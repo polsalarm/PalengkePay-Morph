@@ -1,0 +1,90 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
+# Environment — NEVER commit secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Vite
+frontend/.vite/
+
+# TypeScript
+*.tsbuildinfo
+
+# PWA generated files
+frontend/dist/sw.js
+frontend/dist/workbox-*.js
+
+# Rust / Soroban contracts
+**/target/
+**/*.wasm
+Cargo.lock
+
+# Foundry (EVM) build artifacts — lib/ stays tracked as submodules
+contracts-evm/out/
+contracts-evm/cache/
+contracts-evm/broadcast/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Misc
+*.log
+coverage/
+image.png
+
+# Seed script output — contains private keys
+scripts/seed/seed-output.json
+scripts/seed/seed-pending-output.json
+scripts/seed/seed-vendors-output.json
+scripts/seed/seed-defaults-output.json
+scripts/seed/seed-overdue-output.json
+
+# Internal docs, spec, and assets — hidden from the public repo
+docs/
+spec/
+assets/
+UI_UX_IMPROVEMENTS.md
+frontend/README.md
+ROADMAP.md
+plan.md
+paper.md
+palengkepay-hackathon-application.md
+palengkepay-phase2-features.md
+documentation.md
+
+# Claude Code local config — personal, not project files
+.claude/
+.agents/
+
+.vercel
+.vercel-*
+.env*.local
+.env*

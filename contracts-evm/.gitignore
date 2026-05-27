@@ -1,0 +1,10 @@
+# Foundry
+out/
+cache/
+broadcast/
+
+# Dependencies (git submodules — run `forge install` to fetch)
+lib/
+
+# Env
+.env

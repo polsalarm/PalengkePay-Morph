@@ -35,7 +35,7 @@ describe('normalizeContractPayment', () => {
       id: 4n,
       customer: customerA,
       vendor: vendorA,
-      amount: 12_500_000n,
+      amount: 1_250_000_000_000_000_000n,
       timestamp: 1_768_600_000n,
       memo: 'tilapia',
     })).toEqual({
@@ -54,9 +54,9 @@ describe('normalizeContractPayment', () => {
 describe('buildPaymentMetrics', () => {
   it('builds admin metrics from canonical payment records while preserving vendor category counts', () => {
     const metrics = buildPaymentMetrics(vendors, [
-      normalizeContractPayment({ id: 1, customer: customerA, vendor: vendorA, amount: 20_000_000n, timestamp: 1, memo: 'fish' }),
-      normalizeContractPayment({ id: 2, customer: customerA, vendor: vendorA, amount: 10_000_000n, timestamp: 2, memo: 'more fish' }),
-      normalizeContractPayment({ id: 3, customer: customerA, vendor: vendorB, amount: 5_000_000n, timestamp: 3, memo: 'veg' }),
+      normalizeContractPayment({ id: 1, customer: customerA, vendor: vendorA, amount: 2_000_000_000_000_000_000n, timestamp: 1, memo: 'fish' }),
+      normalizeContractPayment({ id: 2, customer: customerA, vendor: vendorA, amount: 1_000_000_000_000_000_000n, timestamp: 2, memo: 'more fish' }),
+      normalizeContractPayment({ id: 3, customer: customerA, vendor: vendorB, amount: 500_000_000_000_000_000n, timestamp: 3, memo: 'veg' }),
     ], 1);
 
     expect(metrics.summary).toEqual({
@@ -88,7 +88,7 @@ describe('mergePaymentHistory', () => {
       id: 1,
       customer: customerA,
       vendor: vendorA,
-      amount: 10_000_000n,
+      amount: 1_000_000_000_000_000_000n,
       timestamp: 1_700_000_000n,
       memo: 'PP:test',
     });

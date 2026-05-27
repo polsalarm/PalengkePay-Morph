@@ -18,8 +18,6 @@ const CustomerScan = lazy(() => import('./pages/customer/CustomerScan').then((mo
 const CustomerHistory = lazy(() => import('./pages/customer/CustomerHistory').then((module) => ({ default: module.CustomerHistory })));
 const CustomerUtang = lazy(() => import('./pages/customer/CustomerUtang').then((module) => ({ default: module.CustomerUtang })));
 const CustomerProfile = lazy(() => import('./pages/customer/CustomerProfile').then((module) => ({ default: module.CustomerProfile })));
-const CustomerCashin = lazy(() => import('./pages/customer/CustomerCashin').then((module) => ({ default: module.CustomerCashin })));
-const CustomerCashout = lazy(() => import('./pages/customer/CustomerCashout').then((module) => ({ default: module.CustomerCashout })));
 const CustomerTestnetWallet = lazy(() => import('./pages/customer/CustomerTestnetWallet').then((module) => ({ default: module.CustomerTestnetWallet })));
 const VendorApply = lazy(() => import('./pages/vendor/VendorApply').then((module) => ({ default: module.VendorApply })));
 const VendorHome = lazy(() => import('./pages/vendor/VendorHome').then((module) => ({ default: module.VendorHome })));
@@ -32,7 +30,6 @@ const AdminRegister = lazy(() => import('./pages/admin/AdminRegister').then((mod
 const AdminMetrics = lazy(() => import('./pages/admin/AdminMetrics').then((module) => ({ default: module.AdminMetrics })));
 const AdminHealth = lazy(() => import('./pages/admin/AdminHealth').then((module) => ({ default: module.AdminHealth })));
 const AdminProofs = lazy(() => import('./pages/admin/AdminProofs').then((module) => ({ default: module.AdminProofs })));
-const AdminRamps = lazy(() => import('./pages/admin/AdminRamps').then((module) => ({ default: module.AdminRamps })));
 const AdminUtang = lazy(() => import('./pages/admin/AdminUtang').then((module) => ({ default: module.AdminUtang })));
 
 function RouteLoading() {
@@ -82,20 +79,12 @@ export default function App() {
                   <Route path="/customer/history" element={<CustomerHistory />} />
                   <Route path="/customer/utang" element={<CustomerUtang />} />
                   <Route path="/customer/profile" element={<CustomerProfile />} />
-                  {/* Cash-in/cash-out + testnet-wallet are testnet-only (PDAX is mocked, mainnet ramps blocked on CAAS+KMS) */}
+                  {/* Testnet wallet helper (Morph faucet) — testnet-only */}
                   {!IS_MAINNET && (
-                    <>
-                      <Route path="/customer/cashin" element={<CustomerCashin />} />
-                      <Route path="/customer/cashout" element={<CustomerCashout />} />
-                      <Route path="/customer/testnet-wallet" element={<CustomerTestnetWallet />} />
-                    </>
+                    <Route path="/customer/testnet-wallet" element={<CustomerTestnetWallet />} />
                   )}
                   {IS_MAINNET && (
-                    <>
-                      <Route path="/customer/cashin" element={<Navigate to="/customer/profile" replace />} />
-                      <Route path="/customer/cashout" element={<Navigate to="/customer/profile" replace />} />
-                      <Route path="/customer/testnet-wallet" element={<Navigate to="/customer/profile" replace />} />
-                    </>
+                    <Route path="/customer/testnet-wallet" element={<Navigate to="/customer/profile" replace />} />
                   )}
 
                   {/* Admin */}
@@ -104,9 +93,6 @@ export default function App() {
                   <Route path="/admin/metrics" element={<AdminMetrics />} />
                   <Route path="/admin/health" element={<AdminHealth />} />
                   <Route path="/admin/proofs" element={<AdminProofs />} />
-                  {/* Admin ramps console is testnet-only (operator manual settlement is not legal on mainnet) */}
-                  {!IS_MAINNET && <Route path="/admin/ramps" element={<AdminRamps />} />}
-                  {IS_MAINNET && <Route path="/admin/ramps" element={<Navigate to="/admin/market" replace />} />}
                   <Route path="/admin/utang" element={<AdminUtang />} />
 
                   {/* Vendor apply (public) */}

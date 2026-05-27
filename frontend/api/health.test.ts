@@ -1,14 +1,19 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { getSponsorRateLimitReadiness } from './health.js';
 
-afterEach(() => {
+function clearRateLimitEnv() {
   delete process.env.FEE_BUMP_REQUIRE_DURABLE_RATE_LIMIT;
   delete process.env.KV_REST_API_URL;
   delete process.env.KV_REST_API_TOKEN;
   delete process.env.UPSTASH_REDIS_REST_URL;
   delete process.env.UPSTASH_REDIS_REST_TOKEN;
   delete process.env.VERCEL_ENV;
-});
+}
+
+// Isolate ambient env (vitest loads .env.local, which sets KV_REST_API_URL) so the
+// first assertion sees a clean slate, not the dev Redis config.
+beforeEach(clearRateLimitEnv);
+afterEach(clearRateLimitEnv);
 
 describe('getSponsorRateLimitReadiness', () => {
   it('reports local memory fallback as non-production readiness only', () => {

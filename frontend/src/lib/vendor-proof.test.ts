@@ -190,7 +190,7 @@ describe('proof exports', () => {
     });
 
     expect(toProofCsv(summary)).toContain('date,amount_xlm,php_amount,php_per_xlm,memo,customer_wallet,receipt_reference_type,receipt_reference,receipt_lookup_url,source');
-    expect(toProofCsv(summary)).toContain('2026-05-10T00:00:00.000Z,3.2500000,,,gulay,GCUSTO...0000,Transaction hash,hash-1,https://stellar.expert/explorer/testnet/tx/hash-1,Contract records');
+    expect(toProofCsv(summary)).toContain('2026-05-10T00:00:00.000Z,3.2500000,,,gulay,GCUSTO...0000,Transaction hash,hash-1,https://explorer-hoodi.morph.network/tx/hash-1,Contract records');
   });
 
   it('creates a JSON proof bundle with generated metadata, caveats, and certificate data', () => {
@@ -304,7 +304,7 @@ describe('proof exports', () => {
     expect(summary.estimatedPhpTotal).toBe(125);
     expect(summary.readiness.liveProofMissing).toBe(false);
     expect(toProofCsv(summary)).toContain('date,amount_xlm,php_amount,php_per_xlm,memo,customer_wallet,receipt_reference_type,receipt_reference,receipt_lookup_url,source');
-    expect(toProofCsv(summary)).toContain('2026-05-10T00:00:00.000Z,20.0000000,125.00,6.2500,gulay,GCUSTO...0000,Transaction hash,tx-live-hash,https://stellar.expert/explorer/testnet/tx/tx-live-hash,Contract records');
+    expect(toProofCsv(summary)).toContain('2026-05-10T00:00:00.000Z,20.0000000,125.00,6.2500,gulay,GCUSTO...0000,Transaction hash,tx-live-hash,https://explorer-hoodi.morph.network/tx/tx-live-hash,Contract records');
     expect(buildProofBundle(summary)).toMatchObject({
       livePaymentTxHash: 'tx-live-hash',
       totals: { estimatedPhpTotal: 125 },

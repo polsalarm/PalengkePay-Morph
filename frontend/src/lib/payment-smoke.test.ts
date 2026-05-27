@@ -45,7 +45,7 @@ describe('buildTestnetPaymentSmokeGuide', () => {
 
     expect(guide.status).toBe('ready');
     expect(guide.capturedHash).toBe('tx-live-hash');
-    expect(guide.stellarExpertUrl).toBe('https://stellar.expert/explorer/testnet/tx/tx-live-hash');
+    expect(guide.stellarExpertUrl).toBe('https://explorer-hoodi.morph.network/tx/tx-live-hash');
     expect(guide.surfaces).toEqual([
       {
         label: 'Customer history',

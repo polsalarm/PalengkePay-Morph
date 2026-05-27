@@ -1,4 +1,4 @@
-// Auto-generated from contracts-evm/out — do not edit by hand.
+// Auto-generated from contracts-evm/out â€” do not edit by hand.
 // Regenerate after `forge build` if the contract ABI changes.
 export const palengkePaymentAbi = [
   {

@@ -28,8 +28,8 @@ describe('getTransactionReceiptReference', () => {
     expect(getTransactionReceiptReference(tx({ txHash: 'abc123' }))).toEqual({
       label: 'Transaction hash',
       value: 'abc123',
-      lookupUrl: 'https://stellar.expert/explorer/testnet/tx/abc123',
-      detail: 'Open Stellar Expert to verify the submitted transaction.',
+      lookupUrl: 'https://explorer-hoodi.morph.network/tx/abc123',
+      detail: 'Open the Morph explorer to verify the submitted transaction.',
     });
   });
 

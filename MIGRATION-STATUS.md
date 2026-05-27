@@ -46,14 +46,17 @@ Defaults (B1/C1) assumed unless you say otherwise.
 
 ## Not started (next phases)
 
-- **Phase 2** — deploy to Morph Holesky; capture 3 addresses to `frontend/.env.local`:
+- **Phase 2** — deploy to Morph Hoodi testnet (chain 2910). **Holesky (2810) is dead:**
+  Ethereum Holesky was sunset Sept 2025, Morph moved its testnet to Ethereum Hoodi, and
+  the `morphl2.io` domain moved to `morph.network`. Capture 3 addresses to
+  `frontend/.env.local`:
   ```
   VITE_PALENGKE_PAYMENT_ADDRESS=0x...
   VITE_VENDOR_REGISTRY_ADDRESS=0x...
   VITE_UTANG_ESCROW_ADDRESS=0x...
-  VITE_CHAIN_ID=2810
-  VITE_MORPH_RPC_URL=https://rpc-quicknode-holesky.morphl2.io
-  VITE_MORPH_EXPLORER=https://explorer-holesky.morphl2.io
+  VITE_CHAIN_ID=2910
+  VITE_MORPH_RPC_URL=https://rpc-hoodi.morph.network
+  VITE_MORPH_EXPLORER=https://explorer-hoodi.morph.network
   VITE_WALLETCONNECT_PROJECT_ID=...
   ```
 - **Phase 3** — frontend wallet swap (wagmi + RainbowKit). `frontend/` is still the

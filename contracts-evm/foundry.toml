@@ -15,10 +15,10 @@ tab_width = 4
 bracket_spacing = false
 
 [rpc_endpoints]
-morph_holesky = "${MORPH_HOLESKY_RPC}"
+morph_hoodi = "${MORPH_HOODI_RPC}"
 morph = "${MORPH_RPC}"
 
 # Morph uses a Blockscout-style verifier. `forge verify-contract --verifier blockscout`
 # with this URL, or set the key if the explorer requires one.
 [etherscan]
-morph_holesky = {key = "${MORPH_EXPLORER_API_KEY}", url = "https://explorer-holesky.morphl2.io/api", chain = 2810}
+morph_hoodi = {key = "${MORPH_EXPLORER_API_KEY}", url = "https://explorer-hoodi.morph.network/api", chain = 2910}

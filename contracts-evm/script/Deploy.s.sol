@@ -6,11 +6,11 @@ import {PalengkePayment} from "../src/PalengkePayment.sol";
 import {VendorRegistry} from "../src/VendorRegistry.sol";
 import {UTangEscrow} from "../src/UTangEscrow.sol";
 
-/// @notice Deploys all three contracts to Morph Holesky.
+/// @notice Deploys all three contracts to Morph Hoodi testnet (chain 2910).
 /// Usage:
 ///   forge script script/Deploy.s.sol:Deploy \
-///     --rpc-url $MORPH_HOLESKY_RPC --broadcast --verify --verifier blockscout \
-///     --verifier-url https://explorer-holesky.morphl2.io/api
+///     --rpc-url $MORPH_HOODI_RPC --broadcast --verify --verifier blockscout \
+///     --verifier-url https://explorer-hoodi.morph.network/api
 /// Env: DEPLOYER_KEY (uint), ADMIN_ADDRESS (address).
 contract Deploy is Script {
     function run() external {

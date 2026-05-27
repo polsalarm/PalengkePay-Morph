@@ -88,3 +88,6 @@ documentation.md
 .vercel-*
 .env*.local
 .env*
+
+# Seed script output — contains private keys
+frontend/scripts/seed-wallets.json

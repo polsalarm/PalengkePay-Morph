@@ -4,7 +4,7 @@ import { useWallet } from '../../lib/hooks/useWallet';
 import { useVendor } from '../../lib/hooks/useVendor';
 import { QRGenerator } from '../../components/QRGenerator';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
-import { REGISTRY_CONTRACT_ID } from '../../lib/contracts';
+import { REGISTRY_ADDRESS } from '../../lib/contracts';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 export function VendorQR() {
@@ -123,24 +123,24 @@ export function VendorQR() {
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
               style={{
-                backgroundColor: REGISTRY_CONTRACT_ID ? '#F0FDFA' : '#FFFBEB',
-                border: `1.5px solid ${REGISTRY_CONTRACT_ID ? '#CCFBF1' : '#FDE68A'}`,
+                backgroundColor: REGISTRY_ADDRESS ? '#F0FDFA' : '#FFFBEB',
+                border: `1.5px solid ${REGISTRY_ADDRESS ? '#CCFBF1' : '#FDE68A'}`,
               }}
             >
-              {REGISTRY_CONTRACT_ID
+              {REGISTRY_ADDRESS
                 ? <Store size={28} style={{ color: '#008055' }} />
                 : <AlertTriangle size={28} style={{ color: '#D97706' }} />
               }
             </div>
             <p className="text-base font-black text-slate-900 mb-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-              {REGISTRY_CONTRACT_ID ? t('qr.registerStallFirst') : t('qr.registryUnavailable')}
+              {REGISTRY_ADDRESS ? t('qr.registerStallFirst') : t('qr.registryUnavailable')}
             </p>
             <p className="text-sm text-slate-500 mb-5">
-              {REGISTRY_CONTRACT_ID
+              {REGISTRY_ADDRESS
                 ? t('qr.registerHint')
                 : t('qr.registryHint')}
             </p>
-            {REGISTRY_CONTRACT_ID && (
+            {REGISTRY_ADDRESS && (
               <button
                 onClick={() => navigate('/vendor/apply')}
                 className="w-full flex items-center justify-center gap-2 text-sm font-black rounded-2xl active:scale-95 text-white"

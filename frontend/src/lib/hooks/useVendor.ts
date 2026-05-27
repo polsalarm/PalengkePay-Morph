@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  NETWORK_PASSPHRASE,
-  simulateViewCall, prepareContractTx, submitSorobanTx,
-  addressToScVal, stringToScVal, u32ToScVal,
-} from '../stellar';
-import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
+  type VendorRecord, type VendorApplication as RawApplication,
+  getVendor, getAllVendors, getPendingVendors,
+  applyVendor as applyVendorTx, approveVendor as approveVendorTx,
+  rejectVendor as rejectVendorTx, deactivateVendor as deactivateVendorTx,
+  isRegisteredVendor as isRegisteredVendorChain,
+  REGISTRY_ADDRESS,
+} from '../contracts';
+
+export { isRegisteredVendorChain as isRegisteredVendor };
 
 // Module-level cache so repeated renders don't re-fetch same address
 const vendorNameCache = new Map<string, string>();
@@ -33,43 +37,35 @@ export interface VendorApplication {
   status: 'pending' | 'approved' | 'rejected';
 }
 
-const CONTRACT_ID = import.meta.env.VITE_VENDOR_REGISTRY_CONTRACT_ID as string | undefined;
+const configured = !!REGISTRY_ADDRESS;
 
-function mapVendor(r: Record<string, unknown>): VendorProfile {
+function mapVendor(r: VendorRecord): VendorProfile {
   return {
     id: Number(r.id),
-    wallet: String(r.wallet ?? ''),
-    name: String(r.name ?? ''),
-    stallNumber: String(r.stall_number ?? ''),
-    productType: String(r.product_type ?? ''),
-    marketId: String(r.market_id ?? ''),
-    phone: String(r.phone ?? ''),
-    totalTransactions: Number(r.total_transactions ?? 0),
-    totalVolume: BigInt(String(r.total_volume ?? 0)),
-    isActive: Boolean(r.is_active),
+    wallet: r.wallet,
+    name: r.name,
+    stallNumber: r.stallNumber,
+    productType: r.productType,
+    marketId: r.marketId,
+    phone: r.phone,
+    totalTransactions: Number(r.totalTransactions),
+    totalVolume: r.totalVolume,
+    isActive: r.isActive,
   };
 }
 
-function mapApplication(r: Record<string, unknown>): VendorApplication {
-  // Soroban enum variants without associated data come through scValToNative
-  // in stellar-sdk@15 as a 1-element array (e.g. ["Approved"]). Older SDKs
-  // returned { tag: "..." } or a plain string. Accept any shape.
-  const raw = r.status as string | string[] | { tag?: string } | undefined;
-  const statusTag =
-    typeof raw === 'string' ? raw :
-    Array.isArray(raw) && raw.length > 0 ? String(raw[0]) :
-    (raw && typeof raw === 'object' && 'tag' in raw ? String(raw.tag) : 'Pending');
+function mapApplication(r: RawApplication): VendorApplication {
+  // status enum: 1 Pending, 2 Approved, 3 Rejected
   const status: VendorApplication['status'] =
-    statusTag === 'Approved' ? 'approved' :
-    statusTag === 'Rejected' ? 'rejected' : 'pending';
+    r.status === 2 ? 'approved' : r.status === 3 ? 'rejected' : 'pending';
   return {
-    wallet: String(r.wallet ?? ''),
-    name: String(r.name ?? ''),
-    stallNumber: String(r.stall_number ?? ''),
-    productType: String(r.product_type ?? ''),
-    marketId: String(r.market_id ?? ''),
-    phone: String(r.phone ?? ''),
-    appliedAt: BigInt(String(r.applied_at ?? 0)),
+    wallet: r.wallet,
+    name: r.name,
+    stallNumber: r.stallNumber,
+    productType: r.productType,
+    marketId: r.marketId,
+    phone: r.phone,
+    appliedAt: r.appliedAt,
     status,
   };
 }
@@ -82,13 +78,10 @@ export function useVendorName(address: string | null): string | null {
   );
 
   useEffect(() => {
-    if (!address || !CONTRACT_ID) return;
+    if (!address || !configured) return;
     if (vendorNameCache.has(address)) { setName(vendorNameCache.get(address)!); return; }
-    simulateViewCall(CONTRACT_ID, 'get_vendor', [addressToScVal(address)])
-      .then((raw) => {
-        const n = String((raw as Record<string, unknown>)?.name ?? '');
-        if (n) { vendorNameCache.set(address, n); setName(n); }
-      })
+    getVendor(address)
+      .then((v) => { if (v?.name) { vendorNameCache.set(address, v.name); setName(v.name); } })
       .catch(() => {});
   }, [address]);
 
@@ -104,15 +97,14 @@ export function useVendor(walletAddress: string | null) {
 
   useEffect(() => {
     if (!walletAddress) { setVendor(null); return; }
-    if (!CONTRACT_ID) { setNotFound(true); return; }
+    if (!configured) { setNotFound(true); return; }
 
     setIsLoading(true);
     setNotFound(false);
-
-    simulateViewCall(CONTRACT_ID, 'get_vendor', [addressToScVal(walletAddress)])
+    getVendor(walletAddress)
       .then((raw) => {
         if (!raw) { setNotFound(true); setVendor(null); return; }
-        setVendor(mapVendor(raw as Record<string, unknown>));
+        setVendor(mapVendor(raw));
       })
       .catch(() => { setNotFound(true); setVendor(null); })
       .finally(() => setIsLoading(false));
@@ -130,14 +122,11 @@ export function useAllVendors() {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (!CONTRACT_ID) return;
+    if (!configured) return;
     setIsLoading(true);
     setError(null);
-    simulateViewCall(CONTRACT_ID, 'get_all_vendors', [u32ToScVal(50), u32ToScVal(0)])
-      .then((raw) => {
-        if (!Array.isArray(raw)) { setVendors([]); return; }
-        setVendors((raw as Record<string, unknown>[]).map(mapVendor));
-      })
+    getAllVendors(50, 0)
+      .then((raw) => setVendors(raw.map(mapVendor)))
       .catch((e: unknown) => {
         setVendors([]);
         setError((e as { message?: string }).message ?? 'Fetch failed');
@@ -158,14 +147,11 @@ export function usePendingVendors() {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (!CONTRACT_ID) return;
+    if (!configured) return;
     setIsLoading(true);
     setError(null);
-    simulateViewCall(CONTRACT_ID, 'get_pending_vendors', [u32ToScVal(50), u32ToScVal(0)])
-      .then((raw) => {
-        if (!Array.isArray(raw)) { setApplications([]); return; }
-        setApplications((raw as Record<string, unknown>[]).map(mapApplication));
-      })
+    getPendingVendors(50, 0)
+      .then((raw) => setApplications(raw.map(mapApplication)))
       .catch((e: unknown) => {
         setApplications([]);
         setError((e as { message?: string }).message ?? 'Fetch failed');
@@ -192,31 +178,17 @@ export function useApplyVendor() {
     productType: string,
     marketId = 'marikina-public-market',
   ): Promise<boolean> => {
-    if (!CONTRACT_ID) { setError('VendorRegistry contract not deployed'); return false; }
+    if (!configured) { setError('VendorRegistry contract not deployed'); return false; }
     setIsSubmitting(true);
     setError(null);
     setTxHash(null);
     try {
-      // Pre-check: already registered?
-      const existing = await simulateViewCall(CONTRACT_ID, 'get_vendor', [addressToScVal(wallet)]).catch(() => null);
+      const existing = await getVendor(wallet).catch(() => null);
       if (existing) {
         setError('Already registered as vendor. Go to your vendor dashboard.');
         return false;
       }
-
-      const xdr = await prepareContractTx(wallet, CONTRACT_ID, 'apply_vendor', [
-        addressToScVal(wallet),
-        stringToScVal(marketId),
-        stringToScVal(name),
-        stringToScVal(stallNumber),
-        stringToScVal(phone),
-        stringToScVal(productType),
-      ]);
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-        address: wallet,
-      });
-      const hash = await submitSorobanTx(signedTxXdr);
+      const hash = await applyVendorTx({ marketId, name, stallNumber, phone, productType });
       setTxHash(hash);
       return true;
     } catch (err: unknown) {
@@ -230,94 +202,43 @@ export function useApplyVendor() {
   return { apply, isSubmitting, error, txHash };
 }
 
-// ── Admin approve/reject ──────────────────────────────────────────────────────
+// ── Admin approve/reject/deactivate ───────────────────────────────────────────
 
 export function useAdminActions() {
   const [loadingWallet, setLoadingWallet] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const approve = useCallback(async (adminAddress: string, vendorWallet: string): Promise<boolean> => {
-    if (!CONTRACT_ID) return false;
+  const run = useCallback(async (
+    vendorWallet: string,
+    tx: () => Promise<string>,
+    failMsg: string,
+  ): Promise<boolean> => {
+    if (!configured) return false;
     setLoadingWallet(vendorWallet);
     setError(null);
     try {
-      const xdr = await prepareContractTx(adminAddress, CONTRACT_ID, 'approve_vendor', [
-        addressToScVal(adminAddress),
-        addressToScVal(vendorWallet),
-      ]);
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-        address: adminAddress,
-      });
-      await submitSorobanTx(signedTxXdr);
+      await tx();
       return true;
     } catch (err: unknown) {
-      setError((err as { message?: string }).message ?? 'Approve failed');
+      setError((err as { message?: string }).message ?? failMsg);
       return false;
     } finally {
       setLoadingWallet(null);
     }
   }, []);
 
-  const reject = useCallback(async (adminAddress: string, vendorWallet: string): Promise<boolean> => {
-    if (!CONTRACT_ID) return false;
-    setLoadingWallet(vendorWallet);
-    setError(null);
-    try {
-      const xdr = await prepareContractTx(adminAddress, CONTRACT_ID, 'reject_vendor', [
-        addressToScVal(adminAddress),
-        addressToScVal(vendorWallet),
-      ]);
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-        address: adminAddress,
-      });
-      await submitSorobanTx(signedTxXdr);
-      return true;
-    } catch (err: unknown) {
-      setError((err as { message?: string }).message ?? 'Reject failed');
-      return false;
-    } finally {
-      setLoadingWallet(null);
-    }
-  }, []);
+  const approve = useCallback((_adminAddress: string, vendorWallet: string) =>
+    run(vendorWallet, () => approveVendorTx(vendorWallet), 'Approve failed'), [run]);
 
-  const deactivate = useCallback(async (adminAddress: string, vendorWallet: string): Promise<boolean> => {
-    if (!CONTRACT_ID) return false;
-    setLoadingWallet(vendorWallet);
-    setError(null);
-    try {
-      const xdr = await prepareContractTx(adminAddress, CONTRACT_ID, 'deactivate_vendor', [
-        addressToScVal(adminAddress),
-        addressToScVal(vendorWallet),
-      ]);
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-        address: adminAddress,
-      });
-      await submitSorobanTx(signedTxXdr);
-      // Invalidate name cache for this vendor
+  const reject = useCallback((_adminAddress: string, vendorWallet: string) =>
+    run(vendorWallet, () => rejectVendorTx(vendorWallet), 'Reject failed'), [run]);
+
+  const deactivate = useCallback((_adminAddress: string, vendorWallet: string) =>
+    run(vendorWallet, async () => {
+      const hash = await deactivateVendorTx(vendorWallet);
       vendorNameCache.delete(vendorWallet);
-      return true;
-    } catch (err: unknown) {
-      setError((err as { message?: string }).message ?? 'Deactivate failed');
-      return false;
-    } finally {
-      setLoadingWallet(null);
-    }
-  }, []);
+      return hash;
+    }, 'Deactivate failed'), [run]);
 
   return { approve, reject, deactivate, loadingWallet, error };
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-export async function isRegisteredVendor(walletAddress: string): Promise<boolean> {
-  if (!CONTRACT_ID) return false;
-  try {
-    const result = await simulateViewCall(CONTRACT_ID, 'get_vendor', [addressToScVal(walletAddress)]);
-    return result !== null;
-  } catch {
-    return false;
-  }
 }

@@ -37,7 +37,7 @@ import { PushPrompt } from '../../components/PushPrompt';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const REGISTRY_ID = import.meta.env
-  .VITE_VENDOR_REGISTRY_CONTRACT_ID as string | undefined;
+  .VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
 
 const PRODUCT_TYPES = [
   'fish',

@@ -35,7 +35,7 @@ export function UtangCard({
   const daysOver = daysPastDue(utang.nextDueSecs);
   const graceDays = Math.ceil(graceSeconds / 86400);
   const graceElapsed = overdue && daysOver * 86400 > graceSeconds;
-  const lateFeeXlm = utang.installmentAmountXlm * 0.05;
+  const lateFeeXlm = utang.installmentAmountEth * 0.05;
 
   const counterpartyLabel = perspective === 'vendor' ? 'Customer' : 'Vendor';
   const counterpartyDisplay = perspective === 'customer'
@@ -128,7 +128,7 @@ export function UtangCard({
         <div className="px-5 pb-3">
           <div className="flex items-baseline justify-between mb-3">
             <p className="font-black text-slate-900" style={{ fontSize: '1.5rem', fontFamily: "'Montserrat', sans-serif" }}>
-              {format(utang.totalAmountXlm, { showSuffix: false })}
+              {format(utang.totalAmountEth, { showSuffix: false })}
               <span className="text-sm font-semibold text-slate-400 ml-1.5">{unitLabel}</span>
             </p>
             <span
@@ -148,7 +148,7 @@ export function UtangCard({
           </div>
 
           <p className="text-xs text-slate-400 mt-2">
-            {format(utang.installmentAmountXlm, { showSuffix: false })} {unitLabel} × {utang.installmentsTotal} · bawat {utang.intervalDays}d
+            {format(utang.installmentAmountEth, { showSuffix: false })} {unitLabel} × {utang.installmentsTotal} · bawat {utang.intervalDays}d
           </p>
 
           {/* Due date badge */}

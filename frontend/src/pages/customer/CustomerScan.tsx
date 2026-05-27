@@ -14,7 +14,7 @@ import { useCreateUtang } from '../../lib/hooks/useUtang';
 import type { UtangOfferPayload } from '../vendor/VendorUtang';
 import { stellarExpertAccountUrl, stellarExpertUrl, truncateAddress } from '../../lib/stellar';
 import { formatPhp, formatXlm, type StableCheckoutQuote } from '../../lib/checkout-quote';
-import { ESCROW_CONTRACT_ID } from '../../lib/contracts';
+import { ESCROW_ADDRESS } from '../../lib/contracts';
 import { savePaymentProof } from '../../lib/payment-proof';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -145,7 +145,7 @@ export function CustomerScan() {
       {
         vendorWallet: utangOffer.v,
         customerWallet: address,
-        totalAmountXlm: utangOffer.a / STROOPS,
+        totalAmountEth: utangOffer.a / STROOPS,
         installmentsTotal: utangOffer.n,
         intervalDays: Math.round(utangOffer.i / 86400),
         description: utangOffer.d ?? '',
@@ -684,7 +684,7 @@ export function CustomerScan() {
             </div>
           </div>
 
-          {!ESCROW_CONTRACT_ID && (
+          {!ESCROW_ADDRESS && (
             <div
               className="rounded-2xl p-4 flex gap-3"
               style={{ backgroundColor: '#FFFBEB', border: '1.5px solid #FDE68A' }}
@@ -702,17 +702,17 @@ export function CustomerScan() {
           {utangAcceptStatus === 'idle' && (
             <button
               onClick={handleAcceptUtang}
-              disabled={!ESCROW_CONTRACT_ID}
+              disabled={!ESCROW_ADDRESS}
               className="w-full text-white font-black rounded-2xl active:scale-95 transition-all"
               style={{
-                backgroundColor: ESCROW_CONTRACT_ID ? '#008055' : '#94A3B8',
+                backgroundColor: ESCROW_ADDRESS ? '#008055' : '#94A3B8',
                 minHeight: '60px',
                 fontSize: '1.05rem',
                 fontFamily: "'Montserrat', sans-serif",
                 boxShadow: '0 6px 24px rgba(15,118,110,0.4)',
               }}
             >
-              {ESCROW_CONTRACT_ID ? t('scan.acceptAndSign') : t('scan.contractNotConfigured')}
+              {ESCROW_ADDRESS ? t('scan.acceptAndSign') : t('scan.contractNotConfigured')}
             </button>
           )}
 

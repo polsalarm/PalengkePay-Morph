@@ -40,15 +40,10 @@ export function Connect() {
     // Survives a mobile deeplink round-trip that may unmount/remount this page.
     sessionStorage.setItem('pp_connect_pending', '1');
     setConnecting(id);
-    const addr = await connect();
+    // RainbowKit opens its own modal; navigation happens in the useEffect above
+    // once isConnected flips true (handles the mobile WalletConnect remount too).
+    connect();
     setConnecting(null);
-    // Fast-path: connect resolved while we are still mounted — navigate directly
-    // without waiting for the useEffect tick. The sessionStorage guard handles
-    // the remount case (mobile WalletConnect).
-    if (addr) {
-      sessionStorage.removeItem('pp_connect_pending');
-      navigate('/onboard');
-    }
   };
 
   const handleFriendbot = async () => {

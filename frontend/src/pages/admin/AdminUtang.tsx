@@ -16,7 +16,7 @@ import { simulateViewCall, addressToScVal, u32ToScVal, truncateAddress } from '.
 import { UtangCard } from '../../components/UtangCard';
 import { useToast } from '../../lib/hooks/useToast';
 
-const ESCROW_ID = import.meta.env.VITE_UTANG_ESCROW_CONTRACT_ID as string | undefined;
+const ESCROW_ID = import.meta.env.VITE_UTANG_ESCROW_ADDRESS as string | undefined;
 const STROOPS = 10_000_000;
 
 interface RawUtang {
@@ -50,8 +50,8 @@ function mapUtang(raw: RawUtang): UtangRecord {
     id: raw.id,
     customerWallet: String(raw.customer),
     vendorWallet: String(raw.vendor),
-    totalAmountXlm: Number(raw.total_amount) / STROOPS,
-    installmentAmountXlm: Number(raw.installment_amount) / STROOPS,
+    totalAmountEth: Number(raw.total_amount) / STROOPS,
+    installmentAmountEth: Number(raw.installment_amount) / STROOPS,
     installmentsTotal: Number(raw.installments_total),
     installmentsPaid: Number(raw.installments_paid),
     nextDueSecs: raw.next_due,
@@ -148,7 +148,7 @@ export function AdminUtang() {
   const handleMarkDefault = async (u: UtangRecord) => {
     if (!address) return;
     if (!window.confirm(
-      `Mark utang #${u.id} as DEFAULTED?\n\nCustomer: ${truncateAddress(u.customerWallet)}\nVendor: ${truncateAddress(u.vendorWallet)}\nTotal: ${u.totalAmountXlm.toFixed(2)} XLM\nPaid: ${u.installmentsPaid}/${u.installmentsTotal}\n\nThis cannot be undone (customer can still resume by paying late fee).`
+      `Mark utang #${u.id} as DEFAULTED?\n\nCustomer: ${truncateAddress(u.customerWallet)}\nVendor: ${truncateAddress(u.vendorWallet)}\nTotal: ${u.totalAmountEth.toFixed(2)} XLM\nPaid: ${u.installmentsPaid}/${u.installmentsTotal}\n\nThis cannot be undone (customer can still resume by paying late fee).`
     )) return;
     setBusyId(u.id);
     const hash = await markDefault(address, u.id);

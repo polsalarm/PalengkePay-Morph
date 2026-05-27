@@ -17,20 +17,13 @@ export function Landing() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleVendorClick = async () => {
-    let addr = address;
-    if (!isConnected || !addr) {
-      addr = await connect();
-      if (!addr) return;
-    }
-    const registered = await isRegisteredVendor(addr);
+    if (!isConnected || !address) { connect(); return; }
+    const registered = await isRegisteredVendor(address);
     navigate(registered ? '/vendor/home' : '/vendor/apply');
   };
 
-  const handleCustomerClick = async () => {
-    if (!isConnected || !address) {
-      const addr = await connect();
-      if (!addr) return;
-    }
+  const handleCustomerClick = () => {
+    if (!isConnected || !address) { connect(); return; }
     navigate('/customer/home');
   };
 

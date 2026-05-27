@@ -10,7 +10,7 @@ import { UtangCard } from '../../components/UtangCard';
 import { RatingPrompt } from '../../components/RatingPrompt';
 import { stellarExpertUrl, truncateAddress } from '../../lib/stellar';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
-import { ESCROW_CONTRACT_ID } from '../../lib/contracts';
+import { ESCROW_ADDRESS } from '../../lib/contracts';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const STROOPS = 10_000_000;
@@ -98,7 +98,7 @@ export function CustomerUtang() {
       {
         vendorWallet: uploadedOffer.v,
         customerWallet: address,
-        totalAmountXlm: uploadedOffer.a / STROOPS,
+        totalAmountEth: uploadedOffer.a / STROOPS,
         installmentsTotal: uploadedOffer.n,
         intervalDays: Math.round(uploadedOffer.i / 86400),
         description: uploadedOffer.d ?? '',
@@ -117,7 +117,7 @@ export function CustomerUtang() {
 
   const active = utangs.filter((u) => u.status === 'active');
   const filtered = filter === 'all' ? utangs : utangs.filter((u) => u.status === filter);
-  const totalDue = active.reduce((sum, u) => sum + u.installmentAmountXlm, 0);
+  const totalDue = active.reduce((sum, u) => sum + u.installmentAmountEth, 0);
 
   function handlePayClick(utang: UtangRecord) {
     if (!address) return;
@@ -206,7 +206,7 @@ export function CustomerUtang() {
         </div>
       )}
 
-      {!ESCROW_CONTRACT_ID && (
+      {!ESCROW_ADDRESS && (
         <div
           className="rounded-2xl p-4 flex gap-3"
           style={{ backgroundColor: '#FFFBEB', border: '1.5px solid #FDE68A' }}
@@ -222,7 +222,7 @@ export function CustomerUtang() {
       )}
 
       {/* ── Load error ── */}
-      {!isLoading && fetchError && ESCROW_CONTRACT_ID && (
+      {!isLoading && fetchError && ESCROW_ADDRESS && (
         <div
           className="rounded-2xl p-4 flex gap-3"
           style={{ backgroundColor: '#FFF1F2', color: '#BE123C', border: '1.5px solid #FECDD3' }}
@@ -568,7 +568,7 @@ export function CustomerUtang() {
                   5% Late Fee
                 </p>
                 <p className="font-black text-white leading-none" style={{ fontSize: '2.6rem', fontFamily: "'Montserrat', sans-serif", letterSpacing: '-0.02em' }}>
-                  {(resuming.installmentAmountXlm * 0.05).toFixed(2)}
+                  {(resuming.installmentAmountEth * 0.05).toFixed(2)}
                 </p>
                 <p className="text-base font-bold mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>XLM</p>
                 <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.85)' }}>
@@ -696,8 +696,8 @@ export function CustomerUtang() {
                 >
                   {(() => {
                     const remaining = paying.installmentsTotal - paying.installmentsPaid;
-                    const rest = paying.totalAmountXlm - paying.installmentAmountXlm * paying.installmentsPaid;
-                    return (remaining === 1 ? rest : paying.installmentAmountXlm).toFixed(2);
+                    const rest = paying.totalAmountEth - paying.installmentAmountEth * paying.installmentsPaid;
+                    return (remaining === 1 ? rest : paying.installmentAmountEth).toFixed(2);
                   })()}
                 </p>
                 <p className="text-base font-bold mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>XLM</p>

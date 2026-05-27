@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchBalance } from '../stellar';
+import { fetchBalance } from '../evm';
 
 export function useBalance(address: string | null) {
   const [balance, setBalance] = useState<string | null>(null);

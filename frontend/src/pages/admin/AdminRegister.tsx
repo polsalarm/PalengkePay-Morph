@@ -5,7 +5,7 @@ import { useToast } from '../../lib/hooks/useToast';
 import { NETWORK_PASSPHRASE, stellarExpertUrl, truncateAddress, prepareContractTx, submitSorobanTx, addressToScVal, stringToScVal } from '../../lib/stellar';
 import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
 
-const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_CONTRACT_ID as string | undefined;
+const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
 const PRODUCT_TYPES = ['fish', 'meat', 'vegetables', 'fruits', 'rice & grains', 'spices', 'other'];
 
 const PRODUCT_META: Record<string, string> = {
@@ -84,7 +84,7 @@ export function AdminRegister() {
               Contract not deployed
             </p>
             <p className="text-xs mt-1" style={{ color: '#D97706' }}>
-              Set <code className="font-mono bg-amber-100 px-1 rounded">VITE_VENDOR_REGISTRY_CONTRACT_ID</code> in{' '}
+              Set <code className="font-mono bg-amber-100 px-1 rounded">VITE_VENDOR_REGISTRY_ADDRESS</code> in{' '}
               <code className="font-mono bg-amber-100 px-1 rounded">.env.local</code>
             </p>
           </div>

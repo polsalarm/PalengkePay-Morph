@@ -294,18 +294,18 @@ export function buildCollectionsSummary(utangs: UtangRecord[], now = new Date())
   const nowSecs = BigInt(Math.floor(now.getTime() / 1000));
 
   for (const utang of utangs) {
-    const paid = roundXlm(utang.installmentAmountXlm * utang.installmentsPaid);
+    const paid = roundXlm(utang.installmentAmountEth * utang.installmentsPaid);
     totalCollectedXlm += paid;
 
     if (utang.status === 'active') {
       activeAgreements += 1;
-      totalOutstandingXlm += Math.max(0, utang.totalAmountXlm - paid);
+      totalOutstandingXlm += Math.max(0, utang.totalAmountEth - paid);
       if (utang.nextDueSecs < nowSecs) overdueAgreements += 1;
     } else if (utang.status === 'completed') {
       completedAgreements += 1;
     } else if (utang.status === 'defaulted') {
       defaultedAgreements += 1;
-      totalOutstandingXlm += Math.max(0, utang.totalAmountXlm - paid);
+      totalOutstandingXlm += Math.max(0, utang.totalAmountEth - paid);
     }
   }
 

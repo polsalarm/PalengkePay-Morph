@@ -1,6 +1,6 @@
 import { getServer, simulateViewCall, addressToScVal, stellarExpertUrl } from './stellar';
 
-const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_CONTRACT_ID as string | undefined;
+const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
 
 export interface ReceiptVendor {
   name: string;

@@ -7,7 +7,7 @@ import { stellarExpertUrl, truncateAddress } from '../../lib/stellar';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const PRODUCT_TYPES = ['fish', 'meat', 'vegetables', 'fruits', 'rice & grains', 'spices', 'other'];
-const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_CONTRACT_ID as string | undefined;
+const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
 
 const PRODUCT_META: Record<string, { emoji: string; color: string; bg: string }> = {
   fish:           { emoji: '🐟', color: '#2563EB', bg: '#EFF6FF' },

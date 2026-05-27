@@ -25,9 +25,9 @@ interface HealthResponse {
 const clientEnv = [
   { key: 'VITE_STELLAR_NETWORK', value: import.meta.env.VITE_STELLAR_NETWORK },
   { key: 'VITE_SOROBAN_RPC_URL', value: import.meta.env.VITE_SOROBAN_RPC_URL },
-  { key: 'VITE_VENDOR_REGISTRY_CONTRACT_ID', value: import.meta.env.VITE_VENDOR_REGISTRY_CONTRACT_ID },
-  { key: 'VITE_PALENGKE_PAYMENT_CONTRACT_ID', value: import.meta.env.VITE_PALENGKE_PAYMENT_CONTRACT_ID },
-  { key: 'VITE_UTANG_ESCROW_CONTRACT_ID', value: import.meta.env.VITE_UTANG_ESCROW_CONTRACT_ID },
+  { key: 'VITE_VENDOR_REGISTRY_ADDRESS', value: import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS },
+  { key: 'VITE_PALENGKE_PAYMENT_ADDRESS', value: import.meta.env.VITE_PALENGKE_PAYMENT_ADDRESS },
+  { key: 'VITE_UTANG_ESCROW_ADDRESS', value: import.meta.env.VITE_UTANG_ESCROW_ADDRESS },
   { key: 'VITE_FEE_BUMP_URL', value: import.meta.env.VITE_FEE_BUMP_URL },
 ];
 

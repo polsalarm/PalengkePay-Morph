@@ -88,8 +88,8 @@ export function CustomerHome() {
 
   const activeUtangs = utangs.filter((u) => u.status === 'active');
   const totalOwed = activeUtangs.reduce((sum, u) => {
-    const paid = u.installmentAmountXlm * u.installmentsPaid;
-    return sum + Math.max(0, u.totalAmountXlm - paid);
+    const paid = u.installmentAmountEth * u.installmentsPaid;
+    return sum + Math.max(0, u.totalAmountEth - paid);
   }, 0);
   const overdueCount = activeUtangs.filter((u) => isOverdue(u.nextDueSecs)).length;
   const recent = transactions.slice(0, 10);

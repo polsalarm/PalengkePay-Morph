@@ -12,7 +12,7 @@ import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { buildCollectionsSummary } from '../../lib/vendor-proof';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-const ESCROW_ID = import.meta.env.VITE_UTANG_ESCROW_CONTRACT_ID as string | undefined;
+const ESCROW_ID = import.meta.env.VITE_UTANG_ESCROW_ADDRESS as string | undefined;
 const FEE_XLM = (import.meta.env.VITE_UTANG_FEE_XLM as string | undefined) ?? '0.1';
 const FEE_DEST = (import.meta.env.VITE_UTANG_FEE_DEST as string | undefined)
   ?? 'GBI5W3JPFNGBMW2TCSGTNL3NPW6E423UN4BMAXAU34AXTSMTSDT2JDXH';
@@ -41,7 +41,7 @@ type FeeStatus = 'idle' | 'paying' | 'paid' | 'failed';
 
 interface UtangForm {
   customerWallet: string;
-  totalAmountXlm: string;
+  totalAmountEth: string;
   installmentsTotal: number;
   intervalDays: number;
   description: string;
@@ -49,7 +49,7 @@ interface UtangForm {
 
 const DEFAULT_FORM: UtangForm = {
   customerWallet: '',
-  totalAmountXlm: '',
+  totalAmountEth: '',
   installmentsTotal: 3,
   intervalDays: 7,
   description: '',
@@ -82,12 +82,12 @@ export function VendorUtang() {
   const collectionsSummary = useMemo(() => buildCollectionsSummary(utangs), [utangs]);
   const filtered = filter === 'all' ? utangs : utangs.filter((u) => u.status === filter);
   const totalOwed = active.reduce(
-    (sum, u) => sum + (u.totalAmountXlm - u.installmentAmountXlm * u.installmentsPaid),
+    (sum, u) => sum + (u.totalAmountEth - u.installmentAmountEth * u.installmentsPaid),
     0
   );
 
-  const installmentXlm = form.totalAmountXlm && Number(form.totalAmountXlm) > 0
-    ? (Number(form.totalAmountXlm) / form.installmentsTotal).toFixed(2)
+  const installmentXlm = form.totalAmountEth && Number(form.totalAmountEth) > 0
+    ? (Number(form.totalAmountEth) / form.installmentsTotal).toFixed(2)
     : null;
 
   const owedStr = totalOwed.toFixed(2);
@@ -101,7 +101,7 @@ export function VendorUtang() {
     setFormError(null);
     if (!address) { setFormError(t('profile.walletNotConnected')); return false; }
     if (!form.description.trim()) { setFormError(t('vendorUtang.itemsRequired')); return false; }
-    const amount = parseFloat(form.totalAmountXlm);
+    const amount = parseFloat(form.totalAmountEth);
     if (!amount || amount <= 0) { setFormError(t('vendorUtang.validAmountRequired')); return false; }
     if (mode === 'manual') {
       if (!form.customerWallet.trim().startsWith('G') || form.customerWallet.trim().length !== 56) {
@@ -135,7 +135,7 @@ export function VendorUtang() {
         t: 'u',
         v: address,
         c: mode === 'manual' ? form.customerWallet.trim() : undefined,
-        a: Math.round(parseFloat(form.totalAmountXlm) * STROOPS),
+        a: Math.round(parseFloat(form.totalAmountEth) * STROOPS),
         n: form.installmentsTotal,
         i: form.intervalDays * 86400,
         d: form.description.trim(),
@@ -623,8 +623,8 @@ export function VendorUtang() {
                         min="0.01"
                         step="0.01"
                         placeholder="0.00"
-                        value={form.totalAmountXlm}
-                        onChange={(e) => setForm((f) => ({ ...f, totalAmountXlm: e.target.value }))}
+                        value={form.totalAmountEth}
+                        onChange={(e) => setForm((f) => ({ ...f, totalAmountEth: e.target.value }))}
                         className="w-full rounded-xl px-4 text-sm focus:outline-none"
                         style={{
                           border: '1.5px solid rgba(15,23,42,0.15)',
@@ -761,11 +761,11 @@ export function VendorUtang() {
                       {[
                         {
                           label: t('vendorUtang.totalAmount'),
-                          value: `${form.totalAmountXlm} XLM`,
+                          value: `${form.totalAmountEth} XLM`,
                         },
                         {
                           label: t('vendorUtang.installments'),
-                          value: `${form.installmentsTotal} × ${(Number(form.totalAmountXlm) / form.installmentsTotal).toFixed(2)} XLM`,
+                          value: `${form.installmentsTotal} × ${(Number(form.totalAmountEth) / form.installmentsTotal).toFixed(2)} XLM`,
                         },
                         {
                           label: t('vendorUtang.interval'),

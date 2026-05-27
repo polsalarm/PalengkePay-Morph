@@ -6,7 +6,7 @@ import {
 } from '../stellar';
 import { summarize, type RatingSummary } from '../rating';
 
-const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_CONTRACT_ID as string | undefined;
+const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
 
 const summaryCache = new Map<string, RatingSummary>();
 const ratedCache = new Map<string, boolean>(); // key: `${vendor}|${txHash}`

@@ -36,8 +36,8 @@ function utang(overrides: Partial<UtangRecord>): UtangRecord {
     id: 1n,
     customerWallet: customerA,
     vendorWallet,
-    totalAmountXlm: 12,
-    installmentAmountXlm: 4,
+    totalAmountEth: 12,
+    installmentAmountEth: 4,
     installmentsTotal: 3,
     installmentsPaid: 1,
     nextDueSecs: 1_777_000_000n,
@@ -335,9 +335,9 @@ describe('buildCollectionsSummary', () => {
   it('summarizes active, completed, overdue, defaulted, outstanding, and collected utang values', () => {
     const now = new Date('2026-05-14T00:00:00.000Z');
     const summary = buildCollectionsSummary([
-      utang({ id: 1n, status: 'active', totalAmountXlm: 12, installmentAmountXlm: 4, installmentsPaid: 1, nextDueSecs: 1_700_000_000n }),
-      utang({ id: 2n, status: 'completed', totalAmountXlm: 9, installmentAmountXlm: 3, installmentsPaid: 3 }),
-      utang({ id: 3n, status: 'defaulted', totalAmountXlm: 10, installmentAmountXlm: 5, installmentsPaid: 1 }),
+      utang({ id: 1n, status: 'active', totalAmountEth: 12, installmentAmountEth: 4, installmentsPaid: 1, nextDueSecs: 1_700_000_000n }),
+      utang({ id: 2n, status: 'completed', totalAmountEth: 9, installmentAmountEth: 3, installmentsPaid: 3 }),
+      utang({ id: 3n, status: 'defaulted', totalAmountEth: 10, installmentAmountEth: 5, installmentsPaid: 1 }),
     ], now);
 
     expect(summary.activeAgreements).toBe(1);

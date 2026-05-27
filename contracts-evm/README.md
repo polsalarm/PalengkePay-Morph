@@ -23,7 +23,14 @@ testnet to Ethereum Hoodi and the `morphl2.io` domain to `morph.network`.
 - **Admin** (`ADMIN_ROLE` on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
   (disposable testnet EOA).
 - Network: RPC `https://rpc-hoodi.morph.network`, explorer `https://explorer-hoodi.morph.network`.
-- Source verification on Blockscout is **still pending** (verifier API path returned 404).
+- Source **verified** on Blockscout (all three). Re-verify with:
+  ```bash
+  forge verify-contract <addr> src/<Contract>.sol:<Contract> --chain 2910 \
+    --verifier blockscout --verifier-url "https://explorer-api-hoodi.morph.network/api?" --watch
+  # registry + escrow also need: --constructor-args $(cast abi-encode "constructor(address)" <admin>)
+  ```
+  Note the explorer UI host is `explorer-hoodi.morph.network` but the **API host** is
+  `explorer-api-hoodi.morph.network` — the UI host's `/api` 404s (Next.js frontend).
 
 ## Prerequisites
 

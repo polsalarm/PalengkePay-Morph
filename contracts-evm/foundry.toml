@@ -21,4 +21,4 @@ morph = "${MORPH_RPC}"
 # Morph uses a Blockscout-style verifier. `forge verify-contract --verifier blockscout`
 # with this URL, or set the key if the explorer requires one.
 [etherscan]
-morph_hoodi = {key = "${MORPH_EXPLORER_API_KEY}", url = "https://explorer-hoodi.morph.network/api", chain = 2910}
+morph_hoodi = {key = "${MORPH_EXPLORER_API_KEY}", url = "https://explorer-api-hoodi.morph.network/api", chain = 2910}

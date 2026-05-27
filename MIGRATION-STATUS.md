@@ -53,9 +53,9 @@ was dead — Ethereum sunset it Sept 2025, Morph moved to Hoodi + `morph.network
 - **Gotcha for redeploys:** Morph Hoodi sequencer floor gas is ~0.2 gwei but forge's
   EIP-1559 estimate off the 0.001 gwei base fee produced 0.0025 gwei txs that hung
   pending forever. Deploy with `--legacy --with-gas-price 1000000000 --slow`.
-- **TODO:** Blockscout source verification still pending — `--verify --verifier
-  blockscout --verifier-url .../api` returned 404; needs the correct Hoodi Blockscout
-  verification endpoint. Non-blocking for the frontend.
+- Source **verified** on Blockscout (all three, `Pass - Verified`). The verify API host is
+  `explorer-api-hoodi.morph.network` (NOT the UI host `explorer-hoodi.morph.network`, whose
+  `/api` is a Next.js 404). Command in `contracts-evm/README.md`.
 
 ## Decisions taken (plan §8) — confirm or override
 

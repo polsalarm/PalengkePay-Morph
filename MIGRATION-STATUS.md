@@ -34,6 +34,29 @@ the Stellar original is untouched in the sibling `../PalengkePay Pro`.
   vendor over-collect. Solidity-only fix; the Stellar/Soroban original in the sibling
   `../PalengkePay Pro` was intentionally left untouched.
 
+### Phase 2 — deploy to Morph Hoodi ✅ (2026-05-27, chain 2910)
+Deployed all three contracts to Morph Hoodi testnet via `forge script`. Holesky (2810)
+was dead — Ethereum sunset it Sept 2025, Morph moved to Hoodi + `morph.network` domain.
+
+| Contract | Address |
+| --- | --- |
+| PalengkePayment | `0x49cfc8687afb94a2d3867713a7de829dc21794ca` |
+| VendorRegistry  | `0xa1aba560607d756096f28f35c5127ce3a05f3032` |
+| UTangEscrow     | `0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229` |
+
+- Admin (ADMIN_ROLE on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
+  (disposable testnet EOA). Verified on-chain: `escrow.gracePeriod()==604800`,
+  `hasRole(ADMIN_ROLE, admin)==true` on both.
+- Explorer: https://explorer-hoodi.morph.network/address/0x49cfc8687afb94a2d3867713a7de829dc21794ca (etc).
+- Addresses written to `frontend/.env.local` (gitignored) as `VITE_*_ADDRESS`, plus
+  `VITE_CHAIN_ID=2910`, RPC, explorer.
+- **Gotcha for redeploys:** Morph Hoodi sequencer floor gas is ~0.2 gwei but forge's
+  EIP-1559 estimate off the 0.001 gwei base fee produced 0.0025 gwei txs that hung
+  pending forever. Deploy with `--legacy --with-gas-price 1000000000 --slow`.
+- **TODO:** Blockscout source verification still pending — `--verify --verifier
+  blockscout --verifier-url .../api` returned 404; needs the correct Hoodi Blockscout
+  verification endpoint. Non-blocking for the frontend.
+
 ## Decisions taken (plan §8) — confirm or override
 
 - **A. Gas/currency → A1: native ETH** on testnet (no approve flow). Contracts are
@@ -46,19 +69,6 @@ Defaults (B1/C1) assumed unless you say otherwise.
 
 ## Not started (next phases)
 
-- **Phase 2** — deploy to Morph Hoodi testnet (chain 2910). **Holesky (2810) is dead:**
-  Ethereum Holesky was sunset Sept 2025, Morph moved its testnet to Ethereum Hoodi, and
-  the `morphl2.io` domain moved to `morph.network`. Capture 3 addresses to
-  `frontend/.env.local`:
-  ```
-  VITE_PALENGKE_PAYMENT_ADDRESS=0x...
-  VITE_VENDOR_REGISTRY_ADDRESS=0x...
-  VITE_UTANG_ESCROW_ADDRESS=0x...
-  VITE_CHAIN_ID=2910
-  VITE_MORPH_RPC_URL=https://rpc-hoodi.morph.network
-  VITE_MORPH_EXPLORER=https://explorer-hoodi.morph.network
-  VITE_WALLETCONNECT_PROJECT_ID=...
-  ```
 - **Phase 3** — frontend wallet swap (wagmi + RainbowKit). `frontend/` is still the
   **untouched Stellar code** — left intact as the porting reference. Deps not yet swapped.
 - **Phase 4–6** — contract hooks, proof/recovery, API route rewrites.

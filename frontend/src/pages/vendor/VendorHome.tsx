@@ -8,7 +8,7 @@ import { useVendorTransactions, relativeTime } from '../../lib/hooks/useTransact
 import { useVendorStatus, useToggleVendorStatus } from '../../lib/hooks/useVendorStatus';
 import type { TxRecord } from '../../lib/hooks/useTransactions';
 import { useToast } from '../../lib/hooks/useToast';
-import { truncateAddress, stellarExpertUrl, getServer } from '../../lib/stellar';
+import { truncateAddress, stellarExpertUrl } from '../../lib/evm';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -64,44 +64,20 @@ export function VendorHome() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!address) return;
-    const server = getServer();
-    const close = server.effects().forAccount(address).cursor('now').stream({
-      onmessage: (effect: { type: string; amount?: string }) => {
-        if (effect.type === 'account_credited') {
-          const amt = parseFloat(effect.amount ?? '0').toFixed(2);
-          showToast(`Payment received! +${amt} XLM`, 'success');
-          if ('Notification' in window && Notification.permission === 'granted') {
-            server.transactions().forAccount(address).order('desc').limit(1).call()
-              .then(({ records }) => {
-                const memo = records[0]?.memo ?? '';
-                new Notification('PalengkePay — Payment received!', {
-                  body: memo ? `+${amt} XLM · ${memo}` : `+${amt} XLM`,
-                  icon: '/favicon.ico',
-                  tag: 'payment-received',
-                });
-              })
-              .catch(() => {
-                new Notification('PalengkePay — Payment received!', {
-                  body: `+${amt} XLM`,
-                  icon: '/favicon.ico',
-                  tag: 'payment-received',
-                });
-              });
-          }
-        }
-      },
-      onerror: () => {},
-    });
-    return () => { if (typeof close === 'function') close(); };
-  }, [address, showToast]);
-
+  // New-payment toast is driven by the transaction poll below (useVendorTransactions
+  // refreshes every 30s); the old Horizon effects stream is gone on EVM.
   useEffect(() => {
     if (prevCountRef.current === null) { prevCountRef.current = transactions.length; return; }
     if (transactions.length > prevCountRef.current) {
       const newest = transactions[0];
-      showToast(`+${newest.amountXlm.toFixed(2)} XLM from ${newest.from.slice(0, 8)}…`, 'success');
+      showToast(`+${newest.amountXlm.toFixed(4)} ETH from ${newest.from.slice(0, 8)}…`, 'success');
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('PalengkePay — Payment received!', {
+          body: newest.memo ? `+${newest.amountXlm.toFixed(4)} ETH · ${newest.memo}` : `+${newest.amountXlm.toFixed(4)} ETH`,
+          icon: '/favicon.ico',
+          tag: 'payment-received',
+        });
+      }
     }
     prevCountRef.current = transactions.length;
   }, [transactions, showToast]);

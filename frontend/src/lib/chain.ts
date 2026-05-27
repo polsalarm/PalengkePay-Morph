@@ -5,6 +5,9 @@ import { defineChain } from 'viem';
 
 export const CHAIN_ID = Number(import.meta.env.VITE_CHAIN_ID ?? 2910);
 
+/** True on Morph mainnet (2818). Testnet (Hoodi 2910) otherwise. */
+export const IS_MAINNET = CHAIN_ID === 2818;
+
 const RPC_URL =
   (import.meta.env.VITE_MORPH_RPC_URL as string | undefined) ?? 'https://rpc-hoodi.morph.network';
 

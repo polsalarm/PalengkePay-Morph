@@ -9,7 +9,7 @@ import type { VendorProfile, VendorApplication } from '../../lib/hooks/useVendor
 import { useToast } from '../../lib/hooks/useToast';
 import { useBulkVendorRatings } from '../../lib/hooks/useRating';
 import type { RatingSummary } from '../../lib/rating';
-import { stellarExpertAccountUrl, truncateAddress } from '../../lib/stellar';
+import { stellarExpertAccountUrl, truncateAddress } from '../../lib/evm';
 
 const PRODUCT_META: Record<string, { emoji: string; label: string; accent: string; bg: string; chipBg: string; chipColor: string }> = {
   fish:            { emoji: '🐟', label: 'Fish',          accent: '#2563EB', bg: '#EFF6FF', chipBg: '#DBEAFE', chipColor: '#1D4ED8' },

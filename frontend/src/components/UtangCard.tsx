@@ -3,7 +3,7 @@ import type { UtangRecord } from '../lib/hooks/useUtang';
 import { dueLabel, isOverdue, daysPastDue } from '../lib/hooks/useUtang';
 import { useVendorName } from '../lib/hooks/useVendor';
 import { useFormatAmount } from '../lib/hooks/useDisplayUnit';
-import { truncateAddress, stellarExpertUrl } from '../lib/stellar';
+import { truncateAddress, stellarExpertUrl } from '../lib/evm';
 
 interface UtangCardProps {
   utang: UtangRecord;

@@ -13,8 +13,9 @@ const WALLETS = [
 ];
 
 async function fundWithFriendbot(address: string): Promise<void> {
-  const res = await fetch(`https://friendbot.stellar.org/?addr=${encodeURIComponent(address)}`);
-  if (!res.ok) throw new Error('Friendbot failed');
+  // Morph has no programmatic faucet — open the web faucet for the connected address.
+  const faucet = `https://morph-rails-hoodi.morph.network/faucet?address=${encodeURIComponent(address)}`;
+  window.open(faucet, '_blank', 'noopener');
 }
 
 export function Connect() {

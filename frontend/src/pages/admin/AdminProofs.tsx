@@ -5,7 +5,7 @@ import { buildTestnetPaymentSmokeGuide } from '../../lib/payment-smoke';
 import { getAllPaymentProofs } from '../../lib/payment-proof';
 import type { PaymentHistoryRecord } from '../../lib/payment-source';
 import { formatPhp, formatXlm } from '../../lib/checkout-quote';
-import { truncateAddress } from '../../lib/stellar';
+import { truncateAddress } from '../../lib/evm';
 
 interface HealthResponse {
   status: 'ok' | 'degraded';

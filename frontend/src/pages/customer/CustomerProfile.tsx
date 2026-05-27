@@ -24,7 +24,7 @@ import { UnitToggle } from '../../components/UnitToggle';
 import { PrivacyToggle } from '../../components/PrivacyToggle';
 import { PushPrompt } from '../../components/PushPrompt';
 
-import { truncateAddress, stellarExpertUrl, IS_MAINNET } from '../../lib/stellar';
+import { truncateAddress, stellarExpertUrl, IS_MAINNET } from '../../lib/evm';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useToast } from '../../lib/hooks/useToast';
 

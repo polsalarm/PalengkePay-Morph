@@ -45,15 +45,11 @@ export function Onboard() {
     setFunding(true);
     setFundErr(null);
     try {
-      const res = await fetch(`https://friendbot.stellar.org/?addr=${encodeURIComponent(address)}`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { detail?: string };
-        // Already funded = still a success
-        if (!body.detail?.includes('createAccountAlreadyExist')) {
-          throw new Error(body.detail ?? 'Friendbot failed');
-        }
-      }
-      await new Promise((r) => setTimeout(r, 2000));
+      // Morph has no programmatic faucet — open the web faucet for this address.
+      const faucet = `https://morph-rails-hoodi.morph.network/faucet?address=${encodeURIComponent(address)}`;
+      window.open(faucet, '_blank', 'noopener');
+      // Give the user a moment to claim, then re-check the on-chain balance.
+      await new Promise((r) => setTimeout(r, 4000));
       await refetch();
       setFunded(true);
     } catch (e: unknown) {

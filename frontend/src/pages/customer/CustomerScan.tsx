@@ -12,7 +12,7 @@ import { useVendor } from '../../lib/hooks/useVendor';
 import { usePayment } from '../../lib/hooks/usePayment';
 import { useCreateUtang } from '../../lib/hooks/useUtang';
 import type { UtangOfferPayload } from '../vendor/VendorUtang';
-import { stellarExpertAccountUrl, stellarExpertUrl, truncateAddress } from '../../lib/stellar';
+import { stellarExpertAccountUrl, stellarExpertUrl, truncateAddress } from '../../lib/evm';
 import { formatPhp, formatXlm, type StableCheckoutQuote } from '../../lib/checkout-quote';
 import { ESCROW_ADDRESS } from '../../lib/contracts';
 import { savePaymentProof } from '../../lib/payment-proof';

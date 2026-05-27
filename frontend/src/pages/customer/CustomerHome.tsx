@@ -6,7 +6,7 @@ import { useBalance } from '../../lib/hooks/useBalance';
 import { useCustomerTransactions, relativeTime } from '../../lib/hooks/useTransactions';
 import type { TxRecord } from '../../lib/hooks/useTransactions';
 import { useCustomerUtangs, isOverdue } from '../../lib/hooks/useUtang';
-import { truncateAddress, stellarExpertUrl } from '../../lib/stellar';
+import { truncateAddress, stellarExpertUrl } from '../../lib/evm';
 import { useVendorName } from '../../lib/hooks/useVendor';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { PrivacyToggle } from '../../components/PrivacyToggle';

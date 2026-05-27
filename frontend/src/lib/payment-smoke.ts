@@ -1,5 +1,5 @@
 import type { PaymentProofRecord } from './payment-proof';
-import { stellarExpertUrl } from './stellar';
+import { stellarExpertUrl } from './evm';
 
 type SmokeStepStatus = 'todo' | 'blocked' | 'done';
 type SmokeGuideStatus = 'needs_hash' | 'ready';

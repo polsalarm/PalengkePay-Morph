@@ -9,7 +9,7 @@ import { useWallet } from '../../lib/hooks/useWallet';
 import { useVendor } from '../../lib/hooks/useVendor';
 import { useVendorTransactions, relativeTime } from '../../lib/hooks/useTransactions';
 import type { TxRecord } from '../../lib/hooks/useTransactions';
-import { truncateAddress } from '../../lib/stellar';
+import { truncateAddress } from '../../lib/evm';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { formatPhp } from '../../lib/checkout-quote';
 import {

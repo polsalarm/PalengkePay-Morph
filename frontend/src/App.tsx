@@ -4,7 +4,7 @@ import { WalletProvider } from './components/WalletProvider';
 import { ToastProvider } from './components/Toast';
 import { Layout } from './components/Layout';
 import { LanguageProvider } from './contexts/LanguageContext'; // Add this import
-import { IS_MAINNET } from './lib/stellar';
+import { IS_MAINNET } from './lib/chain';
 
 const Landing = lazy(() => import('./pages/Landing').then((module) => ({ default: module.Landing })));
 const Connect = lazy(() => import('./pages/Connect').then((module) => ({ default: module.Connect })));

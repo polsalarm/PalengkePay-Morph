@@ -8,7 +8,7 @@ import type { UtangRecord } from '../../lib/hooks/useUtang';
 import type { UtangOfferPayload } from '../vendor/VendorUtang';
 import { UtangCard } from '../../components/UtangCard';
 import { RatingPrompt } from '../../components/RatingPrompt';
-import { stellarExpertUrl, truncateAddress } from '../../lib/stellar';
+import { stellarExpertUrl, truncateAddress } from '../../lib/evm';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { ESCROW_ADDRESS } from '../../lib/contracts';
 import { useLanguage } from '../../contexts/LanguageContext';

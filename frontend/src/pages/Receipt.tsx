@@ -2,7 +2,7 @@ import { ArrowLeft, ExternalLink, Printer, ReceiptText, ShieldCheck } from 'luci
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { formatPhp, formatXlm } from '../lib/checkout-quote';
 import { getPaymentProofByHash } from '../lib/payment-proof';
-import { stellarExpertUrl, truncateAddress } from '../lib/stellar';
+import { stellarExpertUrl, truncateAddress } from '../lib/evm';
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (

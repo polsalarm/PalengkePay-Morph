@@ -1,5 +1,5 @@
 import type { PaymentHistoryRecord } from './payment-source';
-import { stellarExpertUrl } from './stellar';
+import { stellarExpertUrl } from './evm';
 
 export interface ReceiptReference {
   label: string;
@@ -45,7 +45,7 @@ export function getTransactionReceiptReference(payment: PaymentHistoryRecord): R
       label: 'Transaction hash',
       value: payment.txHash,
       lookupUrl: stellarExpertUrl(payment.txHash),
-      detail: 'Open Stellar Expert to verify the submitted transaction.',
+      detail: 'Open the Morph explorer to verify the submitted transaction.',
     };
   }
 

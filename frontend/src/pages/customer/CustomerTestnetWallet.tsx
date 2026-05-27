@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Loader2, Send, Wallet, XCircle, CheckCircle2 } from 'lucide-react';
 import { useWallet } from '../../lib/hooks/useWallet';
 import { usePayment } from '../../lib/hooks/usePayment';
-import { stellarExpertUrl, truncateAddress } from '../../lib/stellar';
+import { stellarExpertUrl, truncateAddress } from '../../lib/evm';
 
 const TEST_DESTINATION = 'GBI5W3JPFNGBMW2TCSGTNL3NPW6E423UN4BMAXAU34AXTSMTSDT2JDXH';
 const TEST_AMOUNT = '0.1000000';

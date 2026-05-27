@@ -21,17 +21,8 @@ import { useWallet } from '../../lib/hooks/useWallet';
 import { useVendor } from '../../lib/hooks/useVendor';
 import { useVendorRating } from '../../lib/hooks/useRating';
 import { useToast } from '../../lib/hooks/useToast';
-import {
-  NETWORK_PASSPHRASE,
-  truncateAddress,
-  prepareContractTx,
-  submitSorobanTx,
-  addressToScVal,
-  stringToScVal,
-} from '../../lib/stellar';
-import {
-  StellarWalletsKit,
-} from '@creit.tech/stellar-wallets-kit';
+import { truncateAddress } from '../../lib/evm';
+import { updateProfile } from '../../lib/contracts';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { PushPrompt } from '../../components/PushPrompt';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -154,28 +145,12 @@ export function VendorProfile() {
     setSaving(true);
 
     try {
-      const xdr = await prepareContractTx(
-        address,
-        REGISTRY_ID,
-        'update_profile',
-        [
-          addressToScVal(address),
-          stringToScVal(form.name),
-          stringToScVal(form.stallNumber),
-          stringToScVal(form.phone),
-          stringToScVal(form.productType),
-        ]
-      );
-
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(
-        xdr,
-        {
-          networkPassphrase: NETWORK_PASSPHRASE,
-          address,
-        }
-      );
-
-      await submitSorobanTx(signedTxXdr);
+      await updateProfile({
+        name: form.name,
+        stallNumber: form.stallNumber,
+        phone: form.phone,
+        productType: form.productType,
+      });
 
       showToast(t('profile.updateSuccess'), 'success');
 

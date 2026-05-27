@@ -12,54 +12,12 @@ import {
   useUtangGracePeriod,
   formatGraceSeconds,
 } from '../../lib/hooks/useUtang';
-import { simulateViewCall, addressToScVal, u32ToScVal, truncateAddress } from '../../lib/stellar';
+import { truncateAddress } from '../../lib/evm';
+import { getVendorUtangs } from '../../lib/contracts';
 import { UtangCard } from '../../components/UtangCard';
 import { useToast } from '../../lib/hooks/useToast';
 
 const ESCROW_ID = import.meta.env.VITE_UTANG_ESCROW_ADDRESS as string | undefined;
-const STROOPS = 10_000_000;
-
-interface RawUtang {
-  id: bigint;
-  customer: string;
-  vendor: string;
-  total_amount: bigint;
-  installment_amount: bigint;
-  installments_total: number;
-  installments_paid: number;
-  next_due: bigint;
-  interval_seconds: bigint;
-  // Soroban enum variants without associated data come through scValToNative
-  // in stellar-sdk@15 as a 1-element array (e.g. ["Defaulted"]). Older
-  // SDKs returned { tag: "..." } or a plain string. Accept any shape so the
-  // UI keeps working across SDK versions.
-  status: string | string[] | { tag: string };
-  description: string;
-}
-
-function readStatusTag(s: RawUtang['status']): string {
-  if (typeof s === 'string') return s;
-  if (Array.isArray(s) && s.length > 0) return String(s[0]);
-  if (s && typeof s === 'object' && 'tag' in s) return String(s.tag);
-  return 'Active';
-}
-
-function mapUtang(raw: RawUtang): UtangRecord {
-  const tag = readStatusTag(raw.status);
-  return {
-    id: raw.id,
-    customerWallet: String(raw.customer),
-    vendorWallet: String(raw.vendor),
-    totalAmountEth: Number(raw.total_amount) / STROOPS,
-    installmentAmountEth: Number(raw.installment_amount) / STROOPS,
-    installmentsTotal: Number(raw.installments_total),
-    installmentsPaid: Number(raw.installments_paid),
-    nextDueSecs: raw.next_due,
-    intervalDays: Math.round(Number(raw.interval_seconds) / 86400),
-    status: tag === 'Completed' ? 'completed' : tag === 'Defaulted' ? 'defaulted' : 'active',
-    description: String(raw.description ?? ''),
-  };
-}
 
 function useAllUtangs(vendorWallets: string[]) {
   const [utangs, setUtangs] = useState<UtangRecord[]>([]);
@@ -75,17 +33,10 @@ function useAllUtangs(vendorWallets: string[]) {
     setIsLoading(true);
     setError(null);
     Promise.all(
-      vendorWallets.map((w) =>
-        simulateViewCall(ESCROW_ID!, 'get_vendor_utangs', [
-          addressToScVal(w),
-          u32ToScVal(50),
-          u32ToScVal(0),
-        ]).catch(() => [] as RawUtang[])
-      )
+      vendorWallets.map((w) => getVendorUtangs(w).catch(() => [] as UtangRecord[]))
     )
       .then((batches) => {
-        const flat = batches.flat() as RawUtang[];
-        setUtangs(flat.map(mapUtang));
+        setUtangs(batches.flat());
       })
       .catch((err: unknown) => {
         setError((err as Error).message ?? 'Failed to load utangs');

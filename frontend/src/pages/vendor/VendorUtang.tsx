@@ -6,16 +6,15 @@ import { useWallet } from '../../lib/hooks/useWallet';
 import { useVendorUtangs } from '../../lib/hooks/useUtang';
 import { UtangCard } from '../../components/UtangCard';
 import { QRScanner } from '../../components/QRScanner';
-import { NETWORK_PASSPHRASE, buildPaymentTx, submitTx } from '../../lib/stellar';
-import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
+import { sendPayment } from '../../lib/contracts';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { buildCollectionsSummary } from '../../lib/vendor-proof';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const ESCROW_ID = import.meta.env.VITE_UTANG_ESCROW_ADDRESS as string | undefined;
-const FEE_XLM = (import.meta.env.VITE_UTANG_FEE_XLM as string | undefined) ?? '0.1';
+const FEE_ETH = (import.meta.env.VITE_UTANG_FEE_ETH as string | undefined) ?? '0.0001';
 const FEE_DEST = (import.meta.env.VITE_UTANG_FEE_DEST as string | undefined)
-  ?? 'GBI5W3JPFNGBMW2TCSGTNL3NPW6E423UN4BMAXAU34AXTSMTSDT2JDXH';
+  ?? '0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76';
 
 const INTERVAL_OPTIONS = [
   { label: 'Weekly', labelTl: 'Lingguwal', days: 7 },
@@ -104,7 +103,7 @@ export function VendorUtang() {
     const amount = parseFloat(form.totalAmountEth);
     if (!amount || amount <= 0) { setFormError(t('vendorUtang.validAmountRequired')); return false; }
     if (mode === 'manual') {
-      if (!form.customerWallet.trim().startsWith('G') || form.customerWallet.trim().length !== 56) {
+      if (!/^0x[0-9a-fA-F]{40}$/.test(form.customerWallet.trim())) {
         setFormError(t('vendorUtang.validWalletRequired'));
         return false;
       }
@@ -124,12 +123,7 @@ export function VendorUtang() {
     setFeeStatus('paying');
     setFeeError(null);
     try {
-      const xdr = await buildPaymentTx(address, FEE_DEST, FEE_XLM, 'PalengkePay utang fee');
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-        address,
-      });
-      await submitTx(signedTxXdr);
+      await sendPayment(FEE_DEST, FEE_ETH, 'PalengkePay utang fee');
       setFeeStatus('paid');
       setQrPayload({
         t: 'u',
@@ -799,7 +793,7 @@ export function VendorUtang() {
                         className="font-black"
                         style={{ fontSize: '1.6rem', color: '#92400E', fontFamily: "'Montserrat', sans-serif" }}
                       >
-                        {FEE_XLM} XLM
+                        {FEE_ETH} XLM
                       </span>
                     </div>
                     <p className="text-xs" style={{ color: 'rgba(146,64,14,0.7)' }}>
@@ -828,7 +822,7 @@ export function VendorUtang() {
                       }}
                     >
                       <CheckCircle size={17} />
-                      {t('vendorUtang.payAndGenerateQR', { fee: FEE_XLM })}
+                      {t('vendorUtang.payAndGenerateQR', { fee: FEE_ETH })}
                     </button>
                   ) : (
                     <div

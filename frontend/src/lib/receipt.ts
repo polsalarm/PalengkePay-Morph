@@ -1,6 +1,8 @@
-import { getServer, simulateViewCall, addressToScVal, stellarExpertUrl } from './stellar';
-
-const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
+import { formatEther, parseEventLogs } from 'viem';
+import { publicClient } from './config';
+import { explorerTxUrl } from './evm';
+import { getVendor } from './contracts';
+import { palengkePaymentAbi } from './abis/palengkePayment';
 
 export interface ReceiptVendor {
   name: string;
@@ -12,84 +14,68 @@ export interface Receipt {
   txHash: string;
   from: string;
   to: string;
-  amountXlm: string;
+  amountXlm: string; // ETH amount (field name kept for compatibility)
   memo: string | null;
   createdAt: string;
-  feeChargedXlm: string;
+  feeChargedXlm: string; // gas fee in ETH
   vendor: ReceiptVendor | null;
-  stellarExpertUrl: string;
-}
-
-interface HorizonTxRecord {
-  hash: string;
-  memo_type?: string;
-  memo?: string;
-  created_at: string;
-  fee_charged: string | number;
-  source_account: string;
-}
-
-interface HorizonPaymentOp {
-  type: string;
-  type_i: number;
-  from?: string;
-  to?: string;
-  funder?: string;
-  account?: string;
-  asset_type?: string;
-  amount?: string;
-  starting_balance?: string;
-}
-
-function stroopsToXlm(stroops: string | number): string {
-  return (Number(stroops) / 10_000_000).toFixed(7).replace(/0+$/, '').replace(/\.$/, '');
+  stellarExpertUrl: string; // Morph explorer tx URL (field name kept for compatibility)
 }
 
 async function fetchVendor(address: string): Promise<ReceiptVendor | null> {
-  if (!REGISTRY_ID) return null;
-  try {
-    const raw = await simulateViewCall(REGISTRY_ID, 'get_vendor', [addressToScVal(address)]);
-    if (!raw) return null;
-    const r = raw as Record<string, unknown>;
-    return {
-      name: String(r.name ?? ''),
-      stallNumber: String(r.stall_number ?? ''),
-      productType: String(r.product_type ?? ''),
-    };
-  } catch {
-    return null;
-  }
+  const v = await getVendor(address).catch(() => null);
+  if (!v) return null;
+  return { name: v.name, stallNumber: v.stallNumber, productType: v.productType };
+}
+
+interface PaymentEventArgs {
+  customer?: string;
+  vendor?: string;
+  amount?: bigint;
+  timestamp?: bigint;
+  memo?: string;
 }
 
 export async function fetchReceipt(txHash: string): Promise<Receipt> {
-  const server = getServer();
-  const [tx, opsPage] = await Promise.all([
-    server.transactions().transaction(txHash).call() as unknown as Promise<HorizonTxRecord>,
-    server.operations().forTransaction(txHash).call() as unknown as Promise<{ records: HorizonPaymentOp[] }>,
+  const hash = txHash as `0x${string}`;
+  const [receipt, tx] = await Promise.all([
+    publicClient.getTransactionReceipt({ hash }),
+    publicClient.getTransaction({ hash }),
   ]);
 
-  const op = opsPage.records.find(
-    (o) => (o.type === 'payment' && o.asset_type === 'native') || o.type === 'create_account',
-  );
-  if (!op) throw new Error('No native payment operation in this transaction.');
+  const events = parseEventLogs({
+    abi: palengkePaymentAbi,
+    eventName: 'PaymentCompleted',
+    logs: receipt.logs,
+  });
+  const ev = (events[0]?.args ?? undefined) as PaymentEventArgs | undefined;
 
-  const from = op.from ?? op.funder ?? tx.source_account;
-  const to = op.to ?? op.account ?? '';
-  const amountXlm = op.amount ?? op.starting_balance ?? '0';
-  const memo = tx.memo_type === 'text' && tx.memo ? tx.memo : null;
+  const from = ev?.customer ?? tx.from;
+  const to = ev?.vendor ?? '';
+  const amountEth = ev?.amount != null ? formatEther(ev.amount) : formatEther(tx.value);
+  const memo = ev?.memo || null;
 
+  let createdAt: string;
+  if (ev?.timestamp) {
+    createdAt = new Date(Number(ev.timestamp) * 1000).toISOString();
+  } else {
+    const block = await publicClient.getBlock({ blockNumber: receipt.blockNumber });
+    createdAt = new Date(Number(block.timestamp) * 1000).toISOString();
+  }
+
+  const feeWei = receipt.gasUsed * receipt.effectiveGasPrice;
   const vendor = to ? await fetchVendor(to) : null;
 
   return {
-    txHash: tx.hash,
+    txHash: hash,
     from,
     to,
-    amountXlm,
+    amountXlm: amountEth,
     memo,
-    createdAt: tx.created_at,
-    feeChargedXlm: stroopsToXlm(tx.fee_charged),
+    createdAt,
+    feeChargedXlm: formatEther(feeWei),
     vendor,
-    stellarExpertUrl: stellarExpertUrl(tx.hash),
+    stellarExpertUrl: explorerTxUrl(hash),
   };
 }
 
@@ -102,7 +88,7 @@ export async function shareReceipt(txHash: string, vendorName?: string, amountXl
   const url = receiptUrl(txHash);
   const title = 'PalengkePay Receipt';
   const text = vendorName && amountXlm
-    ? `Payment of ${amountXlm} XLM to ${vendorName} — verified on Stellar.`
+    ? `Payment of ${amountXlm} ETH to ${vendorName} — verified on Morph.`
     : 'Verified on-chain payment receipt.';
 
   if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { UserPlus, CheckCircle, Loader2, AlertTriangle, ExternalLink, Wallet, ShieldCheck } from 'lucide-react';
 import { useWallet } from '../../lib/hooks/useWallet';
 import { useToast } from '../../lib/hooks/useToast';
-import { NETWORK_PASSPHRASE, stellarExpertUrl, truncateAddress, prepareContractTx, submitSorobanTx, addressToScVal, stringToScVal } from '../../lib/stellar';
-import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
+import { stellarExpertUrl, truncateAddress } from '../../lib/evm';
+import { registerVendor } from '../../lib/contracts';
 
 const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
 const PRODUCT_TYPES = ['fish', 'meat', 'vegetables', 'fruits', 'rice & grains', 'spices', 'other'];
@@ -32,8 +32,8 @@ export function AdminRegister() {
     e.preventDefault();
     if (!isConnected) { connect(); return; }
     if (!address) return;
-    if (!form.walletAddress.startsWith('G') || form.walletAddress.length !== 56) {
-      showToast('Invalid Stellar address — must start with G, 56 chars', 'error');
+    if (!/^0x[0-9a-fA-F]{40}$/.test(form.walletAddress)) {
+      showToast('Invalid address — must be a 0x EVM address (42 chars)', 'error');
       return;
     }
     if (!REGISTRY_ID) {
@@ -42,17 +42,13 @@ export function AdminRegister() {
     }
     setLoading(true);
     try {
-      const xdr = await prepareContractTx(address, REGISTRY_ID, 'register_vendor', [
-        addressToScVal(address),
-        addressToScVal(form.walletAddress),
-        stringToScVal(form.marketId),
-        stringToScVal(form.name),
-        stringToScVal(form.stallNumber),
-        stringToScVal(form.phone),
-        stringToScVal(form.productType),
-      ]);
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, { networkPassphrase: NETWORK_PASSPHRASE, address });
-      const hash = await submitSorobanTx(signedTxXdr);
+      const hash = await registerVendor(form.walletAddress, {
+        marketId: form.marketId,
+        name: form.name,
+        stallNumber: form.stallNumber,
+        phone: form.phone,
+        productType: form.productType,
+      });
       setTxHash(hash);
       showToast(`${form.name} registered on-chain!`, 'success');
       setDone(true);

@@ -1,38 +1,30 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Keypair, Transaction, TransactionBuilder } from '@stellar/stellar-sdk';
+import { verifyMessage, isAddress } from 'viem';
 import { getStatus, getStatuses, setStatus } from './_statusStore.js';
-import { getLiquidityProfile } from './liquidity-profile.js';
 
-const MEMO_PREFIX = 'PPSTAT:';
-const REPLAY_WINDOW_SECONDS = 300;
-
-function networkPassphrase(): string {
-  return getLiquidityProfile().networkPassphrase;
-}
-
-function readMemoText(tx: Transaction): string | null {
-  const memo = tx.memo;
-  if (!memo || memo.type !== 'text') return null;
-  const value = memo.value;
-  if (typeof value === 'string') return value;
-  if (value instanceof Uint8Array) return Buffer.from(value).toString('utf8');
-  return null;
-}
-
-function verifySourceSignature(tx: Transaction): boolean {
-  const sourceKp = Keypair.fromPublicKey(tx.source);
-  const sourceHint = Buffer.from(sourceKp.rawPublicKey()).subarray(-4);
-  return tx.signatures.some((sig) => {
-    const hint = Buffer.from(sig.hint());
-    if (!hint.equals(sourceHint)) return false;
-    return sourceKp.verify(tx.hash(), sig.signature());
-  });
-}
+// Vendor open/closed status, proven by an EIP-191 personal_sign (no on-chain tx).
+// The client signs the message built by lib/vendorStatus.buildSetStatusMessage and
+// posts { address, message, signature }; we verify with viem and store the flag.
+const REPLAY_WINDOW_SECONDS = 600;
 
 function publicStatus(rec: { isOpen: boolean; updatedAt: number } | null) {
   return rec
     ? { isOpen: rec.isOpen, defaulted: false, updatedAt: rec.updatedAt }
     : { isOpen: true, defaulted: true };
+}
+
+function parseStatusMessage(message: string): { vendor: string; isOpen: boolean; issued: number } | null {
+  const lines = message.split('\n').map((l) => l.trim());
+  if (lines[0] !== 'PalengkePay vendor status update') return null;
+  const get = (prefix: string) => lines.find((l) => l.startsWith(prefix))?.slice(prefix.length).trim();
+  const vendor = get('Vendor:');
+  const status = get('Status:');
+  const issuedStr = get('Issued:');
+  if (!vendor || !status || !issuedStr) return null;
+  if (status !== 'open' && status !== 'closed') return null;
+  const issued = Date.parse(issuedStr);
+  if (!Number.isFinite(issued)) return null;
+  return { vendor, isOpen: status === 'open', issued: Math.floor(issued / 1000) };
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -46,9 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (list.length === 0) return res.status(400).json({ error: 'vendor required' });
 
     for (const addr of list) {
-      try { Keypair.fromPublicKey(addr); } catch {
-        return res.status(400).json({ error: `invalid address: ${addr}` });
-      }
+      if (!isAddress(addr)) return res.status(400).json({ error: `invalid address: ${addr}` });
     }
 
     if (list.length === 1) {
@@ -65,56 +55,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { signedXdr } = (req.body ?? {}) as { signedXdr?: string };
-  if (typeof signedXdr !== 'string' || !signedXdr.trim()) {
-    return res.status(400).json({ error: 'signedXdr required' });
+  const { address, message, signature } = (req.body ?? {}) as {
+    address?: string; message?: string; signature?: string;
+  };
+  if (!address || !isAddress(address)) return res.status(400).json({ error: 'valid address required' });
+  if (typeof message !== 'string' || !message.trim()) return res.status(400).json({ error: 'message required' });
+  if (typeof signature !== 'string' || !signature.startsWith('0x')) return res.status(400).json({ error: 'signature required' });
+
+  const parsed = parseStatusMessage(message);
+  if (!parsed) return res.status(400).json({ error: 'malformed status message' });
+  if (parsed.vendor.toLowerCase() !== address.toLowerCase()) {
+    return res.status(400).json({ error: 'message vendor does not match address' });
   }
 
-  let tx: Transaction;
-  try {
-    const parsed = TransactionBuilder.fromXDR(signedXdr, networkPassphrase());
-    if (!(parsed instanceof Transaction)) {
-      return res.status(400).json({ error: 'fee-bump transactions not accepted' });
-    }
-    tx = parsed;
-  } catch {
-    return res.status(400).json({ error: 'invalid signedXdr' });
-  }
-
-  try { Keypair.fromPublicKey(tx.source); } catch {
-    return res.status(400).json({ error: 'invalid transaction source' });
-  }
-
-  if (!verifySourceSignature(tx)) {
-    return res.status(400).json({ error: 'signature must be from vendor source account' });
-  }
-
-  const memoText = readMemoText(tx);
-  if (!memoText || !memoText.startsWith(MEMO_PREFIX)) {
-    return res.status(400).json({ error: 'PPSTAT memo required' });
-  }
-  const parts = memoText.slice(MEMO_PREFIX.length).split(':');
-  const flag = parts[0];
-  if (flag !== '0' && flag !== '1') {
-    return res.status(400).json({ error: 'invalid status flag' });
-  }
-
-  const tb = tx.timeBounds;
-  if (!tb) return res.status(400).json({ error: 'timeBounds required' });
   const now = Math.floor(Date.now() / 1000);
-  const maxTime = Number(tb.maxTime);
-  const minTime = Number(tb.minTime);
-  if (!Number.isFinite(maxTime) || maxTime === 0) {
-    return res.status(400).json({ error: 'maxTime required' });
-  }
-  if (maxTime < now - REPLAY_WINDOW_SECONDS) {
+  if (Math.abs(now - parsed.issued) > REPLAY_WINDOW_SECONDS) {
     return res.status(400).json({ error: 'challenge expired' });
   }
-  if (Number.isFinite(minTime) && minTime > now + REPLAY_WINDOW_SECONDS) {
-    return res.status(400).json({ error: 'challenge not yet valid' });
-  }
 
-  const rec = { isOpen: flag === '1', updatedAt: Date.now() };
-  await setStatus(tx.source, rec);
+  let valid = false;
+  try {
+    valid = await verifyMessage({
+      address: address as `0x${string}`,
+      message,
+      signature: signature as `0x${string}`,
+    });
+  } catch {
+    valid = false;
+  }
+  if (!valid) return res.status(400).json({ error: 'signature verification failed' });
+
+  const rec = { isOpen: parsed.isOpen, updatedAt: Date.now() };
+  await setStatus(address, rec);
   return res.status(200).json({ ok: true, ...publicStatus(rec) });
 }

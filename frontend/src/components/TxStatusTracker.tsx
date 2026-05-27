@@ -1,6 +1,6 @@
 import { Edit3, Loader2, Lock, CheckCircle, XCircle, ExternalLink, RotateCcw, Search, Zap } from 'lucide-react';
 import type { TxStatus } from '../lib/hooks/usePayment';
-import { stellarExpertUrl } from '../lib/stellar';
+import { stellarExpertUrl } from '../lib/evm';
 
 interface Props {
   status: TxStatus;

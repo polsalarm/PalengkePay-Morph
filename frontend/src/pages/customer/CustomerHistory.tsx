@@ -3,7 +3,7 @@ import { AlertTriangle, ExternalLink, RefreshCw, ShoppingBag, ScanLine } from 'l
 import { useWallet } from '../../lib/hooks/useWallet';
 import { useCustomerTransactions, relativeTime } from '../../lib/hooks/useTransactions';
 import type { TxRecord } from '../../lib/hooks/useTransactions';
-import { truncateAddress, stellarExpertUrl } from '../../lib/stellar';
+import { truncateAddress, stellarExpertUrl } from '../../lib/evm';
 import { useVendorName } from '../../lib/hooks/useVendor';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { formatPhp } from '../../lib/checkout-quote';

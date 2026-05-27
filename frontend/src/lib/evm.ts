@@ -8,7 +8,9 @@ import {
 } from '@wagmi/core';
 import type { Abi } from 'viem';
 import { wagmiConfig } from './config';
-import { morphHoodi, EXPLORER_URL } from './chain';
+import { morphHoodi, EXPLORER_URL, IS_MAINNET } from './chain';
+
+export { IS_MAINNET };
 
 // Core EVM helpers — replaces the Stellar SDK wrapper (stellar.ts). Reads go
 // through the public client; writes go through the connected wallet via wagmi.
@@ -88,3 +90,7 @@ export function explorerTxUrl(txHash: string): string {
 export function explorerAccountUrl(address: string): string {
   return `${EXPLORER_URL}/address/${address}`;
 }
+
+// Back-compat aliases for call sites ported from Stellar (now point at the Morph
+// Hoodi block explorer).
+export { explorerTxUrl as stellarExpertUrl, explorerAccountUrl as stellarExpertAccountUrl };

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, Send, X, KeyRound, ExternalLink, Download, DatabaseZap, MessageSquare, AlertTriangle } from 'lucide-react';
 import { useToast } from '../../lib/hooks/useToast';
 import { exportRamps, listAllRamps, seedDemoRamps, type RampTxn } from '../../lib/ramp';
-import { truncateAddress, stellarExpertUrl } from '../../lib/stellar';
+import { truncateAddress, stellarExpertUrl } from '../../lib/evm';
 
 const KEY_STORAGE = 'pp_ramp_admin_key';
 

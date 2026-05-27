@@ -51,28 +51,38 @@ interface PaymentEventArgs {
   memo?: string;
 }
 
+// Morph RPC caps eth_getLogs at 5000 blocks, so scan in chunks from the deploy block.
+// VITE_DEPLOY_BLOCK lets you pin the contracts' deploy height (avoids scanning from 0).
+const MAX_RANGE = 5000n;
+const DEPLOY_BLOCK = BigInt(import.meta.env.VITE_DEPLOY_BLOCK ?? 5_703_000);
+
+async function getPaymentLogs(args: { customer?: `0x${string}`; vendor?: `0x${string}` }) {
+  const latest = await publicClient.getBlockNumber();
+  const start = DEPLOY_BLOCK > latest ? 0n : DEPLOY_BLOCK;
+  const out: Awaited<ReturnType<typeof publicClient.getContractEvents>> = [];
+  for (let from = start; from <= latest; from += MAX_RANGE) {
+    const to = from + MAX_RANGE - 1n > latest ? latest : from + MAX_RANGE - 1n;
+    const logs = await publicClient.getContractEvents({
+      address: PAYMENT_ADDRESS,
+      abi: palengkePaymentAbi,
+      eventName: 'PaymentCompleted',
+      args,
+      fromBlock: from,
+      toBlock: to,
+    });
+    out.push(...logs);
+  }
+  return out;
+}
+
 async function fetchPaymentEvents(address: string): Promise<IndexedPayment[]> {
   if (!PAYMENT_ADDRESS) return [];
   const addr = address as `0x${string}`;
 
-  // Two queries: payments sent (customer) and received (vendor). Both args are indexed.
+  // Two scans: payments sent (customer) and received (vendor). Both args are indexed.
   const [sent, received] = await Promise.all([
-    publicClient.getContractEvents({
-      address: PAYMENT_ADDRESS,
-      abi: palengkePaymentAbi,
-      eventName: 'PaymentCompleted',
-      args: { customer: addr },
-      fromBlock: 0n,
-      toBlock: 'latest',
-    }),
-    publicClient.getContractEvents({
-      address: PAYMENT_ADDRESS,
-      abi: palengkePaymentAbi,
-      eventName: 'PaymentCompleted',
-      args: { vendor: addr },
-      fromBlock: 0n,
-      toBlock: 'latest',
-    }),
+    getPaymentLogs({ customer: addr }),
+    getPaymentLogs({ vendor: addr }),
   ]);
 
   const byId = new Map<string, IndexedPayment>();

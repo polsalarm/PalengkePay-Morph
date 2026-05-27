@@ -14,8 +14,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createPublicClient, createWalletClient, http, parseEther, formatEther, parseGwei, defineChain } from 'viem';
+import { createPublicClient, createWalletClient, http, parseEther, formatEther, parseGwei, defineChain, keccak256, toBytes } from 'viem';
 import { privateKeyToAccount, generatePrivateKey } from 'viem/accounts';
+
+const commentHash = (s) => keccak256(toBytes(s)); // off-chain comment -> bytes32
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -108,12 +110,12 @@ async function main() {
     console.log(`    ✓ funded ${c.label} ${c.address}`);
   }
 
-  console.log('\n[3/4] Customer payments…');
+  console.log('\n[3/5] Customer payments…');
   const c0 = createWalletClient({ account: customers[0].account, chain, transport: http(RPC) });
-  await write(c0, ADDR.payment, paymentAbi, 'pay', [vendors[0].address, 'gulay at isda'], parseEther('0.0002'));
-  await write(c0, ADDR.payment, paymentAbi, 'pay', [vendors[1].address, 'bigas'], parseEther('0.00015'));
+  const payHash0 = await write(c0, ADDR.payment, paymentAbi, 'pay', [vendors[0].address, 'gulay at isda'], parseEther('0.0002'));
+  const payHash1 = await write(c0, ADDR.payment, paymentAbi, 'pay', [vendors[1].address, 'bigas'], parseEther('0.00015'));
 
-  console.log('\n[4/4] Utang: create + pay first installment…');
+  console.log('\n[4/5] Utang: create + pay first installment…');
   const c1 = createWalletClient({ account: customers[1].account, chain, transport: http(RPC) });
   await write(c1, ADDR.escrow, escrowAbi, 'createUtang',
     [vendors[1].address, parseEther('0.0006'), 3, 7n * 86400n, 'sako bigas 25kg']);
@@ -121,6 +123,12 @@ async function main() {
   // installment = ceil(0.0006/3) = 0.0002; +1% reserve
   const value = parseEther('0.0002') + (parseEther('0.0002') * 100n) / 10_000n;
   await write(c1, ADDR.escrow, escrowAbi, 'payInstallment', [id], value);
+
+  console.log('\n[5/5] Ratings (customer0 rates the vendors it paid)…');
+  await write(c0, ADDR.registry, registryAbi, 'submitRating',
+    [vendors[0].address, payHash0, 5, commentHash('Sariwa ang isda, mabilis maglingkod!')]);
+  await write(c0, ADDR.registry, registryAbi, 'submitRating',
+    [vendors[1].address, payHash1, 4, commentHash('Maganda ang bigas, sulit sa presyo')]);
 
   const outFile = path.join(__dirname, 'seed-wallets.json');
   fs.writeFileSync(outFile, JSON.stringify({

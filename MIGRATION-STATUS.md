@@ -69,10 +69,28 @@ Defaults (B1/C1) assumed unless you say otherwise.
 
 ## Not started (next phases)
 
-- **Phase 3** — frontend wallet swap (wagmi + RainbowKit). `frontend/` is still the
-  **untouched Stellar code** — left intact as the porting reference. Deps not yet swapped.
-- **Phase 4–6** — contract hooks, proof/recovery, API route rewrites.
 - **Phase 7–9** — E2E, Vercel deploy, buffer.
+
+### Phase 3–6 — frontend EVM port ✅ (2026-05-27, build + typecheck + 48 tests green)
+`frontend/` fully migrated off Stellar to wagmi + RainbowKit + viem on Morph Hoodi.
+- **Wallet/foundation:** `lib/chain.ts` (Morph Hoodi 2910 viem chain + addresses),
+  `lib/config.ts` (wagmi/RainbowKit + public client), `lib/evm.ts` (read/write via
+  `@wagmi/core`), generated ABIs in `lib/abis/`. `WalletProvider`/`useWallet` now wagmi.
+- **Contract layer:** `lib/contracts.ts` — payment/escrow/registry reads+writes, ETH/wei
+  math, installment value (payAmount + 1% reserve), late fee.
+- **Hooks:** usePayment, useUtang, useVendor, useRating, useVendorStatus, useBalance,
+  useTransactions all viem/wagmi.
+- **Indexer:** Horizon scan → viem `getContractEvents` on `PaymentCompleted`.
+- **Auth (decision B1/SIWE):** vendor status toggle + `api/vendor-status` use EIP-191
+  `signMessage` / `viem.verifyMessage` (replaces the Stellar challenge-tx + SEP-10).
+- **Deleted:** `stellar.ts`, `wallet-kit.ts`, `network.ts`, `wallet-context.ts`, the
+  `@stellar/*` deps, and (decision: lean EVM-only) the whole Stellar fiat ramp:
+  fee-bump, sep10, sep24, `_anchor`, `_network`, `stellar-toml`, cron, ramp + the
+  CustomerCashin/Cashout pages + AdminRamps. Added `valtio` (wagmi transitive).
+- **Status:** `tsc -b` 0 errors, `vite build` OK + PWA, `vitest` 48/48.
+- **Open follow-ups:** set `VITE_WALLETCONNECT_PROJECT_ID` for mobile WalletConnect
+  (injected/MetaMask works without it); run the app against the live contracts to
+  smoke-test the pay/utang flows; Phase 7+ E2E + Vercel deploy.
 
 ## Notable port deviations from the Soroban originals
 - Payment contract drops `set_token`/`fee_bps`/`upgrade` (native ETH, no token addr;

@@ -1,7 +1,9 @@
-import { bytesToHex } from './stellar';
-
 const COMMENT_PREFIX = 'pp_rcmt_';
 const ZERO_HASH_HEX = '0'.repeat(64);
+
+function bytesToHex(buf: Uint8Array): string {
+  return Array.from(buf).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
 
 /** SHA-256 of a UTF-8 string. Returns 64-char lowercase hex. */
 export async function sha256Hex(text: string): Promise<string> {

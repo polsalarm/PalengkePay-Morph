@@ -25,6 +25,25 @@ function requireEscrow(): `0x${string}` {
 
 export interface PaymentResult { txHash: string; }
 
+export interface RawPayment {
+  id: bigint;
+  customer: string;
+  vendor: string;
+  amount: bigint;
+  timestamp: bigint;
+  memo: string;
+}
+
+export async function getVendorPayments(vendor: string, limit = 100, offset = 0): Promise<RawPayment[]> {
+  const raw = await readContractOrNull<RawPayment[]>(requirePayment(), palengkePaymentAbi as never, 'getVendorPayments', [vendor as `0x${string}`, BigInt(limit), BigInt(offset)]);
+  return Array.isArray(raw) ? raw : [];
+}
+
+export async function getCustomerPayments(customer: string, limit = 100, offset = 0): Promise<RawPayment[]> {
+  const raw = await readContractOrNull<RawPayment[]>(requirePayment(), palengkePaymentAbi as never, 'getCustomerPayments', [customer as `0x${string}`, BigInt(limit), BigInt(offset)]);
+  return Array.isArray(raw) ? raw : [];
+}
+
 // ── PalengkePayment ─────────────────────────────────────────────────────────────
 
 /** Pay `to` the given ETH amount through PalengkePayment (msg.value == amount). */

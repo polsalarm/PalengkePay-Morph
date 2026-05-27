@@ -1,19 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
 import {
-  NETWORK_PASSPHRASE, simulateViewCall, prepareContractTx, submitSorobanTx,
-  addressToScVal, bytes32ToScVal, u32ToScVal,
-} from '../stellar';
+  getVendorRating, hasRated as hasRatedChain, submitRating as submitRatingTx,
+  REGISTRY_ADDRESS,
+} from '../contracts';
 import { summarize, type RatingSummary } from '../rating';
 
-const REGISTRY_ID = import.meta.env.VITE_VENDOR_REGISTRY_ADDRESS as string | undefined;
+const configured = !!REGISTRY_ADDRESS;
 
 const summaryCache = new Map<string, RatingSummary>();
 const ratedCache = new Map<string, boolean>(); // key: `${vendor}|${txHash}`
 
-function ratedKey(vendor: string, txHash: string): string {
-  return `${vendor}|${txHash}`;
-}
+const ratedKey = (vendor: string, txHash: string) => `${vendor}|${txHash}`;
+/** Coerce a hex string to a 0x-prefixed bytes32 literal. */
+const as0x = (hex: string): `0x${string}` => (hex.startsWith('0x') ? hex : `0x${hex}`) as `0x${string}`;
 
 export function useVendorRating(vendor: string | null) {
   const [summary, setSummary] = useState<RatingSummary | null>(
@@ -23,14 +22,13 @@ export function useVendorRating(vendor: string | null) {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (!vendor || !REGISTRY_ID) return;
+    if (!vendor || !configured) return;
     let cancelled = false;
     setIsLoading(true);
-    simulateViewCall(REGISTRY_ID, 'get_vendor_rating', [addressToScVal(vendor)])
-      .then((raw) => {
-        if (cancelled || !raw) return;
-        const tuple = raw as [number | bigint, number | bigint];
-        const s = summarize(Number(tuple[0] ?? 0), Number(tuple[1] ?? 0));
+    getVendorRating(vendor)
+      .then(({ sum, count }) => {
+        if (cancelled) return;
+        const s = summarize(sum, count);
         summaryCache.set(vendor, s);
         setSummary(s);
       })
@@ -54,15 +52,12 @@ export function useBulkVendorRatings(vendors: string[]) {
   });
 
   useEffect(() => {
-    if (vendors.length === 0 || !REGISTRY_ID) return;
+    if (vendors.length === 0 || !configured) return;
     let cancelled = false;
     Promise.all(
       vendors.map((v) =>
-        simulateViewCall(REGISTRY_ID, 'get_vendor_rating', [addressToScVal(v)])
-          .then((raw) => {
-            const tuple = (raw ?? [0, 0]) as [number | bigint, number | bigint];
-            return [v, summarize(Number(tuple[0] ?? 0), Number(tuple[1] ?? 0))] as const;
-          })
+        getVendorRating(v)
+          .then(({ sum, count }) => [v, summarize(sum, count)] as const)
           .catch(() => [v, summarize(0, 0)] as const),
       ),
     ).then((entries) => {
@@ -87,15 +82,11 @@ export function useHasRated(vendor: string | null, txHash: string | null) {
   );
 
   useEffect(() => {
-    if (!vendor || !txHash || !REGISTRY_ID) return;
+    if (!vendor || !txHash || !configured) return;
     let cancelled = false;
-    simulateViewCall(REGISTRY_ID, 'has_rated', [
-      addressToScVal(vendor),
-      bytes32ToScVal(txHash),
-    ])
-      .then((raw) => {
+    hasRatedChain(vendor, as0x(txHash))
+      .then((b) => {
         if (cancelled) return;
-        const b = Boolean(raw);
         ratedCache.set(ratedKey(vendor, txHash), b);
         setHasRated(b);
       })
@@ -112,30 +103,19 @@ export function useSubmitRating() {
   const [txHash, setTxHash] = useState<string | null>(null);
 
   const submit = useCallback(async (
-    customer: string,
+    _customer: string,
     vendor: string,
     paymentTxHash: string,
     stars: number,
     commentHashHex: string,
   ): Promise<boolean> => {
-    if (!REGISTRY_ID) { setError('VendorRegistry contract not deployed'); return false; }
+    if (!configured) { setError('VendorRegistry contract not deployed'); return false; }
     if (stars < 1 || stars > 5) { setError('Stars must be 1–5'); return false; }
     setIsSubmitting(true);
     setError(null);
     setTxHash(null);
     try {
-      const xdr = await prepareContractTx(customer, REGISTRY_ID, 'submit_rating', [
-        addressToScVal(customer),
-        addressToScVal(vendor),
-        bytes32ToScVal(paymentTxHash),
-        u32ToScVal(stars),
-        bytes32ToScVal(commentHashHex),
-      ]);
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-        address: customer,
-      });
-      const hash = await submitSorobanTx(signedTxXdr);
+      const hash = await submitRatingTx(vendor, as0x(paymentTxHash), stars, as0x(commentHashHex));
       setTxHash(hash);
       summaryCache.delete(vendor);
       ratedCache.set(ratedKey(vendor, paymentTxHash), true);

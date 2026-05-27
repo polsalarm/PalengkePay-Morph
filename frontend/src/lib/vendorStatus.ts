@@ -1,11 +1,4 @@
-import {
-  Account, Memo, Operation, TransactionBuilder,
-} from '@stellar/stellar-sdk';
-import { NETWORK_PASSPHRASE } from './stellar';
-
 const STATUS_ENDPOINT = (import.meta.env.VITE_VENDOR_STATUS_URL as string | undefined) ?? '/api/vendor-status';
-const MEMO_PREFIX = 'PPSTAT:';
-const CHALLENGE_TTL_SECONDS = 300;
 
 export interface VendorStatus {
   isOpen: boolean;
@@ -58,32 +51,33 @@ export async function fetchVendorStatuses(addresses: string[]): Promise<Map<stri
 }
 
 /**
- * Build a challenge transaction the vendor will sign to prove ownership of
- * their G-address. The transaction is NEVER submitted to Horizon — the server
- * only verifies the signature and reads the memo to determine the desired
- * status. Sequence number is set to "0" so any accidental submission would
- * fail with tx_bad_seq.
+ * Build the message a vendor signs (EIP-191 personal_sign) to prove ownership of
+ * their address and set their open/closed status. The server verifies the
+ * signature (viem verifyMessage) — nothing is submitted on-chain. The nonce +
+ * timestamp guard against replay.
  */
-export function buildSetStatusXdr(vendorAddress: string, isOpen: boolean): string {
+export function buildSetStatusMessage(vendorAddress: string, isOpen: boolean): string {
   const nonce = randomNonce();
-  const memoText = `${MEMO_PREFIX}${isOpen ? '1' : '0'}:${nonce}`.slice(0, 28);
-  const account = new Account(vendorAddress, '0');
-  const tx = new TransactionBuilder(account, {
-    fee: '100',
-    networkPassphrase: NETWORK_PASSPHRASE,
-  })
-    .addOperation(Operation.manageData({ name: 'pp_status_challenge', value: nonce }))
-    .addMemo(Memo.text(memoText))
-    .setTimeout(CHALLENGE_TTL_SECONDS)
-    .build();
-  return tx.toXDR();
+  return [
+    'PalengkePay vendor status update',
+    `Vendor: ${vendorAddress}`,
+    `Status: ${isOpen ? 'open' : 'closed'}`,
+    `Nonce: ${nonce}`,
+    `Issued: ${new Date().toISOString()}`,
+  ].join('\n');
 }
 
-export async function submitSignedStatus(signedXdr: string): Promise<void> {
+export interface SignedStatusPayload {
+  address: string;
+  message: string;
+  signature: string;
+}
+
+export async function submitSignedStatus(payload: SignedStatusPayload): Promise<void> {
   const res = await fetch(STATUS_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ signedXdr }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: 'Status update failed' })) as { error?: string };

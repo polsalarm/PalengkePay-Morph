@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
-import { NETWORK_PASSPHRASE } from '../stellar';
+import { signMessage } from '@wagmi/core';
+import { wagmiConfig } from '../config';
 import {
-  buildSetStatusXdr, fetchVendorStatus, fetchVendorStatuses, submitSignedStatus, type VendorStatus,
+  buildSetStatusMessage, fetchVendorStatus, fetchVendorStatuses, submitSignedStatus, type VendorStatus,
 } from '../vendorStatus';
 
 // Module cache so cards in MarketDirectory don't refetch repeatedly
@@ -42,12 +42,9 @@ export function useToggleVendorStatus(address: string | null) {
     setIsPending(true);
     setError(null);
     try {
-      const xdr = buildSetStatusXdr(address, nextIsOpen);
-      const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASE,
-        address,
-      });
-      await submitSignedStatus(signedTxXdr);
+      const message = buildSetStatusMessage(address, nextIsOpen);
+      const signature = await signMessage(wagmiConfig, { message, account: address as `0x${string}` });
+      await submitSignedStatus({ address, message, signature });
       cache.set(address, { isOpen: nextIsOpen, defaulted: false, updatedAt: Date.now() });
       return true;
     } catch (err: unknown) {

@@ -1,8 +1,11 @@
-import { addressToScVal, simulateViewCall, u32ToScVal } from './stellar';
+import { formatEther } from 'viem';
+import { getVendorPayments, getCustomerPayments } from './contracts';
 import { getPaymentContractId } from './payment-routing';
 import type { IndexedPayment } from './indexer';
 import type { StableCheckoutQuote } from './checkout-quote';
 
+// Rounding factor for amount fingerprints/averages (kept at 1e7 — 7 dp is plenty
+// for display). Amounts are ETH; field names retain the *Xlm suffix for compat.
 const STROOPS_PER_XLM = 10_000_000;
 
 export type PaymentHistorySource = 'palengke-payment' | 'fee-bump';
@@ -75,7 +78,7 @@ export function normalizeContractPayment(payment: ContractPaymentPayload): Payme
     paymentId,
     from: String(payment.customer),
     to: String(payment.vendor),
-    amountXlm: Number(BigInt(payment.amount)) / STROOPS_PER_XLM,
+    amountXlm: Number(formatEther(BigInt(payment.amount))),
     createdAt: new Date(Number(BigInt(payment.timestamp)) * 1000).toISOString(),
     memo: payment.memo ? String(payment.memo) : undefined,
     source: 'palengke-payment',
@@ -175,11 +178,15 @@ export function hasPaymentContractSource(): boolean {
 }
 
 export async function fetchVendorContractPayments(vendorWallet: string): Promise<PaymentHistoryRecord[]> {
-  return fetchContractPayments('get_vendor_payments', vendorWallet);
+  if (!hasPaymentContractSource()) return [];
+  const raw = await getVendorPayments(vendorWallet);
+  return raw.map(normalizeContractPayment);
 }
 
 export async function fetchCustomerContractPayments(customerWallet: string): Promise<PaymentHistoryRecord[]> {
-  return fetchContractPayments('get_customer_payments', customerWallet);
+  if (!hasPaymentContractSource()) return [];
+  const raw = await getCustomerPayments(customerWallet);
+  return raw.map(normalizeContractPayment);
 }
 
 export async function fetchContractPaymentsForVendors(vendors: MetricVendor[]): Promise<PaymentHistoryRecord[]> {
@@ -189,20 +196,6 @@ export async function fetchContractPaymentsForVendors(vendors: MetricVendor[]): 
     byId.set(payment.id, payment);
   }
   return Array.from(byId.values()).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-}
-
-async function fetchContractPayments(method: string, wallet: string): Promise<PaymentHistoryRecord[]> {
-  const contractId = getPaymentContractId();
-  if (!contractId?.trim()) return [];
-
-  const raw = await simulateViewCall(contractId, method, [
-    addressToScVal(wallet),
-    u32ToScVal(100),
-    u32ToScVal(0),
-  ]);
-
-  if (!Array.isArray(raw)) return [];
-  return (raw as ContractPaymentPayload[]).map(normalizeContractPayment);
 }
 
 function paymentFingerprint(payment: PaymentHistoryRecord): string {

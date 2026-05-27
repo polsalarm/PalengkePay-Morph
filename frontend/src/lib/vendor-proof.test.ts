@@ -88,7 +88,7 @@ describe('filterTransactionsByPeriod', () => {
       reviewStatus: 'Ready for review',
       highlights: [
         { label: 'Transactions', value: '1' },
-        { label: 'Total XLM', value: '20.00 XLM' },
+        { label: 'Total ETH', value: '20.00 ETH' },
         { label: 'PHP estimate', value: 'PHP 125.00' },
         { label: 'Source', value: 'Contract records' },
         { label: 'Live hash', value: 'tx-live-hash' },
@@ -311,7 +311,7 @@ describe('proof exports', () => {
       certificate: {
         highlights: [
           { label: 'Transactions', value: '1' },
-          { label: 'Total XLM', value: '20.00 XLM' },
+          { label: 'Total ETH', value: '20.00 ETH' },
           { label: 'PHP estimate', value: 'PHP 125.00' },
           { label: 'Source', value: 'Contract records' },
           { label: 'Live hash', value: 'tx-live-hash' },

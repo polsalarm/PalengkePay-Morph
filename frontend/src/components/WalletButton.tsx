@@ -134,7 +134,7 @@ export function WalletButton() {
                 style={{ fontSize: '1.5rem', fontFamily: "'Montserrat', sans-serif', letterSpacing: '-0.02em'" }}
               >
                 {parseFloat(balance).toFixed(2)}
-                <span className="text-sm font-semibold ml-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>XLM</span>
+                <span className="text-sm font-semibold ml-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>ETH</span>
               </p>
             )}
           </div>

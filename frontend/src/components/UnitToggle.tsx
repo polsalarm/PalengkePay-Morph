@@ -6,8 +6,8 @@ interface Props {
 }
 
 /**
- * PHP / XLM display-unit switcher. Mirrors the EN/TL language toggle's styling.
- * XLM stays the on-chain settlement asset — this only changes UI presentation.
+ * PHP / ETH display-unit switcher. Mirrors the EN/TL language toggle's styling.
+ * ETH stays the on-chain settlement asset — this only changes UI presentation.
  */
 export function UnitToggle({ variant = 'dark' }: Props) {
   const { unit, setUnit } = useDisplayUnit();
@@ -32,7 +32,7 @@ export function UnitToggle({ variant = 'dark' }: Props) {
             : { color: inactiveColor }
           }
         >
-          {u === 'xlm' ? 'XLM' : '₱'}
+          {u === 'xlm' ? 'ETH' : '₱'}
         </button>
       ))}
     </div>

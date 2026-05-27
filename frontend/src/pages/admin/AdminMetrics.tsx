@@ -282,7 +282,7 @@ export function AdminMetrics() {
             <div className="flex items-center justify-between rounded-2xl px-4 py-2" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
               <div className="flex flex-col gap-0.5">
                 <p className="text-xs font-black text-white" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                  {summary.totalVolumeXlm.toFixed(2)} XLM
+                  {summary.totalVolumeXlm.toFixed(2)} ETH
                 </p>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Total volume</p>
               </div>
@@ -316,10 +316,10 @@ export function AdminMetrics() {
         <>
           {/* Stat cards */}
           <div className="grid grid-cols-2 gap-3">
-            <StatCard icon={TrendingUp} label="Total XLM Processed" value={summary.totalVolumeXlm.toFixed(2)} sub="XLM on Testnet" color="#008055" />
+            <StatCard icon={TrendingUp} label="Total ETH Processed" value={summary.totalVolumeXlm.toFixed(2)} sub="ETH on Testnet" color="#008055" />
             <StatCard icon={Zap} label="Total Transactions" value={String(summary.totalTransactions)} sub="all-time payments" color="#042E80" />
             <StatCard icon={Users} label="Active Vendors" value={`${summary.activeVendors}/${summary.totalVendors}`} sub={`${summary.totalVendors - summary.activeVendors} inactive`} color="#0369A1" />
-            <StatCard icon={Clock} label="Avg Tx Size" value={summary.avgTxXlm > 0 ? summary.avgTxXlm.toFixed(3) : '—'} sub="XLM per payment" color="#D97706" />
+            <StatCard icon={Clock} label="Avg Tx Size" value={summary.avgTxXlm > 0 ? summary.avgTxXlm.toFixed(3) : '—'} sub="ETH per payment" color="#D97706" />
           </div>
 
           {/* Donut chart: vendor categories */}
@@ -362,7 +362,7 @@ export function AdminMetrics() {
                                 }}
                               />
                             </div>
-                            <span className="text-xs text-slate-400 shrink-0">{count}v · {volumeXlm.toFixed(1)} XLM</span>
+                            <span className="text-xs text-slate-400 shrink-0">{count}v · {volumeXlm.toFixed(1)} ETH</span>
                           </div>
                         </div>
                       </div>
@@ -404,7 +404,7 @@ export function AdminMetrics() {
                           </div>
                         </div>
                         <span className="text-xs font-black shrink-0 ml-2" style={{ color: '#008055' }}>
-                          {v.volumeXlm.toFixed(2)} XLM
+                          {v.volumeXlm.toFixed(2)} ETH
                         </span>
                       </div>
                       {/* Stacked bar: product color + remaining */}
@@ -438,7 +438,7 @@ export function AdminMetrics() {
       )}
 
       <p className="text-center text-xs pb-2" style={{ color: '#94A3B8' }}>
-        {metricsSource === 'palengke-payment' ? 'Live from PalengkePayment records' : 'Using registry fallback'} · Stellar Testnet · refreshes every {REFRESH_SECS}s
+        {metricsSource === 'palengke-payment' ? 'Live from PalengkePayment records' : 'Using registry fallback'} · Morph Testnet · refreshes every {REFRESH_SECS}s
       </p>
     </div>
   );

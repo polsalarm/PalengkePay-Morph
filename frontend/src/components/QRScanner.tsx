@@ -49,7 +49,7 @@ export function QRScanner({ onScan, onManualEntry, onRawScan }: Props) {
         if (address.startsWith('G') && address.length === 56) {
           onScan(address, meta);
         } else {
-          setError('QR code is not a Stellar address. Try again.');
+          setError('QR code is not a valid wallet address. Try again.');
           setTimeout(() => setError(null), 3000);
         }
       },
@@ -103,7 +103,7 @@ export function QRScanner({ onScan, onManualEntry, onRawScan }: Props) {
       if (address.startsWith('G') && address.length === 56) {
         onScan(address, meta);
       } else {
-        setError('QR code is not a Stellar address.');
+        setError('QR code is not a valid wallet address.');
         setTimeout(() => setError(null), 4000);
       }
     } catch {

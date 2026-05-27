@@ -5,11 +5,10 @@ import { useWallet } from '../lib/hooks/useWallet';
 import logoImg2 from '../assets/logo-2.png';
 
 const WALLETS = [
-  { id: 'freighter',     letter: 'F', color: '#4F46E5', bg: '#EEF2FF', name: 'Freighter',     sub: 'Browser extension wallet' },
-  { id: 'lobstr',        letter: 'L', color: '#0EA5E9', bg: '#F0F9FF', name: 'Lobstr',         sub: 'Mobile wallet' },
-  { id: 'xbull',         letter: 'X', color: '#042E80', bg: '#F5F3FF', name: 'xBull',          sub: 'Advanced wallet' },
-  { id: 'albedo',        letter: 'A', color: '#D97706', bg: '#FFFBEB', name: 'Albedo',          sub: 'Web-based, no install needed' },
-  { id: 'walletconnect', letter: 'W', color: '#008055', bg: '#F0FDFA', name: 'WalletConnect',   sub: 'Connect mobile wallet' },
+  { id: 'metamask',      letter: 'M', color: '#F6851B', bg: '#FFF7ED', name: 'MetaMask',        sub: 'Browser extension wallet' },
+  { id: 'coinbase',      letter: 'C', color: '#0052FF', bg: '#EFF6FF', name: 'Coinbase Wallet', sub: 'Mobile + extension' },
+  { id: 'rainbow',       letter: 'R', color: '#5B6EE8', bg: '#EEF2FF', name: 'Rainbow',         sub: 'Mobile wallet' },
+  { id: 'walletconnect', letter: 'W', color: '#008055', bg: '#F0FDFA', name: 'WalletConnect',   sub: 'Connect any mobile wallet' },
 ];
 
 async function fundWithFriendbot(address: string): Promise<void> {
@@ -91,7 +90,7 @@ export function Connect() {
             Step into the<br />digital palengke.
           </h2>
           <p className="text-sm leading-relaxed mb-10" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            12,400+ vendors already accept XLM.<br />
+            12,400+ vendors already accept ETH.<br />
             Every transaction settles in 3 seconds.
           </p>
 
@@ -122,7 +121,7 @@ export function Connect() {
         {/* Footer */}
         <div className="flex items-center gap-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
           <ShieldCheck size={13} style={{ color: '#4ADE80' }} />
-          <span className="text-xs font-medium">Secured by Stellar Testnet</span>
+          <span className="text-xs font-medium">Secured by Morph Testnet</span>
         </div>
       </div>
 
@@ -157,7 +156,7 @@ export function Connect() {
               Connect Your Wallet
             </h1>
             <p className="text-sm text-slate-500 mb-8 leading-relaxed">
-              Link your Stellar wallet to start accepting or making payments
+              Link your wallet to start accepting or making payments
             </p>
 
             {/* Wallet list */}
@@ -198,13 +197,13 @@ export function Connect() {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Zap size={14} style={{ color: '#008055' }} />
-                  <p className="text-sm font-bold text-slate-800">Get Testnet XLM (Free)</p>
+                  <p className="text-sm font-bold text-slate-800">Get Testnet ETH (Free)</p>
                 </div>
                 <p className="text-xs text-slate-500 mb-3">
-                  Fund your wallet with free testnet XLM via Stellar Friendbot. One-time per account.
+                  Fund your wallet with free testnet ETH via the Morph faucet. One-time per account.
                 </p>
                 {funded ? (
-                  <p className="text-xs font-bold" style={{ color: '#008055' }}>✓ Wallet funded with 10,000 testnet XLM!</p>
+                  <p className="text-xs font-bold" style={{ color: '#008055' }}>✓ Wallet funded with 10,000 testnet ETH!</p>
                 ) : (
                   <button
                     onClick={handleFriendbot}
@@ -237,7 +236,7 @@ export function Connect() {
         {/* Mobile footer */}
         <div className="lg:hidden px-6 pb-6 flex items-center justify-center gap-2 text-xs text-slate-400">
           <ShieldCheck size={12} className="text-green-500" />
-          Secured by Stellar Testnet
+          Secured by Morph Testnet
         </div>
       </div>
     </div>

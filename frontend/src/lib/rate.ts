@@ -1,13 +1,13 @@
 /**
- * XLM → PHP exchange rate fetcher.
+ * ETH → PHP exchange rate fetcher.
  *
  * Source: CoinGecko public API (no auth, free tier).
  * Cached in localStorage with TTL to limit API calls.
  */
 
-const CACHE_KEY = 'pp_xlm_php_rate';
+const CACHE_KEY = 'pp_eth_php_rate';
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
-const FALLBACK_RATE = 22; // PHP per 1 XLM — sane default when API unreachable
+const FALLBACK_RATE = 200_000; // PHP per 1 ETH — sane default when API unreachable
 
 interface CachedRate {
   rate: number;
@@ -15,7 +15,7 @@ interface CachedRate {
 }
 
 interface CoinGeckoResponse {
-  stellar?: { php?: number };
+  ethereum?: { php?: number };
 }
 
 export interface RateState {
@@ -54,12 +54,12 @@ export function getCachedRate(): RateState {
 export async function fetchPhpRate(): Promise<RateState> {
   try {
     const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=php',
+      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=php',
       { signal: AbortSignal.timeout(8000) },
     );
     if (!res.ok) throw new Error(`CoinGecko ${res.status}`);
     const data = (await res.json()) as CoinGeckoResponse;
-    const rate = data.stellar?.php;
+    const rate = data.ethereum?.php;
     if (typeof rate !== 'number' || rate <= 0) throw new Error('Invalid rate');
     writeCache(rate);
     return { rate, fetchedAt: new Date(), isFresh: true };

@@ -47,15 +47,15 @@ export function useDisplayUnit() {
 }
 
 export interface FormatOptions {
-  /** Number of XLM digits when displaying in XLM (default 2). */
+  /** Number of ETH digits when displaying in ETH (default 2). */
   xlmDigits?: number;
-  /** Show unit suffix (e.g. "XLM" or "₱"). Default true. */
+  /** Show unit suffix (e.g. "ETH" or "₱"). Default true. */
   showSuffix?: boolean;
 }
 
 /**
- * Returns a formatter that renders an XLM amount in the user's chosen display unit.
- * XLM stays the on-chain settlement asset — this only changes UI presentation.
+ * Returns a formatter that renders an ETH amount in the user's chosen display unit.
+ * ETH stays the on-chain settlement asset — this only changes UI presentation.
  * Also respects privacy mode (hide-balance) — when hidden, returns the mask string.
  */
 export function useFormatAmount() {
@@ -64,20 +64,20 @@ export function useFormatAmount() {
   const { hidden } = usePrivacy();
 
   const format = useCallback((xlm: number, opts: FormatOptions = {}): string => {
-    const { xlmDigits = 2, showSuffix = true } = opts;
-    if (hidden) return showSuffix ? `${HIDDEN_MASK} ${unit === 'php' ? 'PHP' : 'XLM'}` : HIDDEN_MASK;
+    const { xlmDigits = 4, showSuffix = true } = opts;
+    if (hidden) return showSuffix ? `${HIDDEN_MASK} ${unit === 'php' ? 'PHP' : 'ETH'}` : HIDDEN_MASK;
     if (unit === 'php') {
       const value = xlmToPhp(xlm, rate);
       return showSuffix ? formatPhp(value) : value.toFixed(2);
     }
     const value = xlm.toFixed(xlmDigits);
-    return showSuffix ? `${value} XLM` : value;
+    return showSuffix ? `${value} ETH` : value;
   }, [unit, rate, hidden]);
 
-  /** Companion sub-line, e.g. "≈ ₱22.50" when primary unit is XLM, and vice versa. */
+  /** Companion sub-line, e.g. "≈ ₱22.50" when primary unit is ETH, and vice versa. */
   const formatCompanion = useCallback((xlm: number): string => {
     if (hidden) return `≈ ${HIDDEN_MASK}`;
-    if (unit === 'php') return `≈ ${xlm.toFixed(2)} XLM`;
+    if (unit === 'php') return `≈ ${xlm.toFixed(2)} ETH`;
     return `≈ ${formatPhp(xlmToPhp(xlm, rate))}`;
   }, [unit, rate, hidden]);
 

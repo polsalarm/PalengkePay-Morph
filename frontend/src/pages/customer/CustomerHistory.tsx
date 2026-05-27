@@ -57,7 +57,7 @@ function TxRow({ tx }: { tx: TxRecord }) {
           )}
           {tx.quote && (
             <p className="text-xs font-black truncate mt-0.5" style={{ color: '#0F766E' }}>
-              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerXlm.toFixed(2)}/XLM
+              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerXlm.toFixed(2)}/ETH
             </p>
           )}
           <p className="text-xs text-slate-400">{relativeTime(tx.createdAt)}</p>
@@ -68,7 +68,7 @@ function TxRow({ tx }: { tx: TxRecord }) {
           <p className="text-sm font-black" style={{ color: '#F43F5E' }}>
             -{tx.amountXlm.toFixed(2)}
           </p>
-          <p className="text-xs text-slate-400">XLM</p>
+          <p className="text-xs text-slate-400">ETH</p>
         </div>
         {tx.txHash && (
           <a
@@ -178,7 +178,7 @@ export function CustomerHistory() {
                   </p>
                   <p className="text-base font-black text-white" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                     {transactions.length ? (totalSpent / transactions.length).toFixed(2) : '0.00'}
-                    <span className="text-xs font-normal ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>XLM</span>
+                    <span className="text-xs font-normal ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>ETH</span>
                   </p>
                 </div>
               </div>

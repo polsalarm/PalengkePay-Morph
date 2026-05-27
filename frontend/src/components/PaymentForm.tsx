@@ -12,7 +12,7 @@ import {
 } from '../lib/checkout-quote';
 
 const MEMO_MAX = 28;
-const XLM_TO_PHP = 8.5;
+const ETH_TO_PHP = 8.5;
 
 interface Props {
   vendorAddress: string;
@@ -29,7 +29,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
   const [amountPhp, setAmountPhp] = useState('');
   const [memo, setMemo] = useState('');
   const [error, setError] = useState('');
-  const [phpRate, setPhpRate] = useState<number>(XLM_TO_PHP);
+  const [phpRate, setPhpRate] = useState<number>(ETH_TO_PHP);
   const [quoteSource, setQuoteSource] = useState<StableCheckoutQuote['source']>('fallback');
   const [rateLoading, setRateLoading] = useState(false);
   const [quote, setQuote] = useState<StableCheckoutQuote | null>(null);
@@ -200,7 +200,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-wider text-slate-400">
-                  Locked XLM
+                  Locked ETH
                 </p>
                 <p className="text-lg font-black text-slate-900" style={{ fontFamily: "'Syne', sans-serif" }}>
                   {formatXlm(quote.xlmAmount)}
@@ -215,7 +215,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
               </div>
             </div>
             <p className="text-xs text-slate-400 mt-1">
-              {formatPhp(quote.phpAmount)} at ₱{quote.phpPerXlm.toFixed(2)}/XLM{rateLoading ? ' · refreshing rate' : ''}
+              {formatPhp(quote.phpAmount)} at ₱{quote.phpPerXlm.toFixed(2)}/ETH{rateLoading ? ' · refreshing rate' : ''}
             </p>
           </div>
         )}
@@ -265,7 +265,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
         }
         {settlementMode === 'contract'
           ? 'On-chain receipt — recorded by PalengkePayment'
-          : 'Payment contract not configured — using sponsored Stellar transfer'}
+          : 'Payment contract not configured — using direct transfer'}
       </div>
 
       {/* ── Submit ── */}

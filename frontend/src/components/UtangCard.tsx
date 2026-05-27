@@ -29,7 +29,7 @@ export function UtangCard({
 
   const resolvedVendorName = useVendorName(perspective === 'customer' ? utang.vendorWallet : null);
   const { unit, format } = useFormatAmount();
-  const unitLabel = unit === 'php' ? 'PHP' : 'XLM';
+  const unitLabel = unit === 'php' ? 'PHP' : 'ETH';
 
   const overdue = utang.status === 'active' && isOverdue(utang.nextDueSecs);
   const daysOver = daysPastDue(utang.nextDueSecs);
@@ -218,10 +218,10 @@ export function UtangCard({
                 disabled={busy}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all active:scale-95 disabled:opacity-50"
                 style={{ backgroundColor: '#D97706', boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}
-                title={`Resume by paying ${lateFeeXlm.toFixed(2)} XLM late fee (5%)`}
+                title={`Resume by paying ${lateFeeXlm.toFixed(2)} ETH late fee (5%)`}
               >
                 <RotateCcw size={11} />
-                Resume · {lateFeeXlm.toFixed(2)} XLM fee
+                Resume · {lateFeeXlm.toFixed(2)} ETH fee
               </button>
             )}
             {perspective === 'admin' && utang.status === 'active' && onMarkDefault && (

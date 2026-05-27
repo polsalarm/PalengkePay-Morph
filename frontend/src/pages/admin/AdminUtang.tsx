@@ -99,7 +99,7 @@ export function AdminUtang() {
   const handleMarkDefault = async (u: UtangRecord) => {
     if (!address) return;
     if (!window.confirm(
-      `Mark utang #${u.id} as DEFAULTED?\n\nCustomer: ${truncateAddress(u.customerWallet)}\nVendor: ${truncateAddress(u.vendorWallet)}\nTotal: ${u.totalAmountEth.toFixed(2)} XLM\nPaid: ${u.installmentsPaid}/${u.installmentsTotal}\n\nThis cannot be undone (customer can still resume by paying late fee).`
+      `Mark utang #${u.id} as DEFAULTED?\n\nCustomer: ${truncateAddress(u.customerWallet)}\nVendor: ${truncateAddress(u.vendorWallet)}\nTotal: ${u.totalAmountEth.toFixed(2)} ETH\nPaid: ${u.installmentsPaid}/${u.installmentsTotal}\n\nThis cannot be undone (customer can still resume by paying late fee).`
     )) return;
     setBusyId(u.id);
     const hash = await markDefault(address, u.id);

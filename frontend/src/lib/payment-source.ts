@@ -6,7 +6,7 @@ import type { StableCheckoutQuote } from './checkout-quote';
 
 // Rounding factor for amount fingerprints/averages (kept at 1e7 — 7 dp is plenty
 // for display). Amounts are ETH; field names retain the *Xlm suffix for compat.
-const STROOPS_PER_XLM = 10_000_000;
+const STROOPS_PER_ETH = 10_000_000;
 
 export type PaymentHistorySource = 'palengke-payment' | 'fee-bump';
 
@@ -209,5 +209,5 @@ function paymentFingerprint(payment: PaymentHistoryRecord): string {
 }
 
 function roundXlm(value: number): number {
-  return Math.round(value * STROOPS_PER_XLM) / STROOPS_PER_XLM;
+  return Math.round(value * STROOPS_PER_ETH) / STROOPS_PER_ETH;
 }

@@ -8,7 +8,7 @@ interface WalletRequiredStateProps {
 }
 
 export function WalletRequiredState({
-  detail = 'Connect your Stellar wallet to load this secure PalengkePay workspace.',
+  detail = 'Connect your wallet to load this secure PalengkePay workspace.',
   fullScreen = false,
   tone = 'light',
 }: WalletRequiredStateProps) {

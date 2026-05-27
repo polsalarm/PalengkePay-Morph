@@ -218,7 +218,7 @@ export function VendorHome() {
                   <span
                     className="text-base font-bold shrink-0"
                     style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Montserrat', sans-serif" }}
-                  >XLM</span>
+                  >ETH</span>
                 </div>
               )
             }
@@ -241,7 +241,7 @@ export function VendorHome() {
               <p className="text-sm font-black text-white leading-tight truncate" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                 {allTimeTotal.toFixed(2)}
               </p>
-              <p className="text-xs opacity-40 text-white">XLM</p>
+              <p className="text-xs opacity-40 text-white">ETH</p>
             </div>
             <div>
               <p className="text-xs font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{t('vendor.totalPayments')}</p>
@@ -254,7 +254,7 @@ export function VendorHome() {
               <p className="text-sm font-black text-white leading-tight truncate" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                 {balanceStr}
               </p>
-              <p className="text-xs opacity-40 text-white">XLM</p>
+              <p className="text-xs opacity-40 text-white">ETH</p>
             </div>
           </div>
         </div>
@@ -456,7 +456,7 @@ export function VendorHome() {
                               <span className="text-sm font-black block" style={{ color: '#059669', fontFamily: "'Montserrat', sans-serif" }}>
                                 +{tx.amountXlm.toFixed(2)}
                               </span>
-                              <span className="text-xs text-slate-400">XLM</span>
+                              <span className="text-xs text-slate-400">ETH</span>
                             </div>
                             <a
                               href={stellarExpertUrl(tx.id)}

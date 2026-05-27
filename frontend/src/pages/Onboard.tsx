@@ -127,7 +127,7 @@ export function Onboard() {
             Step into the<br />digital palengke.
           </h2>
           <p className="text-sm leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            12,400+ vendors already accept XLM.<br />Every transaction settles in 3 seconds.
+            12,400+ vendors already accept ETH.<br />Every transaction settles in 3 seconds.
           </p>
           <div
             className="rounded-2xl p-5"
@@ -154,7 +154,7 @@ export function Onboard() {
       {/* Footer */}
       <div className="flex items-center gap-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
         <ShieldCheck size={13} style={{ color: '#4ADE80' }} />
-        <span className="text-xs font-medium">Secured by Stellar Testnet</span>
+        <span className="text-xs font-medium">Secured by Morph Testnet</span>
       </div>
     </div>
   );
@@ -369,7 +369,7 @@ export function Onboard() {
                   style={{ fontSize: '2rem', fontFamily: "'Montserrat', sans-serif" }}
                 >Get free test money</h1>
                 <p className="text-sm text-slate-500 mb-6 leading-relaxed text-center">
-                  We're on Stellar Testnet — this is play money for testing.<br />Real payments come later.
+                  We're on Morph Testnet — this is play money for testing.<br />Real payments come later.
                 </p>
 
                 {address && (
@@ -386,7 +386,7 @@ export function Onboard() {
                       </button>
                     </div>
                     <p className="text-xs text-slate-400 text-center mt-2">
-                      We'll send 10,000 test XLM to your wallet. It's free!
+                      We'll send 10,000 test ETH to your wallet. It's free!
                     </p>
                   </div>
                 )}
@@ -398,7 +398,7 @@ export function Onboard() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-green-700">Funded!</p>
-                      <p className="text-xs text-green-600">{balance} XLM received</p>
+                      <p className="text-xs text-green-600">{balance} ETH received</p>
                     </div>
                   </div>
                 ) : (
@@ -409,7 +409,7 @@ export function Onboard() {
                     style={{ backgroundColor: '#008055', fontSize: '1rem' }}
                   >
                     {funding ? <Loader2 size={18} className="animate-spin" /> : '💧'}
-                    {funding ? 'Funding wallet…' : 'Get Test XLM'}
+                    {funding ? 'Funding wallet…' : 'Get Test ETH'}
                   </button>
                 )}
 
@@ -458,14 +458,14 @@ export function Onboard() {
                     <span
                       className="text-xs font-bold px-2.5 py-1 rounded-full"
                       style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}
-                    >Stellar Testnet</span>
+                    >Morph Testnet</span>
                   </div>
                   {balance && (
                     <div className="flex items-center justify-between pt-3">
                       <span className="text-xs text-slate-400 font-medium">Balance</span>
                       <span className="text-sm font-black text-slate-800">
                         {parseFloat(balance).toLocaleString('en-PH', { minimumFractionDigits: 2 })}{' '}
-                        <span className="text-xs text-slate-400 font-medium">XLM</span>
+                        <span className="text-xs text-slate-400 font-medium">ETH</span>
                       </span>
                     </div>
                   )}
@@ -520,7 +520,7 @@ export function Onboard() {
         {/* Mobile footer */}
         <div className="lg:hidden px-6 pb-6 flex items-center justify-center gap-2 text-xs text-slate-400">
           <ShieldCheck size={12} className="text-green-500" />
-          Secured by Stellar Testnet
+          Secured by Morph Testnet
         </div>
       </div>
     </div>

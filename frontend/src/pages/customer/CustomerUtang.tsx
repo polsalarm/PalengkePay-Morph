@@ -286,7 +286,7 @@ export function CustomerUtang() {
               >
                 {totalDue.toFixed(2)}
               </span>
-              <span className="text-lg font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>XLM</span>
+              <span className="text-lg font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>ETH</span>
             </div>
             <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.65)' }}>
               {t('customerUtang.activePlans', { count: active.length })}
@@ -438,13 +438,13 @@ export function CustomerUtang() {
                     <p className="text-xl font-black text-slate-900 leading-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                       {(uploadedOffer.a / STROOPS).toFixed(2)}
                     </p>
-                    <p className="text-xs text-slate-400 mt-0.5">XLM {t('customerUtang.total')}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">ETH {t('customerUtang.total')}</p>
                   </div>
                   <div className="p-4 text-center">
                     <p className="text-xl font-black text-slate-900 leading-tight" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                       {uploadedOffer.n}×
                     </p>
-                    <p className="text-xs text-slate-400 mt-0.5">{(uploadedOffer.a / STROOPS / uploadedOffer.n).toFixed(2)} XLM</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{(uploadedOffer.a / STROOPS / uploadedOffer.n).toFixed(2)} ETH</p>
                   </div>
                   <div className="p-4 text-center">
                     <p className="text-base font-black text-slate-900 leading-tight capitalize" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -570,7 +570,7 @@ export function CustomerUtang() {
                 <p className="font-black text-white leading-none" style={{ fontSize: '2.6rem', fontFamily: "'Montserrat', sans-serif", letterSpacing: '-0.02em' }}>
                   {(resuming.installmentAmountEth * 0.05).toFixed(2)}
                 </p>
-                <p className="text-base font-bold mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>XLM</p>
+                <p className="text-base font-bold mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>ETH</p>
                 <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.85)' }}>
                   Babayaran direkta sa vendor. Status mag-aaktibo ulit.
                 </p>
@@ -609,7 +609,7 @@ export function CustomerUtang() {
                     className="flex items-center justify-center gap-2 text-xs font-bold py-3 rounded-xl w-full"
                     style={{ color: '#008055', backgroundColor: '#F0FDFA' }}
                   >
-                    <ExternalLink size={12} /> Tingnan sa Stellar Expert
+                    <ExternalLink size={12} /> Tingnan sa Morph Explorer
                   </a>
                   <button
                     onClick={() => setResuming(null)}
@@ -700,7 +700,7 @@ export function CustomerUtang() {
                     return (remaining === 1 ? rest : paying.installmentAmountEth).toFixed(2);
                   })()}
                 </p>
-                <p className="text-base font-bold mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>XLM</p>
+                <p className="text-base font-bold mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>ETH</p>
               </div>
 
               {status === 'idle' && (

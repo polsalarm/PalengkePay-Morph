@@ -50,7 +50,7 @@ export function TxStatusTracker({
         <div className="min-w-0">
           <p className="text-sm font-bold text-white">Preparing transaction…</p>
           <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Network fee: {displayFee} XLM · sponsored
+            Network fee: {displayFee} ETH · sponsored
           </p>
         </div>
       </div>
@@ -92,7 +92,7 @@ export function TxStatusTracker({
           <Zap size={20} style={{ color: '#D97706' }} className="animate-pulse" />
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-bold" style={{ color: '#92400E' }}>Processing on Stellar…</p>
+          <p className="text-sm font-bold" style={{ color: '#92400E' }}>Processing on Morph…</p>
           <p className="text-xs mt-0.5" style={{ color: '#D97706' }}>
             Karaniwang 3–5 segundo lang
           </p>
@@ -120,7 +120,7 @@ export function TxStatusTracker({
             </p>
             {amount && recipientName && (
               <p className="text-xs mt-0.5" style={{ color: '#16A34A' }}>
-                {amount} XLM → {recipientName}
+                {amount} ETH → {recipientName}
               </p>
             )}
           </div>
@@ -130,7 +130,7 @@ export function TxStatusTracker({
           style={{ backgroundColor: 'white', borderTop: '1px solid #BBF7D0' }}
         >
           <span className="text-xs text-slate-400">
-            Fee: <span className="font-mono">{displayFee} XLM</span>
+            Fee: <span className="font-mono">{displayFee} ETH</span>
           </span>
           {txHash && (
             <a
@@ -140,7 +140,7 @@ export function TxStatusTracker({
               className="flex items-center gap-1 text-xs font-bold active:scale-95"
               style={{ color: '#008055' }}
             >
-              <ExternalLink size={11} /> Stellar Expert
+              <ExternalLink size={11} /> Morph Explorer
             </a>
           )}
         </div>

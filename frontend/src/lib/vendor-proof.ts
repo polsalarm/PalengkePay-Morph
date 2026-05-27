@@ -80,7 +80,7 @@ export interface CollectionsSummary {
   caveats: string[];
 }
 
-const STROOPS_PER_XLM = 10_000_000;
+const STROOPS_PER_ETH = 10_000_000;
 
 export const PROOF_PERIODS: ProofPeriod[] = [
   { kind: '7d', label: '7 days' },
@@ -241,7 +241,7 @@ export function buildIncomeProofCertificate(summary: ProofSummary): IncomeProofC
     generatedLine: `Generated ${formatDateTime(summary.generatedAt)} for ${summary.period.label}`,
     highlights: [
       { label: 'Transactions', value: String(summary.transactionCount) },
-      { label: 'Total XLM', value: `${summary.totalXlm.toFixed(2)} XLM` },
+      { label: 'Total ETH', value: `${summary.totalXlm.toFixed(2)} ETH` },
       { label: 'PHP estimate', value: summary.estimatedPhpTotal !== null ? `PHP ${summary.estimatedPhpTotal.toFixed(2)}` : 'Unavailable' },
       { label: 'Source', value: summary.sourceLabel },
       summary.livePaymentTxHash ? { label: 'Live hash', value: summary.livePaymentTxHash } : null,
@@ -382,7 +382,7 @@ function shortenWallet(wallet: string): string {
 }
 
 function roundXlm(value: number): number {
-  return Math.round(value * STROOPS_PER_XLM) / STROOPS_PER_XLM;
+  return Math.round(value * STROOPS_PER_ETH) / STROOPS_PER_ETH;
 }
 
 function roundCurrency(value: number): number {

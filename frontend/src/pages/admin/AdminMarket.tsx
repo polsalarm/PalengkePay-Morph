@@ -220,7 +220,7 @@ function VendorCard({
             <p className="text-lg font-black" style={{ fontFamily: "'Montserrat', sans-serif", color: '#008055' }}>
               {(Number(vendor.totalVolume) / 10_000_000).toFixed(1)}
             </p>
-            <p className="text-[10px] text-slate-400 uppercase tracking-wider">XLM</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider">ETH</p>
           </div>
           <div className="w-px h-8" style={{ backgroundColor: '#E2E8F0' }} />
           <div className="flex-1 text-center">
@@ -389,7 +389,7 @@ function VendorDetailDrawer({
               <p className="text-xl font-black" style={{ fontFamily: "'Montserrat', sans-serif", color: '#008055' }}>
                 {xlm}
               </p>
-              <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">XLM volume</p>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">ETH volume</p>
             </div>
             <div className="rounded-2xl p-3 text-center" style={{ backgroundColor: '#FFFBEB' }}>
               {rating && rating.count > 0 ? (

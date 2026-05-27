@@ -71,7 +71,7 @@ export function Receipt() {
                   <div>
                     <p className="text-sm font-black text-slate-900">Wallet-signed Testnet proof saved on this device</p>
                     <p className="text-xs text-slate-600 mt-1">
-                      Verify final settlement on Stellar Expert before using this receipt outside the demo.
+                      Verify final settlement on Morph Explorer before using this receipt outside the demo.
                     </p>
                   </div>
                 </div>
@@ -112,7 +112,7 @@ export function Receipt() {
                   className="min-h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-black text-white active:scale-95"
                   style={{ backgroundColor: '#008055' }}
                 >
-                  <ExternalLink size={16} /> Verify on Stellar Expert
+                  <ExternalLink size={16} /> Verify on Morph Explorer
                 </a>
               )}
               <Link

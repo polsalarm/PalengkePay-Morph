@@ -49,7 +49,7 @@ export function BalanceDisplay() {
     <div className="text-center">
       <div className="flex items-center justify-center gap-2">
         <p className="text-3xl font-bold text-slate-900">
-          {format(parseFloat(balance ?? '0'), { showSuffix: false })} <span className="text-teal-700">{unit === 'php' ? 'PHP' : 'XLM'}</span>
+          {format(parseFloat(balance ?? '0'), { showSuffix: false })} <span className="text-teal-700">{unit === 'php' ? 'PHP' : 'ETH'}</span>
         </p>
         <button
           onClick={handleRefresh}

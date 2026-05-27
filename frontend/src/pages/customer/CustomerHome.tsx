@@ -59,7 +59,7 @@ function RecentTxRow({ tx }: { tx: TxRecord }) {
           <span className="text-sm font-black block" style={{ color: '#F43F5E', fontFamily: "'Montserrat', sans-serif" }}>
             -{tx.amountXlm.toFixed(2)}
           </span>
-          <span className="text-xs text-slate-400">XLM</span>
+          <span className="text-xs text-slate-400">ETH</span>
         </div>
         <a
           href={stellarExpertUrl(tx.id)}
@@ -99,7 +99,7 @@ export function CustomerHome() {
   const balanceNum = balance ? parseFloat(balance) : null;
   const balanceStr = balanceNum !== null ? format(balanceNum, { showSuffix: false }) : '—';
   const balanceFontSize = balanceStr.length >= 12 ? '1.5rem' : balanceStr.length >= 10 ? '1.8rem' : balanceStr.length >= 8 ? '2.2rem' : balanceStr.length >= 6 ? '2.6rem' : '3.2rem';
-  const balanceUnitLabel = hidden ? '' : unit === 'php' ? '₱' : 'XLM';
+  const balanceUnitLabel = hidden ? '' : unit === 'php' ? '₱' : 'ETH';
 
   async function handleCopyAddress() {
     if (!address) return;
@@ -285,7 +285,7 @@ export function CustomerHome() {
                       color: overdueCount > 0 ? '#F43F5E' : '#92400E',
                     }}
                   >
-                    {totalOwed.toFixed(2)} <span className="text-xs font-semibold opacity-70">XLM</span>
+                    {totalOwed.toFixed(2)} <span className="text-xs font-semibold opacity-70">ETH</span>
                   </p>
                 </div>
                 <p className="text-xs font-semibold mt-0.5" style={{ color: overdueCount > 0 ? '#F43F5E' : '#92400E' }}>

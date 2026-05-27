@@ -22,7 +22,7 @@ export function TestSend() {
       return;
     }
     if (!to || to.length < 56) {
-      setValidationError('Enter a valid Stellar address (G...)');
+      setValidationError('Enter a valid EVM address (0x...)');
       return;
     }
     if (!amount || parseFloat(amount) <= 0) {
@@ -39,12 +39,12 @@ export function TestSend() {
         <Link to="/" className="text-slate-400 hover:text-slate-600 transition-colors">
           <ArrowLeft size={18} />
         </Link>
-        <h1 className="text-xl font-bold text-slate-900">Test Send XLM</h1>
+        <h1 className="text-xl font-bold text-slate-900">Test Send ETH</h1>
       </div>
 
       {!isConnected && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5">
-          <p className="text-sm text-amber-700 mb-3">Connect your wallet to send XLM.</p>
+          <p className="text-sm text-amber-700 mb-3">Connect your wallet to send ETH.</p>
           <button
             onClick={connect}
             className="text-sm font-medium bg-teal-700 hover:bg-teal-600 text-white px-4 py-2 rounded-lg transition-colors"
@@ -70,7 +70,7 @@ export function TestSend() {
 
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-            Amount (XLM)
+            Amount (ETH)
           </label>
           <input
             type="number"
@@ -107,7 +107,7 @@ export function TestSend() {
           className="w-full flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-600 active:scale-95 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send size={16} />
-          Send XLM
+          Send ETH
         </button>
       </form>
 

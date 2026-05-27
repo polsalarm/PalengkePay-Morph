@@ -23,14 +23,14 @@ export function getPaymentFailureDetails(err: unknown): PaymentFailureDetails {
   if (rc) {
     const tx = rc.transaction;
     const ops = rc.operations ?? [];
-    const diagnostic = `Stellar result codes: ${[tx, ...ops].filter(Boolean).join(', ')}`;
+    const diagnostic = `Revert data: ${[tx, ...ops].filter(Boolean).join(', ')}`;
 
     if (tx === 'tx_bad_seq') return { message: 'Sequence error — please try again', diagnostic };
     if (tx === 'tx_insufficient_fee') return { message: 'Network fee too low — please try again', diagnostic };
     if (tx === 'tx_bad_auth') return { message: 'Invalid signature — reconnect wallet', diagnostic };
-    if (ops.includes('op_no_destination')) return { message: 'Vendor account not activated on Stellar testnet', diagnostic };
-    if (ops.includes('op_underfunded')) return { message: 'Insufficient XLM balance', diagnostic };
-    if (ops.includes('op_low_reserve')) return { message: 'Account below minimum XLM reserve', diagnostic };
+    if (ops.includes('op_no_destination')) return { message: 'Vendor account not activated on Morph testnet', diagnostic };
+    if (ops.includes('op_underfunded')) return { message: 'Insufficient ETH balance', diagnostic };
+    if (ops.includes('op_low_reserve')) return { message: 'Account below minimum ETH reserve', diagnostic };
 
     return { message: `Transaction failed: ${tx ?? ops.join(', ') ?? 'unknown'}`, diagnostic };
   }
@@ -77,10 +77,10 @@ export function getPaymentFailureDetails(err: unknown): PaymentFailureDetails {
     return { message: 'Transaction cancelled — no funds sent', diagnostic: null };
   }
   if (lower.includes('network')) {
-    return { message: 'Please switch to Stellar Testnet', diagnostic: raw.slice(0, 160) };
+    return { message: 'Please switch to Morph Testnet', diagnostic: raw.slice(0, 160) };
   }
   if (lower.includes('balance') || lower.includes('insufficient')) {
-    return { message: 'Insufficient XLM balance', diagnostic: raw.slice(0, 160) };
+    return { message: 'Insufficient ETH balance', diagnostic: raw.slice(0, 160) };
   }
   if (lower.includes('timeout')) {
     return { message: 'Transaction timed out — tap retry to resend', diagnostic: raw.slice(0, 160) };

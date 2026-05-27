@@ -425,7 +425,7 @@ export function CustomerScan() {
                   {t('scan.priceLock')}
                 </p>
                 <p className="text-sm font-black text-white">
-                  ₱{pendingPayment.quote.phpPerXlm.toFixed(2)}/XLM
+                  ₱{pendingPayment.quote.phpPerXlm.toFixed(2)}/ETH
                 </p>
               </div>
               <div>
@@ -527,7 +527,7 @@ export function CustomerScan() {
             )}
             {pendingPayment && (
               <p className="text-sm mt-2 font-bold" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                {formatXlm(pendingPayment.quote.xlmAmount)} at ₱{pendingPayment.quote.phpPerXlm.toFixed(2)}/XLM
+                {formatXlm(pendingPayment.quote.xlmAmount)} at ₱{pendingPayment.quote.phpPerXlm.toFixed(2)}/ETH
               </p>
             )}
             {vendorDisplay && (
@@ -653,7 +653,7 @@ export function CustomerScan() {
                 >
                   {(utangOffer.a / STROOPS).toFixed(2)}
                 </p>
-                <p className="text-xs text-slate-400 mt-0.5">XLM total</p>
+                <p className="text-xs text-slate-400 mt-0.5">ETH total</p>
               </div>
               <div className="p-4 text-center">
                 <p
@@ -663,7 +663,7 @@ export function CustomerScan() {
                   {utangOffer.n}×
                 </p>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  {(utangOffer.a / STROOPS / utangOffer.n).toFixed(2)} XLM
+                  {(utangOffer.a / STROOPS / utangOffer.n).toFixed(2)} ETH
                 </p>
               </div>
               <div className="p-4 text-center">

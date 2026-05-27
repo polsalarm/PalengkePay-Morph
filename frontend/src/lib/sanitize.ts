@@ -7,20 +7,20 @@ export function sanitizeText(value: string, maxLen = 200): string {
     .slice(0, maxLen);
 }
 
-/** Validate a Stellar public address (G... 56 chars). */
+/** Validate an EVM address (0x + 40 hex). Name kept for call-site compatibility. */
 export function isValidStellarAddress(address: string): boolean {
-  return /^G[A-Z2-7]{55}$/.test(address.trim());
+  return /^0x[0-9a-fA-F]{40}$/.test(address.trim());
 }
 
-/** Validate a positive XLM amount string (max 7 decimal places). */
+/** Validate a positive ETH amount string (up to 18 decimal places). */
 export function isValidXlmAmount(value: string): boolean {
-  return /^\d+(\.\d{1,7})?$/.test(value.trim()) && parseFloat(value) > 0;
+  return /^\d+(\.\d{1,18})?$/.test(value.trim()) && parseFloat(value) > 0;
 }
 
-/** Sanitize memo field: ASCII printable, max 28 chars (Stellar memo limit). */
+/** Sanitize memo field: ASCII printable, max 64 chars. */
 export function sanitizeMemo(value: string): string {
   return value
     .replace(/[^\x20-\x7E]/g, '')
     .trim()
-    .slice(0, 28);
+    .slice(0, 64);
 }

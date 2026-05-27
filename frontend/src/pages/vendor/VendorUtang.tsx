@@ -285,7 +285,7 @@ export function VendorUtang() {
             }}
           >
             {owedStr}
-            <span className="text-base font-bold ml-2" style={{ color: 'rgba(120,53,15,0.6)' }}>XLM</span>
+            <span className="text-base font-bold ml-2" style={{ color: 'rgba(120,53,15,0.6)' }}>ETH</span>
           </p>
           <p className="text-sm font-semibold mt-2 relative" style={{ color: 'rgba(120,53,15,0.7)' }}>
             {t('vendorUtang.activeAgreements', { count: active.length })}
@@ -338,14 +338,14 @@ export function VendorUtang() {
             <p className="text-xs font-bold mb-1" style={{ color: '#C2410C' }}>{t('vendorUtang.outstanding')}</p>
             <p className="text-xl font-black" style={{ color: '#9A3412', fontFamily: "'Montserrat', sans-serif" }}>
               {collectionsSummary.totalOutstandingXlm.toFixed(2)}
-              <span className="text-xs font-bold ml-1">XLM</span>
+              <span className="text-xs font-bold ml-1">ETH</span>
             </p>
           </div>
           <div className="rounded-2xl p-4" style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0' }}>
             <p className="text-xs font-bold mb-1" style={{ color: '#047857' }}>{t('vendorUtang.collected')}</p>
             <p className="text-xl font-black" style={{ color: '#065F46', fontFamily: "'Montserrat', sans-serif" }}>
               {collectionsSummary.totalCollectedXlm.toFixed(2)}
-              <span className="text-xs font-bold ml-1">XLM</span>
+              <span className="text-xs font-bold ml-1">ETH</span>
             </p>
           </div>
         </div>
@@ -678,7 +678,7 @@ export function VendorUtang() {
                       >
                         <p className="text-xs font-bold" style={{ color: '#008055' }}>{form.description}</p>
                         <p className="text-xs mt-0.5" style={{ color: 'rgba(15,118,110,0.7)' }}>
-                          {form.installmentsTotal} × {installmentXlm} XLM · {INTERVAL_OPTIONS.find((o) => o.days === form.intervalDays)?.[lang === 'tl' ? 'labelTl' : 'label'].toLowerCase()}
+                          {form.installmentsTotal} × {installmentXlm} ETH · {INTERVAL_OPTIONS.find((o) => o.days === form.intervalDays)?.[lang === 'tl' ? 'labelTl' : 'label'].toLowerCase()}
                         </p>
                       </div>
                     )}
@@ -755,11 +755,11 @@ export function VendorUtang() {
                       {[
                         {
                           label: t('vendorUtang.totalAmount'),
-                          value: `${form.totalAmountEth} XLM`,
+                          value: `${form.totalAmountEth} ETH`,
                         },
                         {
                           label: t('vendorUtang.installments'),
-                          value: `${form.installmentsTotal} × ${(Number(form.totalAmountEth) / form.installmentsTotal).toFixed(2)} XLM`,
+                          value: `${form.installmentsTotal} × ${(Number(form.totalAmountEth) / form.installmentsTotal).toFixed(2)} ETH`,
                         },
                         {
                           label: t('vendorUtang.interval'),
@@ -793,7 +793,7 @@ export function VendorUtang() {
                         className="font-black"
                         style={{ fontSize: '1.6rem', color: '#92400E', fontFamily: "'Montserrat', sans-serif" }}
                       >
-                        {FEE_ETH} XLM
+                        {FEE_ETH} ETH
                       </span>
                     </div>
                     <p className="text-xs" style={{ color: 'rgba(146,64,14,0.7)' }}>
@@ -878,7 +878,7 @@ export function VendorUtang() {
                     <div className="text-center">
                       <p className="text-base font-bold text-slate-900">{qrPayload.d}</p>
                       <p className="text-sm mt-1" style={{ color: 'rgba(15,23,42,0.45)' }}>
-                        {(qrPayload.a / STROOPS).toFixed(2)} XLM · {qrPayload.n} × {(qrPayload.a / STROOPS / qrPayload.n).toFixed(2)} XLM · {INTERVAL_OPTIONS.find((o) => o.days * 86400 === qrPayload.i)?.[lang === 'tl' ? 'labelTl' : 'label'] ?? ''}
+                        {(qrPayload.a / STROOPS).toFixed(2)} ETH · {qrPayload.n} × {(qrPayload.a / STROOPS / qrPayload.n).toFixed(2)} ETH · {INTERVAL_OPTIONS.find((o) => o.days * 86400 === qrPayload.i)?.[lang === 'tl' ? 'labelTl' : 'label'] ?? ''}
                       </p>
                     </div>
                   </div>

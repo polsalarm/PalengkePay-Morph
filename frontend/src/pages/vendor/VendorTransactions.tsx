@@ -85,7 +85,7 @@ function TxRow({ tx, onOpenProof }: { tx: TxRecord; onOpenProof: (tx: TxRecord) 
           )}
           {tx.quote && (
             <p className="text-xs font-black truncate mt-0.5" style={{ color: '#0F766E' }}>
-              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerXlm.toFixed(2)}/XLM
+              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerXlm.toFixed(2)}/ETH
             </p>
           )}
           <p className="text-xs text-slate-400">{relativeTime(tx.createdAt)}</p>
@@ -99,7 +99,7 @@ function TxRow({ tx, onOpenProof }: { tx: TxRecord; onOpenProof: (tx: TxRecord) 
           <p className="text-sm font-black" style={{ color: '#16A34A' }}>
             +{tx.amountXlm.toFixed(2)}
           </p>
-          <p className="text-xs text-slate-400">XLM</p>
+          <p className="text-xs text-slate-400">ETH</p>
         </div>
         {receipt.lookupUrl && (
           <a
@@ -275,7 +275,7 @@ export function VendorTransactions() {
                   <p className="text-base font-black text-white flex items-center gap-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                     <Zap size={13} style={{ color: '#FDE68A' }} />
                     {earnings.toFixed(2)}
-                    <span className="text-xs font-normal" style={{ color: 'rgba(255,255,255,0.4)' }}>XLM</span>
+                    <span className="text-xs font-normal" style={{ color: 'rgba(255,255,255,0.4)' }}>ETH</span>
                   </p>
                 </div>
                 <div>

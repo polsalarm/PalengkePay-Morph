@@ -213,7 +213,7 @@ export function Landing() {
   }}
 >
   <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#008055' }} />
-  Live on Stellar Testnet
+  Live on Morph Testnet
 </div>
 
             <h1
@@ -232,7 +232,7 @@ export function Landing() {
             </h1>
 
             <p className="text-slate-500 leading-relaxed mb-10 max-w-[480px]" style={{ fontSize: '1.125rem' }}>
-              Scan. Pay. Done. — powered by Stellar blockchain.<br />
+              Scan. Pay. Done. — powered by Morph blockchain.<br />
               No merchant fees, no waiting times, no headaches.
             </p>
 
@@ -461,7 +461,7 @@ export function Landing() {
           {/* ── Stellar badge ── */}
           <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-2 pointer-events-none">
             <ShieldCheck size={12} style={{ color: '#4ADE80' }} />
-            <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>Secured by Stellar Blockchain</span>
+            <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>Secured by Morph blockchain</span>
             <span className="w-1 h-1 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.3)' }} />
             <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>Instant Settlement</span>
           </div>
@@ -516,7 +516,7 @@ export function Landing() {
             color: '#008055',
             bg: '#E8F5F3',
             title: 'Get Your QR',
-            desc: 'Register your stall and receive a unique QR code linked to your Stellar wallet. Display it prominently at your stall.',
+            desc: 'Register your stall and receive a unique QR code linked to your wallet. Display it prominently at your stall.',
             highlight: 'Free to register'
           },
           {
@@ -534,7 +534,7 @@ export function Landing() {
             color: '#D97706',
             bg: '#FFFBEB',
             title: 'Instant Payment',
-            desc: 'Payment settles instantly on Stellar blockchain. Money appears in your wallet in ~3 seconds. No waiting, no chargebacks.',
+            desc: 'Payment settles instantly on Morph blockchain. Money appears in your wallet in ~3 seconds. No waiting, no chargebacks.',
             highlight: '~3s settlement'
           },
         ].map(({ step, icon: Icon, color, bg, title, desc, highlight }, index) => (
@@ -670,7 +670,7 @@ export function Landing() {
               </h3>
               <div className="w-12 h-1 bg-white/40 rounded-full mb-4" />
               <p className="text-white/80 leading-relaxed mb-6">
-                Display your unique QR code at your stall. Customers scan, enter the amount, and confirm — money lands in your Stellar wallet in seconds.
+                Display your unique QR code at your stall. Customers scan, enter the amount, and confirm — money lands in your wallet in seconds.
               </p>
             </div>
 
@@ -727,7 +727,7 @@ export function Landing() {
             </div>
             <h3 className="font-black text-slate-900 text-xl mb-2">Immutable Records</h3>
             <p className="text-slate-500 text-sm leading-relaxed mb-4">
-              Every transaction permanently on Stellar blockchain. Dispute-proof. Your ledger never lies.
+              Every transaction permanently on Morph blockchain. Dispute-proof. Your ledger never lies.
             </p>
 
           </div>

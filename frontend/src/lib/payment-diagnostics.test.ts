@@ -33,7 +33,7 @@ describe('getPaymentFailureDetails', () => {
       },
     });
 
-    expect(details.message).toBe('Insufficient XLM balance');
+    expect(details.message).toBe('Insufficient ETH balance');
     expect(details.diagnostic).toContain('op_underfunded');
   });
 

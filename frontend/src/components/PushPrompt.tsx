@@ -5,7 +5,7 @@ import { usePushNotifications } from '../lib/hooks/usePushNotifications';
 interface Props {
   /** Whose perspective — affects copy. */
   role?: 'vendor' | 'customer';
-  /** Stellar wallet to key the subscription by. Required for server-side fan-out. */
+  /** wallet to key the subscription by. Required for server-side fan-out. */
   wallet?: string | null;
 }
 

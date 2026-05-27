@@ -52,5 +52,5 @@ export function formatXlm(amount: string | number): string {
   const formatted = Number.isFinite(asNumber)
     ? asNumber.toLocaleString('en-US', { maximumFractionDigits: 7 })
     : String(amount);
-  return `${formatted} XLM`;
+  return `${formatted} ETH`;
 }

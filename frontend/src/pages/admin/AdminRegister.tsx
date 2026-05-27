@@ -120,7 +120,7 @@ export function AdminRegister() {
                 className="flex items-center justify-center gap-2 text-xs font-bold py-3 rounded-xl w-full active:scale-95"
                 style={{ color: '#008055', backgroundColor: '#F0FDFA' }}
               >
-                <ExternalLink size={13} /> View on Stellar Expert
+                <ExternalLink size={13} /> View on Morph Explorer
               </a>
             )}
             <button

@@ -49,7 +49,7 @@ describe('buildStableCheckoutQuote', () => {
 describe('quote formatting', () => {
   it('formats receipt amounts consistently', () => {
     expect(formatPhp(420)).toBe('₱420.00');
-    expect(formatXlm('50.0000000')).toBe('50 XLM');
-    expect(formatXlm('0.1234567')).toBe('0.1234567 XLM');
+    expect(formatXlm('50.0000000')).toBe('50 ETH');
+    expect(formatXlm('0.1234567')).toBe('0.1234567 ETH');
   });
 });

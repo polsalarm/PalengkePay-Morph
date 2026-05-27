@@ -197,7 +197,7 @@ export function AdminProofs() {
               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                 {smokeGuide.stellarExpertUrl && (
                   <a href={smokeGuide.stellarExpertUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-xl text-xs font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" style={{ color: '#A7F3D0' }}>
-                    <ExternalLink size={12} aria-hidden="true" /> Verify on Stellar Expert
+                    <ExternalLink size={12} aria-hidden="true" /> Verify on Morph Explorer
                   </a>
                 )}
                 <button

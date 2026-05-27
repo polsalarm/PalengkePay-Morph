@@ -17,7 +17,7 @@ export function CustomerTestnetWallet() {
   const statusCopy = useMemo(() => {
     if (status === 'building') return 'Building Testnet transaction';
     if (status === 'signing') return 'Waiting for wallet signature';
-    if (status === 'submitting') return 'Submitting to Stellar Testnet';
+    if (status === 'submitting') return 'Submitting to Morph Testnet';
     return null;
   }, [status]);
 
@@ -44,7 +44,7 @@ export function CustomerTestnetWallet() {
         </div>
         <div>
           <h1 className="text-xl font-black text-slate-900" style={{ fontFamily: "'Montserrat', sans-serif" }}>Testnet Wallet Check</h1>
-          <p className="text-xs text-slate-400">Send a small XLM transfer and verify it on Stellar Expert</p>
+          <p className="text-xs text-slate-400">Send a small ETH transfer and verify it on Morph Explorer</p>
         </div>
       </div>
 
@@ -52,14 +52,14 @@ export function CustomerTestnetWallet() {
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Network</p>
-            <p className="text-sm font-bold text-slate-900 mt-1">Stellar Testnet</p>
+            <p className="text-sm font-bold text-slate-900 mt-1">Morph Testnet</p>
           </div>
           <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full" style={{ backgroundColor: '#F0FDFA', color: '#008055' }}>
             No fiat movement
           </span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <Metric label="Amount" value={`${TEST_AMOUNT} XLM`} />
+          <Metric label="Amount" value={`${TEST_AMOUNT} ETH`} />
           <Metric label="Memo" value="PP:wallet test" />
         </div>
         <div className="rounded-xl px-3 py-2" style={{ backgroundColor: '#F8FAFC' }}>
@@ -71,7 +71,7 @@ export function CustomerTestnetWallet() {
       {!isConnected && (
         <div className="rounded-2xl bg-white border p-4 space-y-3" style={{ borderColor: '#F1F5F9' }}>
           <p className="text-sm font-bold text-slate-900">Connect a Testnet wallet first</p>
-          <p className="text-xs text-slate-500">This check signs one tiny Testnet transfer so judges can see a real Stellar transaction hash.</p>
+          <p className="text-xs text-slate-500">This check signs one tiny Testnet transfer so judges can see a real Morph transaction hash.</p>
           <button
             onClick={handleConnect}
             disabled={connecting || isConnecting}
@@ -88,7 +88,7 @@ export function CustomerTestnetWallet() {
       {isConnected && address && status !== 'confirmed' && status !== 'failed' && (
         <div className="rounded-2xl bg-white border p-4 space-y-3" style={{ borderColor: '#F1F5F9' }}>
           <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Connected wallet</p>
-          <p className="text-sm font-bold text-slate-900">{walletName ?? 'Stellar wallet'} · <span className="font-mono">{truncateAddress(address)}</span></p>
+          <p className="text-sm font-bold text-slate-900">{walletName ?? 'wallet'} · <span className="font-mono">{truncateAddress(address)}</span></p>
           {statusCopy && (
             <div className="rounded-xl px-3 py-2 flex items-center gap-2" style={{ backgroundColor: '#F8FAFC' }}>
               <Loader2 size={15} className="animate-spin" style={{ color: '#008055' }} />
@@ -101,7 +101,7 @@ export function CustomerTestnetWallet() {
             className="w-full min-h-11 rounded-2xl font-black text-white disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ backgroundColor: '#008055', fontFamily: "'Montserrat', sans-serif" }}
           >
-            <Send size={16} /> Send Testnet XLM
+            <Send size={16} /> Send Testnet ETH
           </button>
         </div>
       )}
@@ -112,7 +112,7 @@ export function CustomerTestnetWallet() {
           <p className="font-black text-slate-900" style={{ fontFamily: "'Montserrat', sans-serif" }}>Wallet test confirmed</p>
           <p className="font-mono text-[11px] text-slate-400 break-all">{txHash}</p>
           <a href={stellarExpertUrl(txHash)} target="_blank" rel="noopener noreferrer" className="min-h-11 rounded-2xl font-bold text-white flex items-center justify-center gap-2" style={{ backgroundColor: '#008055' }}>
-            <ExternalLink size={15} /> View on Stellar Expert
+            <ExternalLink size={15} /> View on Morph Explorer
           </a>
           <button onClick={reset} className="w-full py-2 text-xs text-slate-500 font-bold">Run again</button>
         </div>

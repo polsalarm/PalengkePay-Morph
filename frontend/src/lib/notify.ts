@@ -1,5 +1,5 @@
 /**
- * Fire a server-side push notification fan-out for a given Stellar wallet.
+ * Fire a server-side push notification fan-out for a given wallet.
  * Best-effort — errors swallowed so payment UX isn't blocked by push failures.
  */
 export async function notifyWallet(

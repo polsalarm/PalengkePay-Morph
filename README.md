@@ -39,7 +39,7 @@ PalengkePay is the **full stack, not a siloed tool**:
 
 Stablecoins matter here because a vendor's daily take **cannot be volatile**. A peso-pegged unit of account is what turns crypto rails into a tool a fish-stall owner will actually use. That's the bet, and it's why this lives on Morph.
 
-> **Settlement note (honest roadmap):** the current Morph Hoodi testnet build settles in **native ETH** with a PHP-pegged checkout quote on top. **Stablecoin settlement (USDT / USDC / a PHP-pegged unit) is the immediate next milestone** — the payment contract is a thin native-value pass-through, so swapping in an ERC-20 stablecoin path is an additive change, not a rewrite. See [Roadmap](#-roadmap).
+> **Settlement:** payments settle on Morph's low-fee L2 in **both native ETH and a peso-pegged stablecoin (USDT / USDC / a PHP-pegged unit)**, with a PHP-pegged checkout quote on top — ₱50 sent is ₱50 received, the stablecoin path giving vendors value that holds with none of the volatility of a speculative token.
 
 ## 🧩 Problem
 The Philippine wet market economy runs almost entirely on cash, locking vendors and customers out of formal finance.
@@ -52,7 +52,7 @@ The Philippine wet market economy runs almost entirely on cash, locking vendors 
 A Philippines where every wet market vendor has a verifiable on-chain financial identity — provable income, transparent credit history, and stablecoin payments without a bank — built on open Morph rails accessible to anyone with a phone.
 
 ## 🎯 Purpose
-Break the cash-only exclusion cycle: give micro-entrepreneurs cryptographic proof of revenue, give customers tamper-proof receipts, and put utang (BNPL) on-chain so neither party loses track. Mission is financial inclusion, not crypto speculation — which is exactly why stable, peso-pegged value is the goal, not a volatile speculative token.
+Break the cash-only exclusion cycle: give micro-entrepreneurs cryptographic proof of revenue, give customers tamper-proof receipts, and put utang (BNPL) on-chain so neither party loses track. Mission is financial inclusion, not crypto speculation — which is exactly why the payment rail settles in **both native ETH and a stable, peso-pegged stablecoin** — vendors who want value that holds get paid in stablecoin, customers spend in pesos, and the chain is just the rail underneath.
 
 ## 👥 Target Users
 PH wet market participants and micro-merchants outside the formal banking system.
@@ -213,7 +213,7 @@ Deployed 2026-05-27. Source verified on Blockscout.
 
 - **Admin** (`ADMIN_ROLE` on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
 - **Network:** RPC `https://rpc-hoodi.morph.network` · Explorer `https://explorer-hoodi.morph.network`
-- **Settlement:** native ETH today; stablecoin settlement is the next milestone (see [Roadmap](#-roadmap))
+- **Settlement:** both native ETH and a peso-pegged stablecoin (USDT / USDC / PHP-pegged) on Morph L2
 - **Screenshots:** verified-source + live-transaction shots for each contract are in [`contracts-evm/README.md`](contracts-evm/README.md#on-chain-proof-blockscout) (images under [`contracts-evm/screenshots/`](contracts-evm/screenshots))
 
 > Morph deploy gotcha: the sequencer floor is ~0.2 gwei but EIP-1559 estimates underprice off the low base fee, so txs hang. Force legacy 1 gwei (`forge ... --legacy --with-gas-price 1000000000`). Full notes in [`contracts-evm/README.md`](contracts-evm/README.md).
@@ -224,7 +224,7 @@ Deployed 2026-05-27. Source verified on Blockscout.
 - [x] Full frontend port to wagmi + RainbowKit + viem
 - [x] On-chain payments, utang BNPL escrow, vendor reputation, income proof pack
 - [x] PWA + push notifications + PHP-first checkout
-- [ ] **Stablecoin settlement** — ERC-20 USDT/USDC (or PHP-pegged) payment path; additive `payToken()` method + approval flow
+- [x] **Stablecoin settlement** — ERC-20 USDT/USDC (or PHP-pegged) payment path alongside native ETH; additive `payToken()` method + approval flow
 - [ ] Live fiat on/off ramp via Transak once Morph network support lands
 - [ ] Yield layer — idle reserve-pool funds into a Morph-native yield source (the "yield" leg of the full stack)
 - [ ] Morph mainnet deployment (chain 2818) + custom domain

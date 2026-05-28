@@ -39,17 +39,17 @@ Each contract is source-verified; screenshots show the verified source and live 
 ### PalengkePayment
 | Verified source | Transactions |
 |---|---|
-| ![PalengkePayment verified source](../UI/CONTRACT/PalengkeyPayment1.png) | ![PalengkePayment transactions](../UI/CONTRACT/PalengkeyPayment2.png) |
+| ![PalengkePayment verified source](screenshots/PalengkeyPayment1.png) | ![PalengkePayment transactions](screenshots/PalengkeyPayment2.png) |
 
 ### VendorRegistry
 | Verified source | Transactions |
 |---|---|
-| ![VendorRegistry verified source](../UI/CONTRACT/VendorRegistry1.png) | ![VendorRegistry transactions](../UI/CONTRACT/VendorRegistry2.png) |
+| ![VendorRegistry verified source](screenshots/VendorRegistry1.png) | ![VendorRegistry transactions](screenshots/VendorRegistry2.png) |
 
 ### UTangEscrow
 | Verified source | Transactions |
 |---|---|
-| ![UTangEscrow verified source](../UI/CONTRACT/UtangEscrow1.png) | ![UTangEscrow transactions](../UI/CONTRACT/UtangEscrow2.png) |
+| ![UTangEscrow verified source](screenshots/UtangEscrow1.png) | ![UTangEscrow transactions](screenshots/UtangEscrow2.png) |
 
 ## Prerequisites
 

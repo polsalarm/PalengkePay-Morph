@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, ExternalLink, RefreshCw, ShoppingBag, ScanLine } from 'lucide-react';
+import { AlertTriangle, ExternalLink, RefreshCw, ShoppingBag, ScanLine, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 import { useWallet } from '../../lib/hooks/useWallet';
 import { useCustomerTransactions, relativeTime } from '../../lib/hooks/useTransactions';
 import type { TxRecord } from '../../lib/hooks/useTransactions';
@@ -7,6 +8,7 @@ import { truncateAddress, stellarExpertUrl } from '../../lib/evm';
 import { useVendorName } from '../../lib/hooks/useVendor';
 import { WalletRequiredState } from '../../components/WalletRequiredState';
 import { formatPhp } from '../../lib/checkout-quote';
+import { getMockRamps } from '../../lib/mockRamp';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 function groupByDate(txs: TxRecord[], t: (key: string, params?: Record<string, string | number>) => string) {
@@ -95,6 +97,7 @@ export function CustomerHistory() {
 
   const totalSpent = transactions.reduce((s, tx) => s + tx.amountXlm, 0);
   const groups = groupByDate(transactions, t);
+  const [ramps] = useState(() => getMockRamps());
 
   if (!address) {
     return <WalletRequiredState detail={t('history.connectWalletDetail')} />;
@@ -267,6 +270,40 @@ export function CustomerHistory() {
           </div>
         )}
       </div>
+
+      {/* ── Cash in / out (mock ramp) ── */}
+      {ramps.length > 0 && (
+        <div className="rounded-3xl overflow-hidden bg-white p-5" style={{ border: '1.5px solid #F1F5F9' }}>
+          <p className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: '#94A3B8' }}>
+            Cash in / out <span className="font-normal lowercase">· demo</span>
+          </p>
+          <div className="divide-y divide-slate-50">
+            {ramps.map((r) => {
+              const isIn = r.kind === 'cashin';
+              return (
+                <div key={r.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: isIn ? '#D1FAE5' : '#FEF3C7', color: isIn ? '#059669' : '#D97706' }}>
+                      {isIn ? <ArrowDownToLine size={16} /> : <ArrowUpFromLine size={16} />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-900">{isIn ? 'Cash in' : 'Cash out'}</p>
+                      <p className="text-xs text-slate-400">{relativeTime(r.at)} · {r.ref}</p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0 ml-3">
+                    <p className="text-sm font-black" style={{ color: isIn ? '#059669' : '#F43F5E' }}>
+                      {isIn ? '+' : '-'}{r.eth.toFixed(6)} ETH
+                    </p>
+                    <p className="text-xs text-slate-400">{formatPhp(r.php)}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

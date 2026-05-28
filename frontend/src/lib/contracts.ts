@@ -1,9 +1,11 @@
-import { parseEther, formatEther } from 'viem';
+import { parseEther, formatEther, parseUnits } from 'viem';
 import { readContractOrNull, writeContract } from './evm';
 import { PAYMENT_ADDRESS, REGISTRY_ADDRESS, ESCROW_ADDRESS, contractsDeployed } from './chain';
 import { palengkePaymentAbi } from './abis/palengkePayment';
+import { erc20Abi } from './abis/erc20';
 import { vendorRegistryAbi } from './abis/vendorRegistry';
 import { utangEscrowAbi } from './abis/utangEscrow';
+import type { PayToken } from './tokens';
 
 export { PAYMENT_ADDRESS, REGISTRY_ADDRESS, ESCROW_ADDRESS, contractsDeployed };
 
@@ -54,6 +56,81 @@ export async function sendPayment(to: string, amountEth: string, memo: string): 
     functionName: 'pay',
     args: [to as `0x${string}`, memo.trim()],
     value: parseEther(amountEth),
+  });
+  return { txHash };
+}
+
+// ── Stablecoin (ERC-20) payments ────────────────────────────────────────────────
+
+/** Current ERC-20 allowance the owner has granted PalengkePayment to spend. */
+export async function getTokenAllowance(token: PayToken, owner: string): Promise<bigint> {
+  if (!token.address) return 0n;
+  const raw = await readContractOrNull<bigint>(token.address, erc20Abi as never, 'allowance', [
+    owner as `0x${string}`,
+    requirePayment(),
+  ]);
+  return raw ?? 0n;
+}
+
+/** ERC-20 balance of `owner` in raw base units (caller formats with token.decimals). */
+export async function getTokenBalance(token: PayToken, owner: string): Promise<bigint> {
+  if (!token.address) return 0n;
+  const raw = await readContractOrNull<bigint>(token.address, erc20Abi as never, 'balanceOf', [
+    owner as `0x${string}`,
+  ]);
+  return raw ?? 0n;
+}
+
+/** Approve PalengkePayment to spend `amount` (base units) of `token`. Waits for receipt. */
+export async function approveToken(token: PayToken, amount: bigint): Promise<string> {
+  if (!token.address) throw new Error('approveToken called for native ETH');
+  return writeContract({
+    address: token.address,
+    abi: erc20Abi as never,
+    functionName: 'approve',
+    args: [requirePayment(), amount],
+  });
+}
+
+/** Mint testnet mock tokens to the caller via the public faucet. Waits for receipt. */
+export async function faucetToken(token: PayToken): Promise<string> {
+  if (!token.address) throw new Error('faucet called for native ETH');
+  return writeContract({
+    address: token.address,
+    abi: erc20Abi as never,
+    functionName: 'faucet',
+    args: [],
+  });
+}
+
+/**
+ * Pay `to` `amount` (human decimal string) of an ERC-20 `token` through
+ * PalengkePayment.payToken. Approves first if the existing allowance is short.
+ * `onApproving` fires when an approve tx is needed (UI shows the 'approving' step).
+ */
+export async function sendStablePayment(
+  from: string,
+  to: string,
+  token: PayToken,
+  amount: string,
+  memo: string,
+  onApproving?: () => void,
+): Promise<PaymentResult> {
+  if (!token.address) throw new Error('sendStablePayment requires an ERC-20 token');
+  const units = parseUnits(amount, token.decimals);
+  if (units <= 0n) throw new Error('amount must be greater than 0');
+
+  const allowance = await getTokenAllowance(token, from);
+  if (allowance < units) {
+    onApproving?.();
+    await approveToken(token, units);
+  }
+
+  const txHash = await writeContract({
+    address: requirePayment(),
+    abi: palengkePaymentAbi as never,
+    functionName: 'payToken',
+    args: [to as `0x${string}`, token.address, units, memo.trim()],
   });
   return { txHash };
 }

@@ -1,7 +1,8 @@
-import { formatEther } from 'viem';
+import { formatEther, formatUnits } from 'viem';
 import { publicClient } from './config';
 import { PAYMENT_ADDRESS } from './chain';
 import { palengkePaymentAbi } from './abis/palengkePayment';
+import { getTokenByAddress } from './tokens';
 
 // EVM payment indexer. Reads PalengkePayment `PaymentCompleted` logs via the public
 // client (the contract is the source of truth — every payment emits one). Caches in
@@ -14,7 +15,9 @@ export interface IndexedPayment {
   id: string;
   from: string;
   to: string;
-  amountEth: number; // ETH amount (field name kept for compatibility)
+  amountEth: number; // settlement amount in token units (field name kept for compatibility)
+  tokenAddress?: string; // address(0)/undefined = native ETH
+  tokenSymbol?: string;  // 'ETH' | 'USDC' | 'USDT' | 'PHPp'
   createdAt: string;
   memo?: string;
 }
@@ -46,6 +49,7 @@ interface PaymentEventArgs {
   paymentId?: bigint;
   customer?: string;
   vendor?: string;
+  token?: string;
   amount?: bigint;
   timestamp?: bigint;
   memo?: string;
@@ -89,11 +93,17 @@ async function fetchPaymentEvents(address: string): Promise<IndexedPayment[]> {
   for (const log of [...sent, ...received]) {
     const a = (log as unknown as { args: PaymentEventArgs }).args;
     const id = `${log.transactionHash}:${a.paymentId ?? 0n}`;
+    const tok = getTokenByAddress(a.token);
+    const amount = a.amount
+      ? Number(tok.kind === 'native' ? formatEther(a.amount) : formatUnits(a.amount, tok.decimals))
+      : 0;
     byId.set(id, {
       id,
       from: a.customer ?? '',
       to: a.vendor ?? '',
-      amountEth: a.amount ? Number(formatEther(a.amount)) : 0,
+      amountEth: amount,
+      tokenAddress: a.token,
+      tokenSymbol: tok.symbol,
       createdAt: new Date(Number(a.timestamp ?? 0n) * 1000).toISOString(),
       memo: a.memo || undefined,
     });

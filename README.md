@@ -175,12 +175,17 @@ VITE_MORPH_RPC_URL=https://rpc-hoodi.morph.network
 VITE_MORPH_EXPLORER=https://explorer-hoodi.morph.network
 
 # Deployed contract addresses (Morph Hoodi)
-VITE_PALENGKE_PAYMENT_ADDRESS=0x49cfc8687afb94a2d3867713a7de829dc21794ca
+VITE_PALENGKE_PAYMENT_ADDRESS=0x9fd349242caB01C8Df92d3C001B6dBa779b34500
 VITE_VENDOR_REGISTRY_ADDRESS=0xa1aba560607d756096f28f35c5127ce3a05f3032
 VITE_UTANG_ESCROW_ADDRESS=0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229
 
+# Stablecoin payment path — testnet mock ERC-20s (6 decimals, public faucet)
+VITE_MOCK_USDC_ADDRESS=0x482Cadd5fFf136280EBd8a92f90621b0De6946E4
+VITE_MOCK_USDT_ADDRESS=0xd9ee5Ca6b15107D44e62c47dC753cc1e4713F355
+VITE_MOCK_PHPP_ADDRESS=0xACbcea210FDA2Fccef942Fe2698eB3fC995736cc
+
 # Indexer: deploy block to start log scans from (Morph caps eth_getLogs at 5000-block windows)
-VITE_DEPLOY_BLOCK=5703000
+VITE_DEPLOY_BLOCK=5741437
 
 # Utang BNPL fee
 VITE_UTANG_FEE_ETH=0.1
@@ -215,7 +220,7 @@ Open `http://localhost:5173`.
 ### 4. Build / test contracts
 ```bash
 cd contracts-evm
-forge test          # 21 passing across 3 suites
+forge test          # 30 passing across 4 suites
 forge build         # compile for deployment
 ```
 See [`contracts-evm/README.md`](contracts-evm/README.md) for the deploy script, the Morph legacy-gas gotcha, and Blockscout verification.
@@ -224,7 +229,7 @@ See [`contracts-evm/README.md`](contracts-evm/README.md) for the deploy script, 
 ```bash
 cd frontend
 npx tsc --noEmit
-npm test            # vitest — 48 passing
+npm test            # vitest — 51 passing
 npm run lint
 npm run build
 npm run e2e         # Playwright — 46 desktop + 46 mobile
@@ -272,13 +277,17 @@ Disposable testnet wallets with existing payments / utang / ratings are listed i
 
 ## 🧪 Deployment — Morph Hoodi Testnet (chain 2910)
 
-Deployed 2026-05-27. Source verified on Blockscout.
+Core contracts deployed 2026-05-27. PalengkePayment redeployed 2026-05-29 with the
+stablecoin `payToken` path + three testnet mock ERC-20s. All source-verified on Blockscout.
 
 | Contract | Address | Explorer |
 |----------|---------|----------|
-| PalengkePayment | `0x49cfc8687afb94a2d3867713a7de829dc21794ca` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0x49cfc8687afb94a2d3867713a7de829dc21794ca) |
+| PalengkePayment | `0x9fd349242caB01C8Df92d3C001B6dBa779b34500` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0x9fd349242caB01C8Df92d3C001B6dBa779b34500) |
 | VendorRegistry | `0xa1aba560607d756096f28f35c5127ce3a05f3032` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0xa1aba560607d756096f28f35c5127ce3a05f3032) |
 | UTangEscrow | `0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229) |
+| MockUSDC (6dp) | `0x482Cadd5fFf136280EBd8a92f90621b0De6946E4` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0x482Cadd5fFf136280EBd8a92f90621b0De6946E4) |
+| MockUSDT (6dp) | `0xd9ee5Ca6b15107D44e62c47dC753cc1e4713F355` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0xd9ee5Ca6b15107D44e62c47dC753cc1e4713F355) |
+| MockPHPp (6dp) | `0xACbcea210FDA2Fccef942Fe2698eB3fC995736cc` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0xACbcea210FDA2Fccef942Fe2698eB3fC995736cc) |
 
 - **Admin** (`ADMIN_ROLE` on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
 - **Network:** RPC `https://rpc-hoodi.morph.network` · Explorer `https://explorer-hoodi.morph.network`
@@ -305,7 +314,7 @@ Each contract is source-verified; screenshots show the verified source and live 
 
 ## 🗺️ Roadmap
 
-- [x] EVM contract port to Morph (Foundry, 21/21 tests, Blockscout-verified)
+- [x] EVM contract port to Morph (Foundry, 30/30 tests, Blockscout-verified)
 - [x] Full frontend port to wagmi + RainbowKit + viem
 - [x] On-chain payments, utang BNPL escrow, vendor reputation, income proof pack
 - [x] PWA + push notifications + PHP-first checkout

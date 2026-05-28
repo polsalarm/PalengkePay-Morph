@@ -41,14 +41,17 @@ if (!/^0x[0-9a-fA-F]{64}$/.test(DEPLOYER_KEY)) {
 }
 
 const ADDR = {
-  payment: '0x49cfc8687afb94a2d3867713a7de829dc21794ca',
+  payment: '0x9fd349242caB01C8Df92d3C001B6dBa779b34500', // payToken-enabled redeploy
   registry: '0xa1aba560607d756096f28f35c5127ce3a05f3032',
   escrow: '0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229',
+  usdc: '0x482Cadd5fFf136280EBd8a92f90621b0De6946E4',
+  phpp: '0xACbcea210FDA2Fccef942Fe2698eB3fC995736cc',
 };
 const abiOf = (c) => JSON.parse(fs.readFileSync(path.join(EVM, 'out', `${c}.sol`, `${c}.json`), 'utf8')).abi;
 const paymentAbi = abiOf('PalengkePayment');
 const registryAbi = abiOf('VendorRegistry');
 const escrowAbi = abiOf('UTangEscrow');
+const mockAbi = abiOf('MockStableCoin');
 
 const chain = defineChain({
   id: 2910, name: 'Morph Hoodi',
@@ -105,7 +108,7 @@ async function main() {
 
   console.log('\n[2/4] Funding customer wallets…');
   for (const c of customers) {
-    const hash = await adminWallet.sendTransaction({ to: c.address, value: parseEther('0.001'), ...GAS });
+    const hash = await adminWallet.sendTransaction({ to: c.address, value: parseEther('0.002'), ...GAS });
     await mined(hash);
     console.log(`    ✓ funded ${c.label} ${c.address}`);
   }
@@ -114,6 +117,18 @@ async function main() {
   const c0 = createWalletClient({ account: customers[0].account, chain, transport: http(RPC) });
   const payHash0 = await write(c0, ADDR.payment, paymentAbi, 'pay', [vendors[0].address, 'gulay at isda'], parseEther('0.0002'));
   const payHash1 = await write(c0, ADDR.payment, paymentAbi, 'pay', [vendors[1].address, 'bigas'], parseEther('0.00015'));
+
+  console.log('\n[3b] Stablecoin payments (USDC + PHPp via payToken)…');
+  const USDC_PAY = 2_000000n;   // 2 USDC (6 dp)
+  const PHPP_PAY = 250_000000n; // 250 PHPp (6 dp)
+  // Admin mints test tokens to customer0 (open mint on the testnet mocks).
+  await write(adminWallet, ADDR.usdc, mockAbi, 'mint', [customers[0].address, USDC_PAY]);
+  await write(adminWallet, ADDR.phpp, mockAbi, 'mint', [customers[0].address, PHPP_PAY]);
+  // Customer approves the payment contract, then pays (approve→payToken two-step).
+  await write(c0, ADDR.usdc, mockAbi, 'approve', [ADDR.payment, USDC_PAY]);
+  await write(c0, ADDR.payment, paymentAbi, 'payToken', [vendors[0].address, ADDR.usdc, USDC_PAY, 'isda (USDC)']);
+  await write(c0, ADDR.phpp, mockAbi, 'approve', [ADDR.payment, PHPP_PAY]);
+  await write(c0, ADDR.payment, paymentAbi, 'payToken', [vendors[1].address, ADDR.phpp, PHPP_PAY, 'bigas (PHPp)']);
 
   console.log('\n[4/5] Utang: create + pay first installment…');
   const c1 = createWalletClient({ account: customers[1].account, chain, transport: http(RPC) });

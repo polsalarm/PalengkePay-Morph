@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
-import { sendPayment as sendPaymentTx, contractsDeployed } from '../contracts';
+import { sendPayment as sendPaymentTx, sendStablePayment, contractsDeployed } from '../contracts';
 import { getPaymentFailureDetails } from '../payment-diagnostics';
 import type { PaymentSettlementMode } from '../payment-routing';
+import { NATIVE_TOKEN, type PayToken } from '../tokens';
 
-export type TxStatus = 'idle' | 'building' | 'signing' | 'submitting' | 'confirmed' | 'failed';
+export type TxStatus = 'idle' | 'building' | 'signing' | 'approving' | 'submitting' | 'confirmed' | 'failed';
 
 export interface PaymentState {
   status: TxStatus;
@@ -12,8 +13,10 @@ export interface PaymentState {
   diagnostic: string | null;
 }
 
-// EVM payment hook. msg.value carries the ETH; the connected wallet is the payer,
-// so the `from` arg is accepted for call-site compatibility but not used on-chain.
+// EVM payment hook. Native ETH goes through PalengkePayment.pay (msg.value); ERC-20
+// stablecoins go through payToken with an approve→pay two-step (the 'approving' status
+// surfaces the extra wallet prompt). The connected wallet is always the payer, so the
+// `from` arg is accepted for call-site compatibility.
 export function usePayment() {
   const settlementMode: PaymentSettlementMode = contractsDeployed ? 'contract' : 'fee-bump';
   const [state, setState] = useState<PaymentState>({
@@ -21,15 +24,19 @@ export function usePayment() {
   });
 
   const sendPayment = useCallback(async (
-    _from: string,
+    from: string,
     to: string,
     amount: string,
     memo?: string,
-    _opts?: { forceClassic?: boolean }
+    token: PayToken = NATIVE_TOKEN,
   ) => {
     try {
       setState({ status: 'submitting', txHash: null, error: null, diagnostic: null });
-      const { txHash } = await sendPaymentTx(to, amount, memo ?? '');
+      const { txHash } = token.kind === 'native'
+        ? await sendPaymentTx(to, amount, memo ?? '')
+        : await sendStablePayment(from, to, token, amount, memo ?? '', () => {
+            setState({ status: 'approving', txHash: null, error: null, diagnostic: null });
+          });
       setState({ status: 'confirmed', txHash, error: null, diagnostic: null });
     } catch (err: unknown) {
       const details = getPaymentFailureDetails(err);

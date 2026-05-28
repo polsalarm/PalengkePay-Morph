@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Clock, Store, Zap } from 'lucide-react';
+import { AlertTriangle, Clock, Store, Zap, Coins } from 'lucide-react';
 import type { VendorProfile } from '../lib/hooks/useVendor';
 import type { PaymentSettlementMode } from '../lib/payment-routing';
 import {
   buildStableCheckoutQuote,
   formatPhp,
-  formatEth,
+  formatSettlement,
   isQuoteExpired,
   quoteSecondsRemaining,
   type StableCheckoutQuote,
 } from '../lib/checkout-quote';
+import { PAY_TOKENS, NATIVE_TOKEN, type PayToken } from '../lib/tokens';
+import { faucetToken } from '../lib/contracts';
 
 const MEMO_MAX = 28;
-const ETH_TO_PHP = 8.5;
+const FALLBACK_ETH_PHP = 200_000; // PHP per 1 ETH when rate sources are unreachable.
+const FALLBACK_USD_PHP = 58;      // PHP per 1 USD (USDC/USDT) fallback.
 
 interface Props {
   vendorAddress: string;
@@ -20,7 +23,7 @@ interface Props {
   isLoading: boolean;
   preloadedVendorName?: string;
   preloadedStallInfo?: string;
-  onSubmit: (amount: string, memo: string, quote: StableCheckoutQuote) => void;
+  onSubmit: (amount: string, memo: string, quote: StableCheckoutQuote, token: PayToken) => void;
   disabled?: boolean;
   settlementMode?: PaymentSettlementMode;
 }
@@ -29,16 +32,19 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
   const [amountPhp, setAmountPhp] = useState('');
   const [memo, setMemo] = useState('');
   const [error, setError] = useState('');
-  const [phpRate, setPhpRate] = useState<number>(ETH_TO_PHP);
+  const [token, setToken] = useState<PayToken>(NATIVE_TOKEN);
+  const [ethPhp, setEthPhp] = useState<number>(FALLBACK_ETH_PHP);
+  const [usdPhp, setUsdPhp] = useState<number>(FALLBACK_USD_PHP);
   const [quoteSource, setQuoteSource] = useState<StableCheckoutQuote['source']>('fallback');
   const [rateLoading, setRateLoading] = useState(false);
   const [quote, setQuote] = useState<StableCheckoutQuote | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const [faucetState, setFaucetState] = useState<'idle' | 'minting' | 'done'>('idle');
 
+  // ETH→PHP (native settlement): API quote endpoint, then CoinGecko ethereum.
   useEffect(() => {
     let cancelled = false;
-
-    async function loadRate() {
+    async function loadEthRate() {
       setRateLoading(true);
       try {
         const response = await fetch('/api/quote');
@@ -46,29 +52,40 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
         const data = await response.json();
         if (!Number.isFinite(Number(data?.phpPerEth))) throw new Error('quote API returned invalid rate');
         if (!cancelled) {
-          setPhpRate(Number(data.phpPerEth));
+          setEthPhp(Number(data.phpPerEth));
           setQuoteSource('api');
         }
       } catch {
         try {
-          const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=php');
+          const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=php');
           const data = await response.json();
-          if (!cancelled && data?.stellar?.php) {
-            setPhpRate(data.stellar.php);
+          if (!cancelled && data?.ethereum?.php) {
+            setEthPhp(data.ethereum.php);
             setQuoteSource('coingecko');
           }
-        } catch {
-          // Keep the static fallback rate when both quote sources are unavailable.
-        }
+        } catch { /* keep fallback */ }
       } finally {
         if (!cancelled) setRateLoading(false);
       }
     }
+    void loadEthRate();
+    return () => { cancelled = true; };
+  }, []);
 
-    void loadRate();
-    return () => {
-      cancelled = true;
-    };
+  // USD→PHP (USDC/USDT settlement): CoinGecko usd-coin in PHP.
+  useEffect(() => {
+    let cancelled = false;
+    async function loadUsdRate() {
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=php');
+        const data = await response.json();
+        if (!cancelled && Number.isFinite(Number(data?.['usd-coin']?.php))) {
+          setUsdPhp(Number(data['usd-coin'].php));
+        }
+      } catch { /* keep fallback */ }
+    }
+    void loadUsdRate();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -77,17 +94,25 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
     return () => clearInterval(timer);
   }, []);
 
+  // PHP per 1 unit of the selected settlement token.
+  const phpPerToken = token.kind === 'php' ? 1 : token.kind === 'usd' ? usdPhp : ethPhp;
+
   useEffect(() => {
     if (!amountPhp.trim()) {
       setQuote(null);
       return;
     }
     try {
-      setQuote(buildStableCheckoutQuote({ phpAmount: amountPhp, phpPerEth: phpRate, source: quoteSource }));
+      setQuote(buildStableCheckoutQuote({
+        phpAmount: amountPhp,
+        phpPerEth: phpPerToken,
+        source: token.kind === 'php' ? 'fallback' : quoteSource,
+        token: { symbol: token.symbol, decimals: token.decimals, kind: token.kind },
+      }));
     } catch {
       setQuote(null);
     }
-  }, [amountPhp, phpRate, quoteSource]);
+  }, [amountPhp, phpPerToken, quoteSource, token]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +125,18 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
       setError('Quote expired. Refresh the amount to lock a new price.');
       return;
     }
-    onSubmit(quote.xlmAmount, memo, quote);
+    onSubmit(quote.xlmAmount, memo, quote, token);
+  };
+
+  const handleFaucet = async () => {
+    if (token.kind === 'native') return;
+    setFaucetState('minting');
+    try {
+      await faucetToken(token);
+      setFaucetState('done');
+    } catch {
+      setFaucetState('idle');
+    }
   };
 
   const displayName = vendor?.name ?? preloadedVendorName ?? null;
@@ -111,6 +147,9 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
   const memoLeft = MEMO_MAX - memo.length;
   const memoNearLimit = memoLeft <= 8;
   const quoteSeconds = quote ? quoteSecondsRemaining(quote, nowMs) : 0;
+  const rateLabel = token.kind === 'php'
+    ? `₱1.00 = 1 ${token.symbol}`
+    : `₱${phpPerToken.toFixed(2)}/${token.symbol}`;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
@@ -154,6 +193,48 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
           )}
         </div>
       </div>
+
+      {/* ── Token selector ── */}
+      {PAY_TOKENS.length > 1 && (
+        <div>
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">
+            Bayad gamit ang
+          </label>
+          <div className="grid grid-cols-4 gap-2">
+            {PAY_TOKENS.map((t) => {
+              const active = t.key === token.key;
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => { setToken(t); setFaucetState('idle'); }}
+                  className="rounded-xl py-2.5 text-sm font-black active:scale-95 transition-all"
+                  style={active
+                    ? { backgroundColor: '#008055', color: 'white', boxShadow: '0 4px 14px rgba(15,118,110,0.35)' }
+                    : { backgroundColor: '#F1F5F9', color: '#475569' }
+                  }
+                >
+                  {t.symbol}
+                </button>
+              );
+            })}
+          </div>
+          {token.kind !== 'native' && (
+            <button
+              type="button"
+              onClick={handleFaucet}
+              disabled={faucetState === 'minting'}
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold active:scale-95 disabled:opacity-50"
+              style={{ color: '#008055' }}
+            >
+              <Coins size={13} />
+              {faucetState === 'minting' ? 'Minting test tokens…'
+                : faucetState === 'done' ? `Test ${token.symbol} minted ✓`
+                : `Need test ${token.symbol}? Tap to mint`}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* ── Amount ── */}
       <div>
@@ -200,10 +281,10 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-wider text-slate-400">
-                  Locked ETH
+                  Locked {token.symbol}
                 </p>
                 <p className="text-lg font-black text-slate-900" style={{ fontFamily: "'Syne', sans-serif" }}>
-                  {formatEth(quote.xlmAmount)}
+                  {formatSettlement(quote)}
                 </p>
               </div>
               <div
@@ -215,7 +296,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
               </div>
             </div>
             <p className="text-xs text-slate-400 mt-1">
-              {formatPhp(quote.phpAmount)} at ₱{quote.phpPerEth.toFixed(2)}/ETH{rateLoading ? ' · refreshing rate' : ''}
+              {formatPhp(quote.phpAmount)} at {rateLabel}{rateLoading && token.kind === 'native' ? ' · refreshing rate' : ''}
             </p>
           </div>
         )}
@@ -264,7 +345,9 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
           : <AlertTriangle size={13} style={{ color: '#D97706' }} />
         }
         {settlementMode === 'contract'
-          ? 'On-chain receipt — recorded by PalengkePayment'
+          ? (token.kind === 'native'
+              ? 'On-chain receipt — settled in native ETH'
+              : `On-chain receipt — settled in ${token.symbol} stablecoin`)
           : 'Payment contract not configured — using direct transfer'}
       </div>
 

@@ -2,21 +2,28 @@
 pragma solidity ^0.8.24;
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /// @title PalengkePayment
-/// @notice Native-ETH payment pass-through. EVM port of the Soroban `palengke-payment`
-///         contract. Customer pays a vendor; full amount is forwarded, no fee skim
-///         (faithful to the Soroban `pay`, which never applied its stored fee_bps).
+/// @notice Payment pass-through. Customer pays a vendor; the full amount is forwarded
+///         with no fee skim and the contract never takes custody. Two settlement modes:
+///           - `pay()`       — native ETH (msg.value), `token == address(0)`.
+///           - `payToken()`  — any ERC-20 (USDC/USDT/PHP-peg), via transferFrom.
 ///
 /// Stellar-isms intentionally dropped on EVM:
-///   - `set_token` / `token()`  — no SAC token address; settlement is native ETH (msg.value)
+///   - `set_token` / `token()`  — settlement token is per-payment now (address(0)=native)
 ///   - `initialize(admin, fee_bps, ...)` — no admin needed; this contract holds no funds
 ///   - `upgrade(wasm_hash)` — redeploy instead (testnet); add UUPS later if mainnet needs it
 contract PalengkePayment is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
+    /// @dev `token == address(0)` denotes a native-ETH payment; otherwise the ERC-20 paid.
     struct Payment {
         uint256 id;
         address customer;
         address vendor;
+        address token;
         uint256 amount;
         uint256 timestamp;
         string memo;
@@ -29,11 +36,12 @@ contract PalengkePayment is ReentrancyGuard {
     mapping(address => uint256[]) private vendorPaymentIds;
     mapping(address => uint256[]) private customerPaymentIds;
 
-    /// @dev Field names mirror the Soroban event so the indexer ports by find/replace.
+    /// @dev `token` is address(0) for native ETH, else the ERC-20 contract address.
     event PaymentCompleted(
         uint256 indexed paymentId,
         address indexed customer,
         address indexed vendor,
+        address token,
         uint256 amount,
         uint256 timestamp,
         string memo
@@ -42,6 +50,7 @@ contract PalengkePayment is ReentrancyGuard {
     error AmountMustBePositive();
     error VendorTransferFailed();
     error PaymentNotFound();
+    error TokenRequired();
 
     /// @notice Pay `vendor` the attached ETH. Customer is `msg.sender`, amount is `msg.value`.
     /// @return paymentId monotonic id of the recorded payment.
@@ -53,25 +62,49 @@ contract PalengkePayment is ReentrancyGuard {
     {
         if (msg.value == 0) revert AmountMustBePositive();
 
+        paymentId = _record(msg.sender, vendor, address(0), msg.value, memo);
+
+        // Effects emitted before the external call (checks-effects-interactions + nonReentrant).
+        (bool ok,) = payable(vendor).call{value: msg.value}("");
+        if (!ok) revert VendorTransferFailed();
+    }
+
+    /// @notice Pay `vendor` `amount` of ERC-20 `token`. Requires prior `approve(this, amount)`.
+    ///         Funds move customer -> vendor directly; this contract never holds the tokens.
+    /// @return paymentId monotonic id of the recorded payment.
+    function payToken(address vendor, address token, uint256 amount, string calldata memo)
+        external
+        nonReentrant
+        returns (uint256 paymentId)
+    {
+        if (token == address(0)) revert TokenRequired();
+        if (amount == 0) revert AmountMustBePositive();
+
+        paymentId = _record(msg.sender, vendor, token, amount, memo);
+
+        IERC20(token).safeTransferFrom(msg.sender, vendor, amount);
+    }
+
+    function _record(address customer, address vendor, address token, uint256 amount, string calldata memo)
+        private
+        returns (uint256 paymentId)
+    {
         paymentCount += 1;
         paymentId = paymentCount;
 
         payments[paymentId] = Payment({
             id: paymentId,
-            customer: msg.sender,
+            customer: customer,
             vendor: vendor,
-            amount: msg.value,
+            token: token,
+            amount: amount,
             timestamp: block.timestamp,
             memo: memo
         });
         vendorPaymentIds[vendor].push(paymentId);
-        customerPaymentIds[msg.sender].push(paymentId);
+        customerPaymentIds[customer].push(paymentId);
 
-        // Effects emitted before the external call (checks-effects-interactions + nonReentrant).
-        emit PaymentCompleted(paymentId, msg.sender, vendor, msg.value, block.timestamp, memo);
-
-        (bool ok,) = payable(vendor).call{value: msg.value}("");
-        if (!ok) revert VendorTransferFailed();
+        emit PaymentCompleted(paymentId, customer, vendor, token, amount, block.timestamp, memo);
     }
 
     function getPayment(uint256 paymentId) external view returns (Payment memory) {

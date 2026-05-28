@@ -3,6 +3,7 @@ import {
   buildStableCheckoutQuote,
   formatPhp,
   formatEth,
+  formatSettlement,
   isQuoteExpired,
 } from './checkout-quote';
 
@@ -18,6 +19,9 @@ describe('buildStableCheckoutQuote', () => {
       phpAmount: 420,
       phpPerEth: 8.4,
       xlmAmount: '50.0000000',
+      tokenSymbol: 'ETH',
+      tokenDecimals: 18,
+      tokenKind: 'native',
       generatedAt: '2026-05-13T10:00:00.000Z',
       expiresAt: '2026-05-13T10:01:00.000Z',
       source: 'fallback',
@@ -46,10 +50,41 @@ describe('buildStableCheckoutQuote', () => {
   });
 });
 
+describe('token-aware checkout quotes', () => {
+  it('prices a USD-pegged stablecoin via the USD→PHP rate at 6 dp', () => {
+    const quote = buildStableCheckoutQuote({
+      phpAmount: '116',
+      phpPerEth: 58, // ₱58 per 1 USDC
+      source: 'api',
+      token: { symbol: 'USDC', decimals: 6, kind: 'usd' },
+      nowMs: Date.UTC(2026, 4, 13, 10, 0, 0),
+    });
+    expect(quote.xlmAmount).toBe('2.000000');
+    expect(quote.tokenSymbol).toBe('USDC');
+    expect(quote.tokenDecimals).toBe(6);
+    expect(quote.tokenKind).toBe('usd');
+  });
+
+  it('prices a PHP-pegged stablecoin 1:1 with no FX', () => {
+    const quote = buildStableCheckoutQuote({
+      phpAmount: '250',
+      phpPerEth: 1,
+      token: { symbol: 'PHPp', decimals: 6, kind: 'php' },
+    });
+    expect(quote.xlmAmount).toBe('250.000000');
+    expect(quote.tokenKind).toBe('php');
+  });
+});
+
 describe('quote formatting', () => {
   it('formats receipt amounts consistently', () => {
     expect(formatPhp(420)).toBe('₱420.00');
     expect(formatEth('50.0000000')).toBe('50 ETH');
     expect(formatEth('0.1234567')).toBe('0.1234567 ETH');
+  });
+
+  it('formats settlement with the quote token symbol', () => {
+    expect(formatSettlement({ xlmAmount: '2.000000', tokenSymbol: 'USDC', tokenDecimals: 6 })).toBe('2 USDC');
+    expect(formatSettlement({ xlmAmount: '0.1234567', tokenSymbol: 'ETH', tokenDecimals: 18 })).toBe('0.1234567 ETH');
   });
 });

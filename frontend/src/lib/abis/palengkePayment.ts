@@ -43,6 +43,11 @@ export const palengkePaymentAbi = [
             "internalType": "address"
           },
           {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
             "name": "amount",
             "type": "uint256",
             "internalType": "uint256"
@@ -90,6 +95,11 @@ export const palengkePaymentAbi = [
           },
           {
             "name": "vendor",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "token",
             "type": "address",
             "internalType": "address"
           },
@@ -155,6 +165,11 @@ export const palengkePaymentAbi = [
             "internalType": "address"
           },
           {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
             "name": "amount",
             "type": "uint256",
             "internalType": "uint256"
@@ -200,6 +215,40 @@ export const palengkePaymentAbi = [
   },
   {
     "type": "function",
+    "name": "payToken",
+    "inputs": [
+      {
+        "name": "vendor",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "token",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "memo",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "paymentId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "paymentCount",
     "inputs": [],
     "outputs": [
@@ -231,6 +280,12 @@ export const palengkePaymentAbi = [
         "name": "vendor",
         "type": "address",
         "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "token",
+        "type": "address",
+        "indexed": false,
         "internalType": "address"
       },
       {
@@ -267,6 +322,22 @@ export const palengkePaymentAbi = [
   {
     "type": "error",
     "name": "ReentrancyGuardReentrantCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SafeERC20FailedOperation",
+    "inputs": [
+      {
+        "name": "token",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "TokenRequired",
     "inputs": []
   },
   {

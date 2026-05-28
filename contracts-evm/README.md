@@ -1,24 +1,30 @@
 # PalengkePay EVM contracts (Morph)
 
-Solidity port of the Soroban contracts, settling in **native ETH** (testnet decision A1 —
-no ERC-20 approve flow, mirrors the original native-XLM behaviour).
+Solidity port of the Soroban contracts. Payments settle in **native ETH** (`pay`) or any
+**ERC-20 stablecoin** (`payToken`) — USDC / USDT / a PHP-pegged token — via a no-custody
+transferFrom pass-through. Native ETH stays the default; stablecoins are additive.
 
 | Contract | Soroban origin | Notes |
 |----------|----------------|-------|
-| `PalengkePayment.sol` | `palengke-payment` | Pass-through pay; full amount to vendor, no fee skim |
+| `PalengkePayment.sol` | `palengke-payment` | Pass-through pay; full amount to vendor, no fee skim. `pay` (native ETH) + `payToken` (ERC-20, SafeERC20, no custody) |
 | `VendorRegistry.sol` | `vendor-registry` | Apply→approve, ratings, default mirror; `AccessControl` |
 | `UTangEscrow.sol` | `utang-escrow` | BNPL; 1% reserve in contract custody, 5% late fee, `nonReentrant` |
+| `MockStableCoin.sol` | — (testnet only) | ERC-20 mock with configurable decimals + public `faucet()`/`mint()`; stands in for USDC/USDT/PHPp since Morph Hoodi has no canonical stablecoins |
 
 ## Deployed — Morph Hoodi testnet (chain 2910)
 
-Deployed 2026-05-27. Holesky (2810) is dead: Ethereum sunset it Sept 2025; Morph moved its
-testnet to Ethereum Hoodi and the `morphl2.io` domain to `morph.network`.
+Core contracts deployed 2026-05-27; PalengkePayment redeployed 2026-05-29 with `payToken`
++ three mock stablecoins. Holesky (2810) is dead: Ethereum sunset it Sept 2025; Morph moved
+its testnet to Ethereum Hoodi and the `morphl2.io` domain to `morph.network`.
 
 | Contract | Address |
 |----------|---------|
-| PalengkePayment | [`0x49cfc8687afb94a2d3867713a7de829dc21794ca`](https://explorer-hoodi.morph.network/address/0x49cfc8687afb94a2d3867713a7de829dc21794ca) |
+| PalengkePayment | [`0x9fd349242caB01C8Df92d3C001B6dBa779b34500`](https://explorer-hoodi.morph.network/address/0x9fd349242caB01C8Df92d3C001B6dBa779b34500) |
 | VendorRegistry  | [`0xa1aba560607d756096f28f35c5127ce3a05f3032`](https://explorer-hoodi.morph.network/address/0xa1aba560607d756096f28f35c5127ce3a05f3032) |
 | UTangEscrow     | [`0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229`](https://explorer-hoodi.morph.network/address/0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229) |
+| MockUSDC (6dp)  | [`0x482Cadd5fFf136280EBd8a92f90621b0De6946E4`](https://explorer-hoodi.morph.network/address/0x482Cadd5fFf136280EBd8a92f90621b0De6946E4) |
+| MockUSDT (6dp)  | [`0xd9ee5Ca6b15107D44e62c47dC753cc1e4713F355`](https://explorer-hoodi.morph.network/address/0xd9ee5Ca6b15107D44e62c47dC753cc1e4713F355) |
+| MockPHPp (6dp)  | [`0xACbcea210FDA2Fccef942Fe2698eB3fC995736cc`](https://explorer-hoodi.morph.network/address/0xACbcea210FDA2Fccef942Fe2698eB3fC995736cc) |
 
 - **Admin** (`ADMIN_ROLE` on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
   (disposable testnet EOA).
@@ -74,11 +80,13 @@ Deps are pinned git submodules under `lib/` (OpenZeppelin `v5.1.0` + forge-std).
 ## Test
 
 ```bash
-forge test          # 21 passing (3 suites)
+forge test          # 30 passing (4 suites)
 forge coverage
 ```
 
-Status: **21/21 passing.** Suites cover happy/revert paths per contract, including the
+Status: **30/30 passing.** Suites cover happy/revert paths per contract, including the
+`PalengkePayment.payToken` ERC-20 path (transferFrom, no custody, event token field,
+zero-address / zero-amount / missing-allowance reverts) and the
 `UTangEscrow` `DegenerateInstallmentPlan` guard (rejects `installmentAmount*(n-1) >= total`,
 e.g. `total=5, n=4`, which would otherwise underflow the final installment).
 

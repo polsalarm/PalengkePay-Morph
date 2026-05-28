@@ -13,7 +13,8 @@ import { usePayment } from '../../lib/hooks/usePayment';
 import { useCreateUtang } from '../../lib/hooks/useUtang';
 import type { UtangOfferPayload } from '../vendor/VendorUtang';
 import { stellarExpertAccountUrl, stellarExpertUrl, truncateAddress } from '../../lib/evm';
-import { formatPhp, formatEth, type StableCheckoutQuote } from '../../lib/checkout-quote';
+import { formatPhp, formatSettlement, type StableCheckoutQuote } from '../../lib/checkout-quote';
+import { type PayToken } from '../../lib/tokens';
 import { ESCROW_ADDRESS } from '../../lib/contracts';
 import { savePaymentProof } from '../../lib/payment-proof';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -37,6 +38,7 @@ interface PendingPayment {
   amount: string;
   memo: string;
   quote: StableCheckoutQuote;
+  token: PayToken;
 }
 
 export function CustomerScan() {
@@ -112,15 +114,15 @@ export function CustomerScan() {
     }
   };
 
-  const handlePay = (amount: string, memo: string, quote: StableCheckoutQuote) => {
-    setPendingPayment({ amount, memo, quote });
+  const handlePay = (amount: string, memo: string, quote: StableCheckoutQuote, token: PayToken) => {
+    setPendingPayment({ amount, memo, quote, token });
     reset();
     setStep('confirm');
   };
 
   const handleConfirm = async () => {
     if (!address || !pendingPayment) return;
-    await sendPayment(address, vendorAddress, pendingPayment.amount, pendingPayment.memo);
+    await sendPayment(address, vendorAddress, pendingPayment.amount, pendingPayment.memo, pendingPayment.token);
   };
 
   const handleRetryPayment = () => {
@@ -414,7 +416,7 @@ export function CustomerScan() {
               {formatPhp(pendingPayment.quote.phpAmount)}
             </p>
             <p className="text-base font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              {formatEth(pendingPayment.quote.xlmAmount)}
+              {formatSettlement(pendingPayment.quote)}
             </p>
             <div
               className="mt-4 pt-4 grid grid-cols-2 gap-3 text-left"
@@ -425,7 +427,7 @@ export function CustomerScan() {
                   {t('scan.priceLock')}
                 </p>
                 <p className="text-sm font-black text-white">
-                  ₱{pendingPayment.quote.phpPerEth.toFixed(2)}/ETH
+                  ₱{pendingPayment.quote.phpPerEth.toFixed(2)}/{pendingPayment.quote.tokenSymbol}
                 </p>
               </div>
               <div>
@@ -481,6 +483,7 @@ export function CustomerScan() {
               error={error}
               diagnostic={diagnostic}
               amount={pendingPayment.amount}
+              tokenSymbol={pendingPayment.quote.tokenSymbol}
               recipientName={vendorDisplay}
               receiptLookupUrl={stellarExpertAccountUrl(address)}
               onRetry={handleRetryPayment}
@@ -527,7 +530,7 @@ export function CustomerScan() {
             )}
             {pendingPayment && (
               <p className="text-sm mt-2 font-bold" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                {formatEth(pendingPayment.quote.xlmAmount)} at ₱{pendingPayment.quote.phpPerEth.toFixed(2)}/ETH
+                {formatSettlement(pendingPayment.quote)} at ₱{pendingPayment.quote.phpPerEth.toFixed(2)}/{pendingPayment.quote.tokenSymbol}
               </p>
             )}
             {vendorDisplay && (
@@ -553,7 +556,7 @@ export function CustomerScan() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">{t('scan.settledOnStellar')}</p>
-                    <p className="text-sm font-black text-slate-900">{formatEth(pendingPayment.quote.xlmAmount)}</p>
+                    <p className="text-sm font-black text-slate-900">{formatSettlement(pendingPayment.quote)}</p>
                   </div>
                 </div>
               </div>

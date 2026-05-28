@@ -32,6 +32,25 @@ testnet to Ethereum Hoodi and the `morphl2.io` domain to `morph.network`.
   Note the explorer UI host is `explorer-hoodi.morph.network` but the **API host** is
   `explorer-api-hoodi.morph.network` — the UI host's `/api` 404s (Next.js frontend).
 
+## On-chain proof (Blockscout)
+
+Each contract is source-verified; screenshots show the verified source and live transactions.
+
+### PalengkePayment
+| Verified source | Transactions |
+|---|---|
+| ![PalengkePayment verified source](../UI/CONTRACT/PalengkeyPayment1.png) | ![PalengkePayment transactions](../UI/CONTRACT/PalengkeyPayment2.png) |
+
+### VendorRegistry
+| Verified source | Transactions |
+|---|---|
+| ![VendorRegistry verified source](../UI/CONTRACT/VendorRegistry1.png) | ![VendorRegistry transactions](../UI/CONTRACT/VendorRegistry2.png) |
+
+### UTangEscrow
+| Verified source | Transactions |
+|---|---|
+| ![UTangEscrow verified source](../UI/CONTRACT/UtangEscrow1.png) | ![UTangEscrow transactions](../UI/CONTRACT/UtangEscrow2.png) |
+
 ## Prerequisites
 
 Foundry (forge 1.7.1) is installed at `~/.foundry/bin` — **not on PATH**, so either add it

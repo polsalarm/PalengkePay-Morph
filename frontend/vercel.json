@@ -13,25 +13,12 @@
         { "key": "Permissions-Policy", "value": "camera=(self), microphone=(), geolocation=()" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.walletconnect.com https://*.walletconnect.org https://*.reown.com https://*.web3modal.org; connect-src 'self' https://horizon-testnet.stellar.org https://soroban-testnet.stellar.org https://friendbot.stellar.org https://horizon.stellar.org https://mainnet.sorobanrpc.com https://*.sentry.io wss://horizon-testnet.stellar.org wss://horizon.stellar.org https://*.walletconnect.org https://*.walletconnect.com wss://*.walletconnect.org wss://*.walletconnect.com https://*.reown.com wss://*.reown.com https://*.web3modal.org wss://*.web3modal.org https://api.coingecko.com; frame-src 'self' https://*.walletconnect.org https://*.walletconnect.com https://*.reown.com https://*.web3modal.org; worker-src 'self' blob:; manifest-src 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.walletconnect.com https://*.walletconnect.org https://*.reown.com https://*.web3modal.org https://*.transak.com; connect-src 'self' https://rpc-hoodi.morph.network https://rpc-quicknode.morph.network https://*.morph.network https://api.coingecko.com https://*.transak.com https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org https://*.reown.com wss://*.reown.com https://*.web3modal.org wss://*.web3modal.org https://*.sentry.io; frame-src 'self' https://*.walletconnect.com https://*.walletconnect.org https://*.reown.com https://*.web3modal.org https://*.transak.com; worker-src 'self' blob:; manifest-src 'self'"
         }
       ]
     }
   ],
   "rewrites": [
-    { "source": "/.well-known/stellar.toml", "destination": "/api/stellar-toml" },
-    { "source": "/api/sep24/info", "destination": "/api/sep24?_op=info" },
-    { "source": "/api/sep24/transactions/deposit/interactive", "destination": "/api/sep24?_op=deposit-interactive" },
-    { "source": "/api/sep24/transactions/withdraw/interactive", "destination": "/api/sep24?_op=withdraw-interactive" },
-    { "source": "/api/sep24/transaction", "destination": "/api/sep24?_op=transaction" },
-    { "source": "/api/sep24/transactions", "destination": "/api/sep24?_op=transactions" },
-    { "source": "/api/ramp/cashout", "destination": "/api/ramp?_op=cashout" },
-    { "source": "/api/ramp/cashin", "destination": "/api/ramp?_op=cashin" },
-    { "source": "/api/ramp/status", "destination": "/api/ramp?_op=status" },
-    { "source": "/api/ramp/admin", "destination": "/api/ramp?_op=admin" },
-    { "source": "/((?!api/|\\.well-known/).*)", "destination": "/index.html" }
-  ],
-  "crons": [
-    { "path": "/api/cron/utang-reminders", "schedule": "0 0 * * *" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

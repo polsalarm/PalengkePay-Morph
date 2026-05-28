@@ -73,7 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'challenge expired' });
   }
 
-  let valid = false;
+  let valid: boolean;
   try {
     valid = await verifyMessage({
       address: address as `0x${string}`,

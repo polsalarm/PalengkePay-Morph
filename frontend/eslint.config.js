@@ -22,6 +22,10 @@ export default defineConfig([
       'react-hooks/immutability': 'off',
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/static-components': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
     },
   },
 ])

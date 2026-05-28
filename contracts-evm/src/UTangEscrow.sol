@@ -172,10 +172,8 @@ contract UTangEscrow is AccessControl, ReentrancyGuard {
         if (u.installmentsPaid >= u.installmentsTotal) revert AlreadyFullyPaid();
 
         uint32 remainingInstallments = u.installmentsTotal - u.installmentsPaid;
-        uint256 remainingAmount =
-            u.totalAmount - (u.installmentAmount * u.installmentsPaid);
-        uint256 payAmount =
-            remainingInstallments == 1 ? remainingAmount : u.installmentAmount;
+        uint256 remainingAmount = u.totalAmount - (u.installmentAmount * u.installmentsPaid);
+        uint256 payAmount = remainingInstallments == 1 ? remainingAmount : u.installmentAmount;
         uint256 reserveFee = (payAmount * RESERVE_BPS) / 10_000;
 
         if (msg.value != payAmount + reserveFee) {

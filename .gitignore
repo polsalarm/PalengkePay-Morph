@@ -91,3 +91,4 @@ documentation.md
 
 # Seed script output — contains private keys
 frontend/scripts/seed-wallets.json
+frontend/scripts/SEED_WALLETS.md

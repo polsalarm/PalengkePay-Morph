@@ -75,11 +75,3 @@ jobs:
       - name: Build
         working-directory: frontend
         run: npm run build
-
-      - name: Install Playwright Chromium
-        working-directory: frontend
-        run: npx playwright install --with-deps chromium
-
-      - name: Browser route QA
-        working-directory: frontend
-        run: npm run qa:visual

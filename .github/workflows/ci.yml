@@ -3,9 +3,9 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   contracts:
@@ -13,38 +13,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Rust quality components
-        run: rustup component add rustfmt clippy
-
-      - name: Cache Cargo
-        uses: actions/cache@v4
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            contracts/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('contracts/**/*.toml') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Check formatting
+        working-directory: contracts-evm
+        run: forge fmt --check
+
+      - name: Build contracts
+        working-directory: contracts-evm
+        run: forge build --sizes
 
       - name: Run contract tests
-        working-directory: contracts
-        run: cargo test --workspace
-
-      - name: Check contract formatting
-        working-directory: contracts
-        run: cargo fmt --all -- --check
-
-      - name: Contract clippy
-        working-directory: contracts
-        run: cargo clippy --workspace -- -D warnings
+        working-directory: contracts-evm
+        run: forge test -vvv
 
   frontend:
     name: Frontend Build
     runs-on: ubuntu-latest
+    env:
+      VITE_CHAIN_ID: "2910"
+      VITE_MORPH_RPC_URL: https://rpc-hoodi.morph.network
+      VITE_MORPH_EXPLORER: https://explorer-hoodi.morph.network
+      VITE_VENDOR_REGISTRY_ADDRESS: "0x0000000000000000000000000000000000000000"
+      VITE_PALENGKE_PAYMENT_ADDRESS: "0x0000000000000000000000000000000000000000"
+      VITE_UTANG_ESCROW_ADDRESS: "0x0000000000000000000000000000000000000000"
+      VITE_DEPLOY_BLOCK: "0"
     steps:
       - uses: actions/checkout@v4
 
@@ -78,12 +75,6 @@ jobs:
       - name: Build
         working-directory: frontend
         run: npm run build
-        env:
-          VITE_STELLAR_NETWORK: testnet
-          VITE_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
-          VITE_VENDOR_REGISTRY_CONTRACT_ID: PLACEHOLDER
-          VITE_PALENGKE_PAYMENT_CONTRACT_ID: PLACEHOLDER
-          VITE_UTANG_ESCROW_CONTRACT_ID: PLACEHOLDER
 
       - name: Install Playwright Chromium
         working-directory: frontend
@@ -92,9 +83,3 @@ jobs:
       - name: Browser route QA
         working-directory: frontend
         run: npm run qa:visual
-        env:
-          VITE_STELLAR_NETWORK: testnet
-          VITE_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
-          VITE_VENDOR_REGISTRY_CONTRACT_ID: PLACEHOLDER
-          VITE_PALENGKE_PAYMENT_CONTRACT_ID: PLACEHOLDER
-          VITE_UTANG_ESCROW_CONTRACT_ID: PLACEHOLDER

@@ -70,7 +70,7 @@ scripts/seed/seed-overdue-output.json
 # Internal docs, spec, and assets — hidden from the public repo
 docs/
 spec/
-assets/
+/assets/
 UI_UX_IMPROVEMENTS.md
 frontend/README.md
 ROADMAP.md

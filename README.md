@@ -167,6 +167,40 @@ npm run e2e         # Playwright — 46 desktop + 46 mobile
 - Open the dev URL on your phone, tap **Connect Wallet → WalletConnect**, approve in your wallet
 - Install as PWA: Android Chrome ⋮ → *Add to Home screen*; iOS Safari Share → *Add to Home Screen*
 
+## 🦊 Wallet Setup — MetaMask + Morph Hoodi (try it in 3 min)
+
+The app needs an EVM wallet on the **Morph Hoodi** testnet. Desktop = MetaMask extension; mobile = any WalletConnect wallet.
+
+### 1. Install MetaMask
+[metamask.io/download](https://metamask.io/download/) → create or import a wallet → save the recovery phrase.
+
+### 2. Add the Morph Hoodi network
+**Option A — manual (recommended):** MetaMask → click the network dropdown (top-left) → **Add a custom network** → fill:
+
+| Field | Value |
+|-------|-------|
+| Network name | `Morph Hoodi` |
+| RPC URL | `https://rpc-hoodi.morph.network` |
+| Chain ID | `2910` |
+| Currency symbol | `ETH` |
+| Block explorer URL | `https://explorer-hoodi.morph.network` |
+
+Save → switch MetaMask to **Morph Hoodi**.
+
+**Option B — auto:** the app prompts to add/switch the network on connect (RainbowKit). Approve the MetaMask popup.
+
+### 3. Get testnet ETH (free)
+Copy your address → open the faucet **[`morph-rails-hoodi.morph.network/faucet`](https://morph-rails-hoodi.morph.network/faucet)** → paste → claim. Lands on Morph L2 directly (no bridge). ~0.01 ETH is plenty; amounts in-app are tiny (`0.0001`–`0.0005` ETH).
+
+### 4. Connect
+Open the app (local `http://localhost:5173` or [live](https://palengkepay-morph.vercel.app)) → **Connect Wallet** → MetaMask → approve. Confirm you're on Morph Hoodi; your balance shows.
+
+### 5. (Optional) Try the pre-seeded demo wallets
+Disposable testnet wallets with existing payments / utang / ratings are listed in `frontend/scripts/SEED_WALLETS.md` (gitignored, local only). Import a private key into MetaMask (**testnet only — never reuse for real funds**) to explore seeded data:
+- **customer0** → `/customer/history` (payments) · **customer1** → `/customer/utang` (utang #1) · **vendor0/1** → `/vendor/home` (received payments + ratings)
+
+> Re-seed fresh data anytime: `cd frontend && node scripts/seed.mjs` (deployer needs ~0.003 ETH). See `DEMO_WALKTHROUGH.md` for the full connect → pay → utang test script.
+
 ## 🧪 Deployment — Morph Hoodi Testnet (chain 2910)
 
 Deployed 2026-05-27. Source verified on Blockscout.

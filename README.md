@@ -80,6 +80,75 @@ PH wet market participants and micro-merchants outside the formal banking system
 - **Blockchain:** **Morph** (EVM L2) — Solidity 0.8.24 contracts, OpenZeppelin v5.1.0, Foundry toolchain
 - **Other tools:** `qrcode.react`, `html5-qrcode`, `vite-plugin-pwa` + Workbox, `web-push` + VAPID, Upstash Redis (Vercel Marketplace), `@sentry/react`, CoinGecko price API, Transak ramp SDK
 
+## 🏗️ Architecture
+
+```mermaid
+flowchart TB
+    subgraph Users
+        C[Customer<br/>buyer / utang borrower]
+        V[Vendor<br/>seller / suki]
+    end
+
+    subgraph Client["Frontend — React 19 + Vite (Vercel PWA)"]
+        UI[Scan-to-Pay · Utang · Ratings · Receipts · History]
+        W[Wallet layer<br/>wagmi · RainbowKit · viem]
+        IDX[On-chain indexer<br/>event logs to UI state]
+        RAMP[Fiat on/off-ramp<br/>PHP ↔ crypto]
+        QUOTE[PHP-first checkout<br/>locked short-lived quote]
+    end
+
+    subgraph API["Serverless API — Vercel Functions (Node)"]
+        PUSH[Web push fan-out<br/>VAPID + Upstash Redis]
+        VS[vendor-status]
+        CRON[utang-reminder cron]
+        H[health]
+    end
+
+    subgraph Morph["Morph Hoodi — EVM L2 (chain 2910)"]
+        PAY[PalengkePayment.sol<br/>pay · payToken · settle]
+        REG[VendorRegistry.sol<br/>vendor identity + ratings]
+        ESC[UTangEscrow.sol<br/>BNPL credit / listahan]
+        STBL[(Peso-pegged stablecoin<br/>USDT / USDC / PHP-pegged · ERC-20)]
+    end
+
+    EXT[CoinGecko<br/>PHP / ETH rate]
+
+    C --> UI
+    V --> UI
+    UI --> W
+    UI --> QUOTE
+    UI --> RAMP
+    W -->|read/write txs| PAY
+    W --> REG
+    W --> ESC
+    PAY -->|transferFrom| STBL
+    PAY -. native ETH path .-> W
+    IDX -->|getLogs| Morph
+    IDX --> UI
+    RAMP --> STBL
+    UI --> API
+    PUSH --> V
+    CRON --> PUSH
+    QUOTE --> EXT
+    UI --> EXT
+```
+
+### Component Breakdown
+
+| Layer | Component | Role |
+|-------|-----------|------|
+| Contracts | `PalengkePayment.sol` | Settles payments — peso-pegged stablecoin (`payToken`) + native ETH (`pay`), no custody, full amount forwarded |
+| Contracts | `VendorRegistry.sol` | On-chain vendor identity + 1–5 star reputation (one rating per `(vendor, txHash)`) |
+| Contracts | `UTangEscrow.sol` | On-chain utang (BNPL) — installments, 1% reserve pool, 5% late-fee resume, default reputation |
+| Token | Peso-pegged stablecoin | ERC-20 (USDT / USDC / PHP-pegged) — value that holds, kills FX volatility for vendors |
+| Frontend | React 19 + wagmi + RainbowKit + viem | Scan-to-pay QR, utang, ratings, receipts; PWA installable, EN/TL toggle |
+| Frontend | PHP-first checkout quote | Customer enters PHP, app locks short-lived quote, dual-currency receipt |
+| Frontend | On-chain indexer | Decodes contract event logs into UI state (5000-block `getLogs` windows) |
+| Frontend | Fiat ramp | PHP ↔ crypto on/off-ramp (Transak scaffolded; mocked on testnet) |
+| API | Vercel Functions | Web push fan-out (VAPID + Upstash Redis), vendor-status, utang-reminder cron, health |
+| Chain | Morph Hoodi (2910) | EVM L2 — near-zero fees, fast finality; contracts Blockscout-verified |
+| External | CoinGecko | PHP/ETH rate for native-ETH display + checkout quote |
+
 ## 🚀 How to Run Locally
 
 ### Prerequisites

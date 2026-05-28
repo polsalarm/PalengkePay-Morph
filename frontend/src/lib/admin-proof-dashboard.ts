@@ -40,7 +40,7 @@ export function buildAdminProofDashboard(input: AdminProofDashboardInput) {
         customerWallet: proof.from,
         vendorWallet: proof.to,
         phpAmount: proof.quote.phpAmount,
-        xlmAmount: proof.amountXlm,
+        xlmAmount: proof.amountEth,
         createdAt: proof.createdAt,
         settlementMode: proof.settlementMode,
       })),

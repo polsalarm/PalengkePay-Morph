@@ -4,7 +4,7 @@ import { buildAdminProofDashboard, type AdminHealthCheck } from '../../lib/admin
 import { buildTestnetPaymentSmokeGuide } from '../../lib/payment-smoke';
 import { getAllPaymentProofs } from '../../lib/payment-proof';
 import type { PaymentHistoryRecord } from '../../lib/payment-source';
-import { formatPhp, formatXlm } from '../../lib/checkout-quote';
+import { formatPhp, formatEth } from '../../lib/checkout-quote';
 import { truncateAddress } from '../../lib/evm';
 
 interface HealthResponse {
@@ -19,7 +19,7 @@ function proofsToPayments(proofs: ReturnType<typeof getAllPaymentProofs>): Payme
     txHash: proof.txHash,
     from: proof.from,
     to: proof.to,
-    amountXlm: proof.amountXlm,
+    amountEth: proof.amountEth,
     createdAt: proof.createdAt,
     memo: proof.memo,
     source: proof.settlementMode === 'contract' ? 'palengke-payment' : 'fee-bump',
@@ -267,7 +267,7 @@ export function AdminProofs() {
                   <p className="text-xs font-mono font-bold text-slate-500 break-words">{receipt.txHash}</p>
                   <div className="grid grid-cols-2 gap-2 mt-3 text-sm">
                     <p className="font-black text-slate-900">{formatPhp(receipt.phpAmount)}</p>
-                    <p className="font-black text-slate-900 text-right">{formatXlm(receipt.xlmAmount)}</p>
+                    <p className="font-black text-slate-900 text-right">{formatEth(receipt.xlmAmount)}</p>
                     <p className="text-xs text-slate-500">{truncateAddress(receipt.customerWallet)}</p>
                     <p className="text-xs text-slate-500 text-right">{truncateAddress(receipt.vendorWallet)}</p>
                   </div>

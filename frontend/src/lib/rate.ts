@@ -82,6 +82,6 @@ export function formatPhp(value: number): string {
   }).format(value);
 }
 
-export function formatXlm(value: number, digits = 2): string {
+export function formatEth(value: number, digits = 2): string {
   return value.toFixed(digits);
 }

@@ -59,7 +59,7 @@ function TxRow({ tx }: { tx: TxRecord }) {
           )}
           {tx.quote && (
             <p className="text-xs font-black truncate mt-0.5" style={{ color: '#0F766E' }}>
-              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerXlm.toFixed(2)}/ETH
+              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerEth.toFixed(2)}/ETH
             </p>
           )}
           <p className="text-xs text-slate-400">{relativeTime(tx.createdAt)}</p>
@@ -68,7 +68,7 @@ function TxRow({ tx }: { tx: TxRecord }) {
       <div className="flex items-center gap-2 shrink-0 ml-3">
         <div className="text-right">
           <p className="text-sm font-black" style={{ color: '#F43F5E' }}>
-            -{tx.amountXlm.toFixed(2)}
+            -{tx.amountEth.toFixed(2)}
           </p>
           <p className="text-xs text-slate-400">ETH</p>
         </div>
@@ -95,7 +95,7 @@ export function CustomerHistory() {
   const { transactions, isLoading, error, retry } = useCustomerTransactions(address);
   const { t } = useLanguage();
 
-  const totalSpent = transactions.reduce((s, tx) => s + tx.amountXlm, 0);
+  const totalSpent = transactions.reduce((s, tx) => s + tx.amountEth, 0);
   const groups = groupByDate(transactions, t);
   const [ramps] = useState(() => getMockRamps());
 

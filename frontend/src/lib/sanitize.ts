@@ -13,7 +13,7 @@ export function isValidStellarAddress(address: string): boolean {
 }
 
 /** Validate a positive ETH amount string (up to 18 decimal places). */
-export function isValidXlmAmount(value: string): boolean {
+export function isValidEthAmount(value: string): boolean {
   return /^\d+(\.\d{1,18})?$/.test(value.trim()) && parseFloat(value) > 0;
 }
 

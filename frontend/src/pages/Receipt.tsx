@@ -1,6 +1,6 @@
 import { ArrowLeft, ExternalLink, Printer, ReceiptText, ShieldCheck } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { formatPhp, formatXlm } from '../lib/checkout-quote';
+import { formatPhp, formatEth } from '../lib/checkout-quote';
 import { getPaymentProofByHash } from '../lib/payment-proof';
 import { stellarExpertUrl, truncateAddress } from '../lib/evm';
 
@@ -78,7 +78,7 @@ export function Receipt() {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <DetailRow label="Customer paid" value={formatPhp(proof.quote.phpAmount)} />
-                  <DetailRow label="Settled amount" value={formatXlm(proof.amountXlm)} />
+                  <DetailRow label="Settled amount" value={formatEth(proof.amountEth)} />
                   <DetailRow label="Customer wallet" value={truncateAddress(proof.from)} />
                   <DetailRow label="Vendor wallet" value={truncateAddress(proof.to)} />
                   <DetailRow label="Quote source" value={proof.quote.source} />

@@ -57,7 +57,7 @@ function RecentTxRow({ tx }: { tx: TxRecord }) {
       <div className="flex items-center gap-1.5 shrink-0 ml-2">
         <div className="text-right">
           <span className="text-sm font-black block" style={{ color: '#F43F5E', fontFamily: "'Montserrat', sans-serif" }}>
-            -{tx.amountXlm.toFixed(2)}
+            -{tx.amountEth.toFixed(2)}
           </span>
           <span className="text-xs text-slate-400">ETH</span>
         </div>
@@ -94,7 +94,7 @@ export function CustomerHome() {
   const overdueCount = activeUtangs.filter((u) => isOverdue(u.nextDueSecs)).length;
   const recent = transactions.slice(0, 10);
   const groups = groupByDate(recent, t);
-  const totalSpent = transactions.reduce((s, tx) => s + tx.amountXlm, 0);
+  const totalSpent = transactions.reduce((s, tx) => s + tx.amountEth, 0);
 
   const balanceNum = balance ? parseFloat(balance) : null;
   const balanceStr = balanceNum !== null ? format(balanceNum, { showSuffix: false }) : '—';

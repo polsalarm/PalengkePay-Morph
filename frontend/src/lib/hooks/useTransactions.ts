@@ -48,7 +48,7 @@ export function useVendorTransactions(vendorWallet: string | null) {
     today.setHours(0, 0, 0, 0);
     return transactions
       .filter((t) => new Date(t.createdAt) >= today)
-      .reduce((sum, t) => sum + t.amountXlm, 0);
+      .reduce((sum, t) => sum + t.amountEth, 0);
   }, [transactions]);
 
   const todayCount = useCallback(() => {

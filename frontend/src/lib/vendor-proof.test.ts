@@ -23,7 +23,7 @@ function tx(overrides: Partial<PaymentHistoryRecord>): PaymentHistoryRecord {
     paymentId: 1,
     from: customerA,
     to: vendorWallet,
-    amountXlm: 10,
+    amountEth: 10,
     createdAt: '2026-05-10T00:00:00.000Z',
     memo: 'gulay',
     source: 'palengke-payment',
@@ -66,10 +66,10 @@ describe('filterTransactionsByPeriod', () => {
         tx({
           id: 'row-1',
           txHash: 'tx-live-hash',
-          amountXlm: 20,
+          amountEth: 20,
           quote: {
             phpAmount: 125,
-            phpPerXlm: 6.25,
+            phpPerEth: 6.25,
             xlmAmount: '20.0000000',
             generatedAt: '2026-05-14T01:00:00.000Z',
             expiresAt: '2026-05-14T01:01:00.000Z',
@@ -100,8 +100,8 @@ describe('filterTransactionsByPeriod', () => {
 describe('filterTransactionsBySearch', () => {
   it('matches transaction hash, customer wallet, memo, source, and amount', () => {
     const rows = [
-      tx({ id: 'contract-row', txHash: 'hash-contract', from: customerA, memo: 'gulay', amountXlm: 12, source: 'palengke-payment' }),
-      tx({ id: 'fallback-row', txHash: 'hash-fallback', from: customerB, memo: 'isda', amountXlm: 4.25, source: 'fee-bump' }),
+      tx({ id: 'contract-row', txHash: 'hash-contract', from: customerA, memo: 'gulay', amountEth: 12, source: 'palengke-payment' }),
+      tx({ id: 'fallback-row', txHash: 'hash-fallback', from: customerB, memo: 'isda', amountEth: 4.25, source: 'fee-bump' }),
     ];
 
     expect(filterTransactionsBySearch(rows, 'hash-fallback').map((payment) => payment.id)).toEqual(['fallback-row']);
@@ -118,16 +118,16 @@ describe('buildProofSummary', () => {
     const summary = buildProofSummary({
       vendor: { name: 'Aling Nena', wallet: vendorWallet, stallNumber: 'A-12', productType: 'gulay' },
       transactions: [
-        tx({ id: 'a', paymentId: 1, amountXlm: 10, source: 'palengke-payment' }),
-        tx({ id: 'b', paymentId: 2, amountXlm: 5, source: 'palengke-payment', from: customerB }),
+        tx({ id: 'a', paymentId: 1, amountEth: 10, source: 'palengke-payment' }),
+        tx({ id: 'b', paymentId: 2, amountEth: 5, source: 'palengke-payment', from: customerB }),
       ],
       period: { kind: 'all', label: 'All time' },
       generatedAt: '2026-05-14T04:00:00.000Z',
     });
 
-    expect(summary.totalXlm).toBe(15);
+    expect(summary.totalEth).toBe(15);
     expect(summary.transactionCount).toBe(2);
-    expect(summary.averageXlm).toBe(7.5);
+    expect(summary.averageEth).toBe(7.5);
     expect(summary.uniqueCustomers).toBe(2);
     expect(summary.sourceLabel).toBe('Contract records');
     expect(summary.hasFallbackCaveat).toBe(false);
@@ -184,7 +184,7 @@ describe('proof exports', () => {
   it('creates a CSV ledger with source labels and safe customer identifiers', () => {
     const summary = buildProofSummary({
       vendor: { name: 'Aling Nena', wallet: vendorWallet },
-      transactions: [tx({ id: 'row-1', txHash: 'hash-1', amountXlm: 3.25 })],
+      transactions: [tx({ id: 'row-1', txHash: 'hash-1', amountEth: 3.25 })],
       period: { kind: 'all', label: 'All time' },
       generatedAt: '2026-05-14T04:00:00.000Z',
     });
@@ -196,7 +196,7 @@ describe('proof exports', () => {
   it('creates a JSON proof bundle with generated metadata, caveats, and certificate data', () => {
     const summary = buildProofSummary({
       vendor: { name: 'Aling Nena', wallet: vendorWallet },
-      transactions: [tx({ id: 'row-1', amountXlm: 2 })],
+      transactions: [tx({ id: 'row-1', amountEth: 2 })],
       period: { kind: 'all', label: 'All time' },
       generatedAt: '2026-05-14T04:00:00.000Z',
     });
@@ -204,7 +204,7 @@ describe('proof exports', () => {
     expect(buildProofBundle(summary)).toMatchObject({
       generatedAt: '2026-05-14T04:00:00.000Z',
       vendor: { name: 'Aling Nena', wallet: vendorWallet },
-      totals: { totalXlm: 2, transactionCount: 1 },
+      totals: { totalEth: 2, transactionCount: 1 },
       certificate: {
         title: 'PalengkePay Income Proof Certificate',
         vendorLine: 'Aling Nena',
@@ -229,10 +229,10 @@ describe('proof exports', () => {
         tx({
           id: 'row-1',
           txHash: 'tx-live-hash',
-          amountXlm: 20,
+          amountEth: 20,
           quote: {
             phpAmount: 125,
-            phpPerXlm: 6.25,
+            phpPerEth: 6.25,
             xlmAmount: '20.0000000',
             generatedAt: '2026-05-14T01:00:00.000Z',
             expiresAt: '2026-05-14T01:01:00.000Z',
@@ -257,12 +257,12 @@ describe('proof exports', () => {
     const summary = buildProofSummary({
       vendor: { name: 'Aling Nena', wallet: vendorWallet },
       transactions: [
-        tx({ id: 'newer', amountXlm: 2, createdAt: '2026-05-12T08:30:00.000Z' }),
-        tx({ id: 'older', amountXlm: 3, createdAt: '2026-05-10T01:15:00.000Z' }),
+        tx({ id: 'newer', amountEth: 2, createdAt: '2026-05-12T08:30:00.000Z' }),
+        tx({ id: 'older', amountEth: 3, createdAt: '2026-05-10T01:15:00.000Z' }),
       ],
       period: { kind: '7d', label: '7 days' },
       generatedAt: '2026-05-14T04:00:00.000Z',
-      phpPerXlm: 6.5,
+      phpPerEth: 6.5,
     });
 
     expect(summary.dateRange).toEqual({
@@ -285,10 +285,10 @@ describe('proof exports', () => {
         tx({
           id: 'row-1',
           txHash: 'tx-live-hash',
-          amountXlm: 20,
+          amountEth: 20,
           quote: {
             phpAmount: 125,
-            phpPerXlm: 6.25,
+            phpPerEth: 6.25,
             xlmAmount: '20.0000000',
             generatedAt: '2026-05-14T01:00:00.000Z',
             expiresAt: '2026-05-14T01:01:00.000Z',
@@ -320,7 +320,7 @@ describe('proof exports', () => {
       transactions: [
         {
           txHash: 'tx-live-hash',
-          quote: { phpAmount: 125, phpPerXlm: 6.25, source: 'api' },
+          quote: { phpAmount: 125, phpPerEth: 6.25, source: 'api' },
           receiptReference: {
             label: 'Transaction hash',
             value: 'tx-live-hash',
@@ -344,8 +344,8 @@ describe('buildCollectionsSummary', () => {
     expect(summary.completedAgreements).toBe(1);
     expect(summary.defaultedAgreements).toBe(1);
     expect(summary.overdueAgreements).toBe(1);
-    expect(summary.totalOutstandingXlm).toBe(13);
-    expect(summary.totalCollectedXlm).toBe(18);
+    expect(summary.totalOutstandingEth).toBe(13);
+    expect(summary.totalCollectedEth).toBe(18);
     expect(summary.sourceLabel).toBe('UtangEscrow records');
   });
 });

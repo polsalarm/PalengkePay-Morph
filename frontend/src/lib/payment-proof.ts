@@ -9,7 +9,7 @@ export interface PaymentProofRecord {
   txHash: string;
   from: string;
   to: string;
-  amountXlm: number;
+  amountEth: number;
   createdAt: string;
   memo?: string;
   settlementMode: PaymentSettlementMode;
@@ -106,7 +106,7 @@ function paymentFingerprint(payment: PaymentHistoryRecord): string {
   return [
     payment.from,
     payment.to,
-    payment.amountXlm.toFixed(7),
+    payment.amountEth.toFixed(7),
     payment.memo?.trim() ?? '',
   ].join('|');
 }
@@ -115,7 +115,7 @@ function proofFingerprint(proof: PaymentProofRecord): string {
   return [
     proof.from,
     proof.to,
-    proof.amountXlm.toFixed(7),
+    proof.amountEth.toFixed(7),
     proof.memo?.trim() ?? '',
   ].join('|');
 }
@@ -125,12 +125,12 @@ function isPaymentProofRecord(value: unknown): value is PaymentProofRecord {
   return typeof proof?.txHash === 'string'
     && typeof proof.from === 'string'
     && typeof proof.to === 'string'
-    && typeof proof.amountXlm === 'number'
-    && Number.isFinite(proof.amountXlm)
+    && typeof proof.amountEth === 'number'
+    && Number.isFinite(proof.amountEth)
     && typeof proof.createdAt === 'string'
     && !!proof.quote
     && typeof proof.quote.phpAmount === 'number'
-    && typeof proof.quote.phpPerXlm === 'number'
+    && typeof proof.quote.phpPerEth === 'number'
     && typeof proof.quote.xlmAmount === 'string'
     && typeof proof.quote.generatedAt === 'string'
     && typeof proof.quote.expiresAt === 'string';

@@ -5,7 +5,7 @@ import type { PaymentSettlementMode } from '../lib/payment-routing';
 import {
   buildStableCheckoutQuote,
   formatPhp,
-  formatXlm,
+  formatEth,
   isQuoteExpired,
   quoteSecondsRemaining,
   type StableCheckoutQuote,
@@ -44,9 +44,9 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
         const response = await fetch('/api/quote');
         if (!response.ok) throw new Error('quote API unavailable');
         const data = await response.json();
-        if (!Number.isFinite(Number(data?.phpPerXlm))) throw new Error('quote API returned invalid rate');
+        if (!Number.isFinite(Number(data?.phpPerEth))) throw new Error('quote API returned invalid rate');
         if (!cancelled) {
-          setPhpRate(Number(data.phpPerXlm));
+          setPhpRate(Number(data.phpPerEth));
           setQuoteSource('api');
         }
       } catch {
@@ -83,7 +83,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
       return;
     }
     try {
-      setQuote(buildStableCheckoutQuote({ phpAmount: amountPhp, phpPerXlm: phpRate, source: quoteSource }));
+      setQuote(buildStableCheckoutQuote({ phpAmount: amountPhp, phpPerEth: phpRate, source: quoteSource }));
     } catch {
       setQuote(null);
     }
@@ -203,7 +203,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
                   Locked ETH
                 </p>
                 <p className="text-lg font-black text-slate-900" style={{ fontFamily: "'Syne', sans-serif" }}>
-                  {formatXlm(quote.xlmAmount)}
+                  {formatEth(quote.xlmAmount)}
                 </p>
               </div>
               <div
@@ -215,7 +215,7 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
               </div>
             </div>
             <p className="text-xs text-slate-400 mt-1">
-              {formatPhp(quote.phpAmount)} at ₱{quote.phpPerXlm.toFixed(2)}/ETH{rateLoading ? ' · refreshing rate' : ''}
+              {formatPhp(quote.phpAmount)} at ₱{quote.phpPerEth.toFixed(2)}/ETH{rateLoading ? ' · refreshing rate' : ''}
             </p>
           </div>
         )}

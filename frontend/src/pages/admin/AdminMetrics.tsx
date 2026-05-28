@@ -184,10 +184,10 @@ export function AdminMetrics() {
   // Track volume + tx history for sparklines
   useEffect(() => {
     if (!isLoading && summary.totalTransactions >= 0) {
-      setVolHistory((p) => [...p.slice(-9), summary.totalVolumeXlm]);
+      setVolHistory((p) => [...p.slice(-9), summary.totalVolumeEth]);
       setTxHistory((p) => [...p.slice(-9), summary.totalTransactions]);
     }
-  }, [isLoading, summary.totalVolumeXlm, summary.totalTransactions]);
+  }, [isLoading, summary.totalVolumeEth, summary.totalTransactions]);
 
   // Animate bars when data loads
   useEffect(() => {
@@ -198,7 +198,7 @@ export function AdminMetrics() {
     }
   }, [isLoading, topVendors]);
 
-  const maxVolume = topVendors.length > 0 ? topVendors[0].volumeXlm || 1 : 1;
+  const maxVolume = topVendors.length > 0 ? topVendors[0].volumeEth || 1 : 1;
   const donutData = productBreakdown.map(({ type, pct }) => ({
     type, pct, color: PRODUCT_COLORS[type] ?? '#94A3B8',
   }));
@@ -282,7 +282,7 @@ export function AdminMetrics() {
             <div className="flex items-center justify-between rounded-2xl px-4 py-2" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
               <div className="flex flex-col gap-0.5">
                 <p className="text-xs font-black text-white" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                  {summary.totalVolumeXlm.toFixed(2)} ETH
+                  {summary.totalVolumeEth.toFixed(2)} ETH
                 </p>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Total volume</p>
               </div>
@@ -316,10 +316,10 @@ export function AdminMetrics() {
         <>
           {/* Stat cards */}
           <div className="grid grid-cols-2 gap-3">
-            <StatCard icon={TrendingUp} label="Total ETH Processed" value={summary.totalVolumeXlm.toFixed(2)} sub="ETH on Testnet" color="#008055" />
+            <StatCard icon={TrendingUp} label="Total ETH Processed" value={summary.totalVolumeEth.toFixed(2)} sub="ETH on Testnet" color="#008055" />
             <StatCard icon={Zap} label="Total Transactions" value={String(summary.totalTransactions)} sub="all-time payments" color="#042E80" />
             <StatCard icon={Users} label="Active Vendors" value={`${summary.activeVendors}/${summary.totalVendors}`} sub={`${summary.totalVendors - summary.activeVendors} inactive`} color="#0369A1" />
-            <StatCard icon={Clock} label="Avg Tx Size" value={summary.avgTxXlm > 0 ? summary.avgTxXlm.toFixed(3) : '—'} sub="ETH per payment" color="#D97706" />
+            <StatCard icon={Clock} label="Avg Tx Size" value={summary.avgTxEth > 0 ? summary.avgTxEth.toFixed(3) : '—'} sub="ETH per payment" color="#D97706" />
           </div>
 
           {/* Donut chart: vendor categories */}
@@ -336,7 +336,7 @@ export function AdminMetrics() {
                 />
                 {/* Legend */}
                 <div className="flex-1 min-w-0 space-y-2">
-                  {productBreakdown.map(({ type, count, pct, volumeXlm }) => {
+                  {productBreakdown.map(({ type, count, pct, volumeEth }) => {
                     const color = PRODUCT_COLORS[type] ?? '#94A3B8';
                     return (
                       <div key={type} className="flex items-center gap-2">
@@ -362,7 +362,7 @@ export function AdminMetrics() {
                                 }}
                               />
                             </div>
-                            <span className="text-xs text-slate-400 shrink-0">{count}v · {volumeXlm.toFixed(1)} ETH</span>
+                            <span className="text-xs text-slate-400 shrink-0">{count}v · {volumeEth.toFixed(1)} ETH</span>
                           </div>
                         </div>
                       </div>
@@ -381,7 +381,7 @@ export function AdminMetrics() {
               </div>
               <div className="px-5 pb-5 space-y-3 mt-2">
                 {topVendors.map((v, i) => {
-                  const widthPct = Math.round((v.volumeXlm / maxVolume) * 100);
+                  const widthPct = Math.round((v.volumeEth / maxVolume) * 100);
                   const prodColor = PRODUCT_COLORS[v.productType] ?? '#94A3B8';
                   return (
                     <div key={v.name + v.stallNumber}>
@@ -404,7 +404,7 @@ export function AdminMetrics() {
                           </div>
                         </div>
                         <span className="text-xs font-black shrink-0 ml-2" style={{ color: '#008055' }}>
-                          {v.volumeXlm.toFixed(2)} ETH
+                          {v.volumeEth.toFixed(2)} ETH
                         </span>
                       </div>
                       {/* Stacked bar: product color + remaining */}

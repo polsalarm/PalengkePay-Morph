@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
           id: 'qa-vendor-proof-hash',
           from: '0x3333333333333333333333333333333333333333',
           to: wallet,
-          amountXlm: 4.25,
+          amountEth: 4.25,
           createdAt: '2026-05-14T01:00:00.000Z',
           memo: 'qa receipt',
         },

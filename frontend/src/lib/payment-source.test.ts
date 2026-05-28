@@ -43,7 +43,7 @@ describe('normalizeContractPayment', () => {
       paymentId: 4,
       from: customerA,
       to: vendorA,
-      amountXlm: 1.25,
+      amountEth: 1.25,
       createdAt: '2026-01-16T21:46:40.000Z',
       memo: 'tilapia',
       source: 'palengke-payment',
@@ -63,21 +63,21 @@ describe('buildPaymentMetrics', () => {
       totalVendors: 2,
       activeVendors: 2,
       pendingVendors: 1,
-      totalVolumeXlm: 3.5,
+      totalVolumeEth: 3.5,
       totalTransactions: 3,
-      avgTxXlm: 1.1666667,
+      avgTxEth: 1.1666667,
     });
     expect(metrics.productBreakdown).toContainEqual({
       type: 'fish',
       count: 1,
-      volumeXlm: 3,
+      volumeEth: 3,
       pct: 50,
     });
     expect(metrics.topVendors[0]).toMatchObject({
       wallet: vendorA,
       name: 'Maria Fish',
       totalTransactions: 2,
-      volumeXlm: 3,
+      volumeEth: 3,
     });
   });
 });
@@ -96,7 +96,7 @@ describe('mergePaymentHistory', () => {
       id: 'horizon-1',
       from: customerA,
       to: vendorA,
-      amountXlm: 1,
+      amountEth: 1,
       createdAt: '2023-11-14T22:13:20.000Z',
       memo: 'PP:test',
     } satisfies IndexedPayment);

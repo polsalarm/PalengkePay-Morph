@@ -21,7 +21,7 @@ export interface ProofSummaryInput {
   transactions: PaymentHistoryRecord[];
   period: ProofPeriod;
   generatedAt?: string;
-  phpPerXlm?: number;
+  phpPerEth?: number;
   livePaymentTxHash?: string;
   hasLivePaymentProof?: boolean;
   repaymentDataPresent?: boolean;
@@ -47,9 +47,9 @@ export interface ProofSummary {
   dateRange: ProofDateRange;
   livePaymentTxHash: string | null;
   transactions: PaymentHistoryRecord[];
-  totalXlm: number;
+  totalEth: number;
   transactionCount: number;
-  averageXlm: number;
+  averageEth: number;
   uniqueCustomers: number;
   sourceLabel: string;
   hasFallbackCaveat: boolean;
@@ -74,8 +74,8 @@ export interface CollectionsSummary {
   completedAgreements: number;
   defaultedAgreements: number;
   overdueAgreements: number;
-  totalOutstandingXlm: number;
-  totalCollectedXlm: number;
+  totalOutstandingEth: number;
+  totalCollectedEth: number;
   sourceLabel: string;
   caveats: string[];
 }
@@ -116,19 +116,19 @@ export function filterTransactionsBySearch(
       payment.from,
       payment.memo,
       payment.source,
-      payment.amountXlm.toFixed(2),
-      payment.amountXlm.toFixed(7),
+      payment.amountEth.toFixed(2),
+      payment.amountEth.toFixed(7),
       receipt.label,
       receipt.value,
       receipt.lookupUrl,
       payment.quote ? payment.quote.phpAmount.toFixed(2) : undefined,
-      payment.quote ? payment.quote.phpPerXlm.toFixed(2) : undefined,
+      payment.quote ? payment.quote.phpPerEth.toFixed(2) : undefined,
     ].some((value) => value?.toLowerCase().includes(query));
   });
 }
 
 export function buildProofSummary(input: ProofSummaryInput): ProofSummary {
-  const totalXlm = roundXlm(input.transactions.reduce((sum, payment) => sum + payment.amountXlm, 0));
+  const totalEth = roundEth(input.transactions.reduce((sum, payment) => sum + payment.amountEth, 0));
   const transactionCount = input.transactions.length;
   const preservedPhpTotal = getPreservedPhpTotal(input.transactions);
   const livePaymentTxHash = input.livePaymentTxHash ?? input.transactions.find((payment) => !!payment.txHash)?.txHash ?? null;
@@ -150,7 +150,7 @@ export function buildProofSummary(input: ProofSummaryInput): ProofSummary {
   if (!input.repaymentDataPresent) {
     caveats.push('Repayment records are not attached to this payment proof pack.');
   }
-  if (transactionCount > 0 && preservedPhpTotal === null && !input.phpPerXlm) {
+  if (transactionCount > 0 && preservedPhpTotal === null && !input.phpPerEth) {
     caveats.push('PHP quote data is not attached to every payment row, so PHP totals are unavailable.');
   }
 
@@ -161,13 +161,13 @@ export function buildProofSummary(input: ProofSummaryInput): ProofSummary {
     dateRange: buildDateRange(input.transactions, input.period),
     livePaymentTxHash,
     transactions: [...input.transactions],
-    totalXlm,
+    totalEth,
     transactionCount,
-    averageXlm: transactionCount > 0 ? roundXlm(totalXlm / transactionCount) : 0,
+    averageEth: transactionCount > 0 ? roundEth(totalEth / transactionCount) : 0,
     uniqueCustomers,
     sourceLabel,
     hasFallbackCaveat,
-    estimatedPhpTotal: preservedPhpTotal ?? (input.phpPerXlm ? roundCurrency(totalXlm * input.phpPerXlm) : null),
+    estimatedPhpTotal: preservedPhpTotal ?? (input.phpPerEth ? roundCurrency(totalEth * input.phpPerEth) : null),
     caveats,
     readiness: {
       label: transactionCount > 0 && hasLivePaymentProof ? 'Ready for review' : 'Needs live proof',
@@ -185,9 +185,9 @@ export function toProofCsv(summary: ProofSummary): string {
       const receipt = getTransactionReceiptReference(payment);
       return [
         payment.createdAt,
-        payment.amountXlm.toFixed(7),
+        payment.amountEth.toFixed(7),
         payment.quote ? payment.quote.phpAmount.toFixed(2) : '',
-        payment.quote ? payment.quote.phpPerXlm.toFixed(4) : '',
+        payment.quote ? payment.quote.phpPerEth.toFixed(4) : '',
         csvCell(payment.memo ?? ''),
         shortenWallet(payment.from),
         csvCell(receipt.label),
@@ -210,9 +210,9 @@ export function buildProofBundle(summary: ProofSummary) {
     livePaymentTxHash: summary.livePaymentTxHash,
     certificate: buildIncomeProofCertificate(summary),
     totals: {
-      totalXlm: summary.totalXlm,
+      totalEth: summary.totalEth,
       transactionCount: summary.transactionCount,
-      averageXlm: summary.averageXlm,
+      averageEth: summary.averageEth,
       uniqueCustomers: summary.uniqueCustomers,
       estimatedPhpTotal: summary.estimatedPhpTotal,
     },
@@ -241,7 +241,7 @@ export function buildIncomeProofCertificate(summary: ProofSummary): IncomeProofC
     generatedLine: `Generated ${formatDateTime(summary.generatedAt)} for ${summary.period.label}`,
     highlights: [
       { label: 'Transactions', value: String(summary.transactionCount) },
-      { label: 'Total ETH', value: `${summary.totalXlm.toFixed(2)} ETH` },
+      { label: 'Total ETH', value: `${summary.totalEth.toFixed(2)} ETH` },
       { label: 'PHP estimate', value: summary.estimatedPhpTotal !== null ? `PHP ${summary.estimatedPhpTotal.toFixed(2)}` : 'Unavailable' },
       { label: 'Source', value: summary.sourceLabel },
       summary.livePaymentTxHash ? { label: 'Live hash', value: summary.livePaymentTxHash } : null,
@@ -289,23 +289,23 @@ export function buildCollectionsSummary(utangs: UtangRecord[], now = new Date())
   let completedAgreements = 0;
   let defaultedAgreements = 0;
   let overdueAgreements = 0;
-  let totalOutstandingXlm = 0;
-  let totalCollectedXlm = 0;
+  let totalOutstandingEth = 0;
+  let totalCollectedEth = 0;
   const nowSecs = BigInt(Math.floor(now.getTime() / 1000));
 
   for (const utang of utangs) {
-    const paid = roundXlm(utang.installmentAmountEth * utang.installmentsPaid);
-    totalCollectedXlm += paid;
+    const paid = roundEth(utang.installmentAmountEth * utang.installmentsPaid);
+    totalCollectedEth += paid;
 
     if (utang.status === 'active') {
       activeAgreements += 1;
-      totalOutstandingXlm += Math.max(0, utang.totalAmountEth - paid);
+      totalOutstandingEth += Math.max(0, utang.totalAmountEth - paid);
       if (utang.nextDueSecs < nowSecs) overdueAgreements += 1;
     } else if (utang.status === 'completed') {
       completedAgreements += 1;
     } else if (utang.status === 'defaulted') {
       defaultedAgreements += 1;
-      totalOutstandingXlm += Math.max(0, utang.totalAmountEth - paid);
+      totalOutstandingEth += Math.max(0, utang.totalAmountEth - paid);
     }
   }
 
@@ -314,8 +314,8 @@ export function buildCollectionsSummary(utangs: UtangRecord[], now = new Date())
     completedAgreements,
     defaultedAgreements,
     overdueAgreements,
-    totalOutstandingXlm: roundXlm(totalOutstandingXlm),
-    totalCollectedXlm: roundXlm(totalCollectedXlm),
+    totalOutstandingEth: roundEth(totalOutstandingEth),
+    totalCollectedEth: roundEth(totalCollectedEth),
     sourceLabel: 'UtangEscrow records',
     caveats: [
       'Repayment totals are based on UtangEscrow records currently available to this wallet.',
@@ -381,7 +381,7 @@ function shortenWallet(wallet: string): string {
   return `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
 }
 
-function roundXlm(value: number): number {
+function roundEth(value: number): number {
   return Math.round(value * STROOPS_PER_ETH) / STROOPS_PER_ETH;
 }
 

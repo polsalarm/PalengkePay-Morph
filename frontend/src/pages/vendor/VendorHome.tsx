@@ -70,10 +70,10 @@ export function VendorHome() {
     if (prevCountRef.current === null) { prevCountRef.current = transactions.length; return; }
     if (transactions.length > prevCountRef.current) {
       const newest = transactions[0];
-      showToast(`+${newest.amountXlm.toFixed(4)} ETH from ${newest.from.slice(0, 8)}…`, 'success');
+      showToast(`+${newest.amountEth.toFixed(4)} ETH from ${newest.from.slice(0, 8)}…`, 'success');
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('PalengkePay — Payment received!', {
-          body: newest.memo ? `+${newest.amountXlm.toFixed(4)} ETH · ${newest.memo}` : `+${newest.amountXlm.toFixed(4)} ETH`,
+          body: newest.memo ? `+${newest.amountEth.toFixed(4)} ETH · ${newest.memo}` : `+${newest.amountEth.toFixed(4)} ETH`,
           icon: '/favicon.ico',
           tag: 'payment-received',
         });
@@ -97,7 +97,7 @@ export function VendorHome() {
   const count = todayCount();
   const recent = transactions.slice(0, 10);
   const groups = groupByDate(recent, lang, t);
-  const allTimeTotal = transactions.reduce((s, tx) => s + tx.amountXlm, 0);
+  const allTimeTotal = transactions.reduce((s, tx) => s + tx.amountEth, 0);
 
   const earningsStr = earnings.toFixed(2);
   const earningsFontSize = earningsStr.length >= 10 ? '1.6rem' : earningsStr.length >= 8 ? '2rem' : earningsStr.length >= 6 ? '2.6rem' : '3.2rem';
@@ -454,7 +454,7 @@ export function VendorHome() {
                           <div className="flex items-center gap-1.5 shrink-0 ml-2">
                             <div className="text-right">
                               <span className="text-sm font-black block" style={{ color: '#059669', fontFamily: "'Montserrat', sans-serif" }}>
-                                +{tx.amountXlm.toFixed(2)}
+                                +{tx.amountEth.toFixed(2)}
                               </span>
                               <span className="text-xs text-slate-400">ETH</span>
                             </div>

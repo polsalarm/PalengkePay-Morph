@@ -35,7 +35,7 @@ export function UtangCard({
   const daysOver = daysPastDue(utang.nextDueSecs);
   const graceDays = Math.ceil(graceSeconds / 86400);
   const graceElapsed = overdue && daysOver * 86400 > graceSeconds;
-  const lateFeeXlm = utang.installmentAmountEth * 0.05;
+  const lateFeeEth = utang.installmentAmountEth * 0.05;
 
   const counterpartyLabel = perspective === 'vendor' ? 'Customer' : 'Vendor';
   const counterpartyDisplay = perspective === 'customer'
@@ -218,10 +218,10 @@ export function UtangCard({
                 disabled={busy}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all active:scale-95 disabled:opacity-50"
                 style={{ backgroundColor: '#D97706', boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}
-                title={`Resume by paying ${lateFeeXlm.toFixed(2)} ETH late fee (5%)`}
+                title={`Resume by paying ${lateFeeEth.toFixed(2)} ETH late fee (5%)`}
               >
                 <RotateCcw size={11} />
-                Resume · {lateFeeXlm.toFixed(2)} ETH fee
+                Resume · {lateFeeEth.toFixed(2)} ETH fee
               </button>
             )}
             {perspective === 'admin' && utang.status === 'active' && onMarkDefault && (

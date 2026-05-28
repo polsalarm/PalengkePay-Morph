@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildStableCheckoutQuote,
   formatPhp,
-  formatXlm,
+  formatEth,
   isQuoteExpired,
 } from './checkout-quote';
 
@@ -10,13 +10,13 @@ describe('buildStableCheckoutQuote', () => {
   it('locks a PHP-first checkout quote for a fixed expiry window', () => {
     const quote = buildStableCheckoutQuote({
       phpAmount: '420',
-      phpPerXlm: 8.4,
+      phpPerEth: 8.4,
       nowMs: Date.UTC(2026, 4, 13, 10, 0, 0),
     });
 
     expect(quote).toEqual({
       phpAmount: 420,
-      phpPerXlm: 8.4,
+      phpPerEth: 8.4,
       xlmAmount: '50.0000000',
       generatedAt: '2026-05-13T10:00:00.000Z',
       expiresAt: '2026-05-13T10:01:00.000Z',
@@ -27,19 +27,19 @@ describe('buildStableCheckoutQuote', () => {
   });
 
   it('rejects invalid checkout amounts and rates', () => {
-    expect(() => buildStableCheckoutQuote({ phpAmount: '0', phpPerXlm: 8.4 })).toThrow('PHP amount must be greater than 0');
-    expect(() => buildStableCheckoutQuote({ phpAmount: '100', phpPerXlm: 0 })).toThrow('quote rate must be greater than 0');
+    expect(() => buildStableCheckoutQuote({ phpAmount: '0', phpPerEth: 8.4 })).toThrow('PHP amount must be greater than 0');
+    expect(() => buildStableCheckoutQuote({ phpAmount: '100', phpPerEth: 0 })).toThrow('quote rate must be greater than 0');
   });
 
   it('preserves the verified quote source for receipts and proof exports', () => {
     expect(buildStableCheckoutQuote({
       phpAmount: '125',
-      phpPerXlm: 6.25,
+      phpPerEth: 6.25,
       source: 'api',
       nowMs: Date.UTC(2026, 4, 14, 1, 0, 0),
     })).toMatchObject({
       phpAmount: 125,
-      phpPerXlm: 6.25,
+      phpPerEth: 6.25,
       xlmAmount: '20.0000000',
       source: 'api',
     });
@@ -49,7 +49,7 @@ describe('buildStableCheckoutQuote', () => {
 describe('quote formatting', () => {
   it('formats receipt amounts consistently', () => {
     expect(formatPhp(420)).toBe('₱420.00');
-    expect(formatXlm('50.0000000')).toBe('50 ETH');
-    expect(formatXlm('0.1234567')).toBe('0.1234567 ETH');
+    expect(formatEth('50.0000000')).toBe('50 ETH');
+    expect(formatEth('0.1234567')).toBe('0.1234567 ETH');
   });
 });

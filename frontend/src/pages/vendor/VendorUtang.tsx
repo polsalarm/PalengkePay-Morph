@@ -85,7 +85,7 @@ export function VendorUtang() {
     0
   );
 
-  const installmentXlm = form.totalAmountEth && Number(form.totalAmountEth) > 0
+  const installmentEth = form.totalAmountEth && Number(form.totalAmountEth) > 0
     ? (Number(form.totalAmountEth) / form.installmentsTotal).toFixed(2)
     : null;
 
@@ -337,14 +337,14 @@ export function VendorUtang() {
           <div className="rounded-2xl p-4" style={{ backgroundColor: '#FFF7ED', border: '1px solid #FED7AA' }}>
             <p className="text-xs font-bold mb-1" style={{ color: '#C2410C' }}>{t('vendorUtang.outstanding')}</p>
             <p className="text-xl font-black" style={{ color: '#9A3412', fontFamily: "'Montserrat', sans-serif" }}>
-              {collectionsSummary.totalOutstandingXlm.toFixed(2)}
+              {collectionsSummary.totalOutstandingEth.toFixed(2)}
               <span className="text-xs font-bold ml-1">ETH</span>
             </p>
           </div>
           <div className="rounded-2xl p-4" style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0' }}>
             <p className="text-xs font-bold mb-1" style={{ color: '#047857' }}>{t('vendorUtang.collected')}</p>
             <p className="text-xl font-black" style={{ color: '#065F46', fontFamily: "'Montserrat', sans-serif" }}>
-              {collectionsSummary.totalCollectedXlm.toFixed(2)}
+              {collectionsSummary.totalCollectedEth.toFixed(2)}
               <span className="text-xs font-bold ml-1">ETH</span>
             </p>
           </div>
@@ -671,14 +671,14 @@ export function VendorUtang() {
                     </div>
 
                     {/* Preview */}
-                    {installmentXlm && form.description && (
+                    {installmentEth && form.description && (
                       <div
                         className="rounded-xl px-4 py-3"
                         style={{ backgroundColor: 'rgba(15,118,110,0.07)', border: '1px solid rgba(15,118,110,0.15)' }}
                       >
                         <p className="text-xs font-bold" style={{ color: '#008055' }}>{form.description}</p>
                         <p className="text-xs mt-0.5" style={{ color: 'rgba(15,118,110,0.7)' }}>
-                          {form.installmentsTotal} × {installmentXlm} ETH · {INTERVAL_OPTIONS.find((o) => o.days === form.intervalDays)?.[lang === 'tl' ? 'labelTl' : 'label'].toLowerCase()}
+                          {form.installmentsTotal} × {installmentEth} ETH · {INTERVAL_OPTIONS.find((o) => o.days === form.intervalDays)?.[lang === 'tl' ? 'labelTl' : 'label'].toLowerCase()}
                         </p>
                       </div>
                     )}

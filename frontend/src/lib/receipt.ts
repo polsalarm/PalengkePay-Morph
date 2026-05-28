@@ -14,10 +14,10 @@ export interface Receipt {
   txHash: string;
   from: string;
   to: string;
-  amountXlm: string; // ETH amount (field name kept for compatibility)
+  amountEth: string; // ETH amount (field name kept for compatibility)
   memo: string | null;
   createdAt: string;
-  feeChargedXlm: string; // gas fee in ETH
+  feeChargedEth: string; // gas fee in ETH
   vendor: ReceiptVendor | null;
   stellarExpertUrl: string; // Morph explorer tx URL (field name kept for compatibility)
 }
@@ -70,10 +70,10 @@ export async function fetchReceipt(txHash: string): Promise<Receipt> {
     txHash: hash,
     from,
     to,
-    amountXlm: amountEth,
+    amountEth: amountEth,
     memo,
     createdAt,
-    feeChargedXlm: formatEther(feeWei),
+    feeChargedEth: formatEther(feeWei),
     vendor,
     stellarExpertUrl: explorerTxUrl(hash),
   };
@@ -84,11 +84,11 @@ export function receiptUrl(txHash: string): string {
   return `${window.location.origin}/receipt/${txHash}`;
 }
 
-export async function shareReceipt(txHash: string, vendorName?: string, amountXlm?: string): Promise<'shared' | 'copied'> {
+export async function shareReceipt(txHash: string, vendorName?: string, amountEth?: string): Promise<'shared' | 'copied'> {
   const url = receiptUrl(txHash);
   const title = 'PalengkePay Receipt';
-  const text = vendorName && amountXlm
-    ? `Payment of ${amountXlm} ETH to ${vendorName} — verified on Morph.`
+  const text = vendorName && amountEth
+    ? `Payment of ${amountEth} ETH to ${vendorName} — verified on Morph.`
     : 'Verified on-chain payment receipt.';
 
   if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {

@@ -85,7 +85,7 @@ function TxRow({ tx, onOpenProof }: { tx: TxRecord; onOpenProof: (tx: TxRecord) 
           )}
           {tx.quote && (
             <p className="text-xs font-black truncate mt-0.5" style={{ color: '#0F766E' }}>
-              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerXlm.toFixed(2)}/ETH
+              {formatPhp(tx.quote.phpAmount)} · ₱{tx.quote.phpPerEth.toFixed(2)}/ETH
             </p>
           )}
           <p className="text-xs text-slate-400">{relativeTime(tx.createdAt)}</p>
@@ -97,7 +97,7 @@ function TxRow({ tx, onOpenProof }: { tx: TxRecord; onOpenProof: (tx: TxRecord) 
       <div className="flex items-center gap-2 shrink-0 ml-3">
         <div className="text-right">
           <p className="text-sm font-black" style={{ color: '#16A34A' }}>
-            +{tx.amountXlm.toFixed(2)}
+            +{tx.amountEth.toFixed(2)}
           </p>
           <p className="text-xs text-slate-400">ETH</p>
         </div>
@@ -177,7 +177,7 @@ export function VendorTransactions() {
 
   const earnings = todayEarnings();
   const count = todayCount();
-  const allTimeTotal = transactions.reduce((s, tx) => s + tx.amountXlm, 0);
+  const allTimeTotal = transactions.reduce((s, tx) => s + tx.amountEth, 0);
   const groups = groupByDate(searchedTransactions, t);
   const proofActionStatus = copyStatus || exportStatus;
 
@@ -394,7 +394,7 @@ export function VendorTransactions() {
           <div className="grid grid-cols-2 gap-2">
             {[
               { label: t('transactions.transactions'), value: String(proofSummary.transactionCount) },
-              { label: t('transactions.totalXlm'), value: proofSummary.totalXlm.toFixed(2) },
+              { label: t('transactions.totalEth'), value: proofSummary.totalEth.toFixed(2) },
               { label: t('transactions.phpEst'), value: proofSummary.estimatedPhpTotal ? `PHP ${proofSummary.estimatedPhpTotal.toFixed(2)}` : t('transactions.unavailable') },
               { label: t('transactions.dateRange'), value: proofSummary.dateRange.label },
             ].map(({ label, value }) => (

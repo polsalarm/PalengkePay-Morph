@@ -7,14 +7,14 @@ import { palengkePaymentAbi } from './abis/palengkePayment';
 // client (the contract is the source of truth — every payment emits one). Caches in
 // localStorage for instant first paint, same as the old Horizon indexer.
 //
-// NOTE: `amountXlm` is retained as the field name for call-site compatibility, but it
+// NOTE: `amountEth` is retained as the field name for call-site compatibility, but it
 // now carries an ETH value (native gas token on Morph). Treat it as "amount".
 
 export interface IndexedPayment {
   id: string;
   from: string;
   to: string;
-  amountXlm: number; // ETH amount (field name kept for compatibility)
+  amountEth: number; // ETH amount (field name kept for compatibility)
   createdAt: string;
   memo?: string;
 }
@@ -93,7 +93,7 @@ async function fetchPaymentEvents(address: string): Promise<IndexedPayment[]> {
       id,
       from: a.customer ?? '',
       to: a.vendor ?? '',
-      amountXlm: a.amount ? Number(formatEther(a.amount)) : 0,
+      amountEth: a.amount ? Number(formatEther(a.amount)) : 0,
       createdAt: new Date(Number(a.timestamp ?? 0n) * 1000).toISOString(),
       memo: a.memo || undefined,
     });

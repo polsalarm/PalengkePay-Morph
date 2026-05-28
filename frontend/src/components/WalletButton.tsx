@@ -3,11 +3,11 @@ import { Wallet, Copy, LogOut, Loader2, ChevronDown } from 'lucide-react';
 import { useWallet } from '../lib/hooks/useWallet';
 
 const WALLET_BADGES: Record<string, { label: string; bg: string; color: string }> = {
-  freighter:     { label: 'Freighter',     bg: '#EEF2FF', color: '#4F46E5' },
-  lobstr:        { label: 'LOBSTR',        bg: '#EFF6FF', color: '#2563EB' },
-  xbull:         { label: 'xBull',         bg: '#F5F3FF', color: '#042E80' },
-  albedo:        { label: 'Albedo',        bg: '#FFF7ED', color: '#EA580C' },
-  walletconnect: { label: 'WalletConnect', bg: '#F1F5F9', color: '#475569' },
+  metamask:       { label: 'MetaMask',        bg: '#FFF7ED', color: '#C2410C' },
+  coinbasewallet: { label: 'Coinbase Wallet', bg: '#EFF6FF', color: '#0052FF' },
+  rainbow:        { label: 'Rainbow',         bg: '#EEF2FF', color: '#5B6EE8' },
+  walletconnect:  { label: 'WalletConnect',   bg: '#F0FDFA', color: '#008055' },
+  injected:       { label: 'Browser Wallet',  bg: '#F1F5F9', color: '#475569' },
 };
 
 function walletBadge(name: string | null) {

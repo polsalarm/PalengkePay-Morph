@@ -13,7 +13,7 @@ import { usePayment } from '../../lib/hooks/usePayment';
 import { useCreateUtang } from '../../lib/hooks/useUtang';
 import type { UtangOfferPayload } from '../vendor/VendorUtang';
 import { stellarExpertAccountUrl, stellarExpertUrl, truncateAddress } from '../../lib/evm';
-import { formatPhp, formatXlm, type StableCheckoutQuote } from '../../lib/checkout-quote';
+import { formatPhp, formatEth, type StableCheckoutQuote } from '../../lib/checkout-quote';
 import { ESCROW_ADDRESS } from '../../lib/contracts';
 import { savePaymentProof } from '../../lib/payment-proof';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -71,7 +71,7 @@ export function CustomerScan() {
       txHash,
       from: address,
       to: vendorAddress,
-      amountXlm: Number(pendingPayment.amount),
+      amountEth: Number(pendingPayment.amount),
       memo: pendingPayment.memo,
       createdAt: new Date().toISOString(),
       settlementMode,
@@ -414,7 +414,7 @@ export function CustomerScan() {
               {formatPhp(pendingPayment.quote.phpAmount)}
             </p>
             <p className="text-base font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              {formatXlm(pendingPayment.quote.xlmAmount)}
+              {formatEth(pendingPayment.quote.xlmAmount)}
             </p>
             <div
               className="mt-4 pt-4 grid grid-cols-2 gap-3 text-left"
@@ -425,7 +425,7 @@ export function CustomerScan() {
                   {t('scan.priceLock')}
                 </p>
                 <p className="text-sm font-black text-white">
-                  ₱{pendingPayment.quote.phpPerXlm.toFixed(2)}/ETH
+                  ₱{pendingPayment.quote.phpPerEth.toFixed(2)}/ETH
                 </p>
               </div>
               <div>
@@ -527,7 +527,7 @@ export function CustomerScan() {
             )}
             {pendingPayment && (
               <p className="text-sm mt-2 font-bold" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                {formatXlm(pendingPayment.quote.xlmAmount)} at ₱{pendingPayment.quote.phpPerXlm.toFixed(2)}/ETH
+                {formatEth(pendingPayment.quote.xlmAmount)} at ₱{pendingPayment.quote.phpPerEth.toFixed(2)}/ETH
               </p>
             )}
             {vendorDisplay && (
@@ -553,7 +553,7 @@ export function CustomerScan() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">{t('scan.settledOnStellar')}</p>
-                    <p className="text-sm font-black text-slate-900">{formatXlm(pendingPayment.quote.xlmAmount)}</p>
+                    <p className="text-sm font-black text-slate-900">{formatEth(pendingPayment.quote.xlmAmount)}</p>
                   </div>
                 </div>
               </div>

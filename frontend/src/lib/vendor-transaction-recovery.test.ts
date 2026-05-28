@@ -15,7 +15,7 @@ function tx(overrides: Partial<PaymentHistoryRecord>): PaymentHistoryRecord {
     paymentId: 1,
     from: customerWallet,
     to: vendorWallet,
-    amountXlm: 4,
+    amountEth: 4,
     createdAt: '2026-05-14T01:00:00.000Z',
     memo: 'gulay',
     source: 'palengke-payment',

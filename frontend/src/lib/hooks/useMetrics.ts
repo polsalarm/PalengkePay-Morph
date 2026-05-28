@@ -24,29 +24,29 @@ export function useMetrics() {
 
   const registryFallbackMetrics = useMemo<PaymentMetrics>(() => {
     const active = vendors.filter((v) => v.isActive);
-    const totalVolumeXlm = vendors.reduce((s, v) => s + Number(v.totalVolume) / 10_000_000, 0);
+    const totalVolumeEth = vendors.reduce((s, v) => s + Number(v.totalVolume) / 10_000_000, 0);
     const totalTransactions = vendors.reduce((s, v) => s + v.totalTransactions, 0);
     const summary: MetricSummary = {
       totalVendors: vendors.length,
       activeVendors: active.length,
       pendingVendors: applications.length,
-      totalVolumeXlm,
+      totalVolumeEth,
       totalTransactions,
-      avgTxXlm: totalTransactions > 0 ? totalVolumeXlm / totalTransactions : 0,
+      avgTxEth: totalTransactions > 0 ? totalVolumeEth / totalTransactions : 0,
     };
 
-    const map = new Map<string, { count: number; volumeXlm: number }>();
+    const map = new Map<string, { count: number; volumeEth: number }>();
     for (const v of vendors) {
       const key = v.productType || 'other';
-      const existing = map.get(key) ?? { count: 0, volumeXlm: 0 };
+      const existing = map.get(key) ?? { count: 0, volumeEth: 0 };
       map.set(key, {
         count: existing.count + 1,
-        volumeXlm: existing.volumeXlm + Number(v.totalVolume) / 10_000_000,
+        volumeEth: existing.volumeEth + Number(v.totalVolume) / 10_000_000,
       });
     }
     const total = vendors.length || 1;
     const productBreakdown: ProductBreakdown[] = Array.from(map.entries())
-      .map(([type, { count, volumeXlm }]) => ({ type, count, volumeXlm, pct: Math.round((count / total) * 100) }))
+      .map(([type, { count, volumeEth }]) => ({ type, count, volumeEth, pct: Math.round((count / total) * 100) }))
       .sort((a, b) => b.count - a.count);
 
     const topVendors: TopVendor[] = [...vendors]
@@ -59,7 +59,7 @@ export function useMetrics() {
         stallNumber: v.stallNumber,
         productType: v.productType,
         totalTransactions: v.totalTransactions,
-        volumeXlm: Number(v.totalVolume) / 10_000_000,
+        volumeEth: Number(v.totalVolume) / 10_000_000,
       }));
 
     return { summary, productBreakdown, topVendors };

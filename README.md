@@ -4,23 +4,42 @@
 
 # PalengkePay
 
-> Stellar-powered micropayment PWA for Philippine wet market vendors. No bank account required.
+> Stablecoin micropayment PWA for Philippine wet market vendors. Built on **Morph**. No bank account required.
 
-![Stellar](https://img.shields.io/badge/Stellar-Mainnet%20%2B%20Testnet-00B4D8?style=flat&logo=stellar&logoColor=white)
-![Soroban](https://img.shields.io/badge/Soroban-Smart%20Contracts-008055?style=flat)
+![Morph](https://img.shields.io/badge/Morph-Hoodi%20L2-00E599?style=flat&logoColor=white)
+![Stablecoins](https://img.shields.io/badge/Stablecoin-Payments-26A17B?style=flat)
+![Solidity](https://img.shields.io/badge/Solidity-0.8.24-363636?style=flat&logo=solidity&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-1.80+-DEA584?style=flat&logo=rust&logoColor=black)
 ![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=flat&logo=pwa&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-22C55E?style=flat)
 
-**Live:** [Testnet →](https://palengkepay-pro.vercel.app) · [Mainnet →](https://palengkepay-mainnet.vercel.app)
-**Demo:** [Product Walkthrough →](https://drive.google.com/drive/folders/1ozQ1dlHwINO-gHuYgv4AVmQYGAj3KFC_?usp=sharing) · [Testnet Demo →](https://drive.google.com/drive/folders/1tZpDFF0VBAGEYmEI9eK6iWa6_AorDFTu?usp=drive_link) · [Mainnet Demo →](https://drive.google.com/drive/folders/1J2fLbQJx17tleVHExptrrOdg7IsB9gGL?usp=drive_link)
-**Docs:** [📖 Full Detail README →](FULL_DETAIL_README.md)
+**Live:** [palengkepay-morph.vercel.app →](https://palengkepay-morph.vercel.app)
+**Demo:** [Product Walkthrough →](https://drive.google.com/drive/folders/1ozQ1dlHwINO-gHuYgv4AVmQYGAj3KFC_?usp=sharing) · [Pitch Deck →](https://drive.google.com/drive/folders/1tGru6SEu5bsqhAks1nQDXdXJmVCl75LX?usp=drive_link) · [User Feedback →](https://docs.google.com/spreadsheets/d/1g0AYRCwqc1-zcxy2q5UnIGHtllJHsXSaUvTCD7POI-g/edit?usp=sharing)
 
 </div>
 
 ---
+
+## 💚 Why Morph — "Stablecoins are real. Integration is still siloed."
+
+Morph's thesis is the exact gap PalengkePay closes:
+
+> *"The next phase of adoption will not be won by another isolated tool. It will be won by the stack that makes stablecoin payments easier to launch, operate, and scale. Payments, FX, and yield — built as one stack."*
+
+Most crypto payment apps are **isolated tools** — a wallet here, a swap there, a receipt somewhere else. None of it talks to the rest, and none of it survives a wet-market vendor's reality: a ₱50 sale, no bank account, and earnings that can't afford to swing 15% overnight.
+
+PalengkePay is the **full stack, not a siloed tool**:
+
+| Layer | What PalengkePay ships |
+|-------|------------------------|
+| **Payments** | Scan-to-pay QR, settling in stablecoin value on Morph's low-fee L2 — ₱50 sent is ₱50 received |
+| **FX** | PHP-first checkout: customer thinks in pesos, a locked short-lived quote handles conversion, dual-currency receipt |
+| **Credit** | On-chain **utang** (BNPL) escrow — installments, reserve pool, late-fee resume, default reputation |
+
+Stablecoins matter here because a vendor's daily take **cannot be volatile**. A peso-pegged unit of account is what turns crypto rails into a tool a fish-stall owner will actually use. That's the bet, and it's why this lives on Morph.
+
+> **Settlement note (honest roadmap):** the current Morph Hoodi testnet build settles in **native ETH** with a PHP-pegged checkout quote on top. **Stablecoin settlement (USDT / USDC / a PHP-pegged unit) is the immediate next milestone** — the payment contract is a thin native-value pass-through, so swapping in an ERC-20 stablecoin path is an additive change, not a rewrite. See [Roadmap](#-roadmap).
 
 ## 🧩 Problem
 The Philippine wet market economy runs almost entirely on cash, locking vendors and customers out of formal finance.
@@ -30,10 +49,10 @@ The Philippine wet market economy runs almost entirely on cash, locking vendors 
 - Vendors can't prove income for loans/aid; customers get no receipts and no structured repayment
 
 ## 🌟 Vision
-A Philippines where every wet market vendor has a verifiable on-chain financial identity — provable income, transparent credit history, and cashless payments without a bank — built on open Stellar rails accessible to anyone with a phone.
+A Philippines where every wet market vendor has a verifiable on-chain financial identity — provable income, transparent credit history, and stablecoin payments without a bank — built on open Morph rails accessible to anyone with a phone.
 
 ## 🎯 Purpose
-Built to break the cash-only exclusion cycle: give micro-entrepreneurs cryptographic proof of revenue, give customers tamper-proof receipts, and put utang (BNPL) on-chain so neither party loses track. Mission is financial inclusion, not crypto speculation.
+Break the cash-only exclusion cycle: give micro-entrepreneurs cryptographic proof of revenue, give customers tamper-proof receipts, and put utang (BNPL) on-chain so neither party loses track. Mission is financial inclusion, not crypto speculation — which is exactly why stable, peso-pegged value is the goal, not a volatile speculative token.
 
 ## 👥 Target Users
 PH wet market participants and micro-merchants outside the formal banking system.
@@ -42,39 +61,38 @@ PH wet market participants and micro-merchants outside the formal banking system
 - **Market Administrators** — manage vendor onboarding, approvals, and dashboards per palengke
 
 ## ✨ Features
-- **Gasless QR Payments** — vendor shows QR, customer scans and pays XLM in seconds; sponsor wallet absorbs all network fees via Stellar `FeeBumpTransaction`
-- **PHP-First Stable Checkout** — customer enters PHP, app locks a short-lived PHP/XLM quote, dual-currency receipt after confirm
-- **On-Chain Utang (BNPL)** — Soroban escrow with installments, 7-day grace, 1% reserve pool, 5% late-fee resume, on-chain default reputation
-- **On-Chain Vendor Reputation** — 1–5 star ratings per payment, stored via `VendorRegistry.submit_rating`; one rating per `(vendor, tx_hash)`
-- **Vendor Income Proof Pack** — per-period bank-ready certificate, CSV/JSON/text exports, wallet-signed Testnet attestation
-- **SEP-24 Fiat Anchor + Cash-In / Cash-Out** — full SEP-1/10/24 anchor; PHP↔XLM via PDAX-mocked client with operator manual settlement console at `/admin/ramps`
+- **Scan-to-Pay QR Payments** — vendor shows QR, customer scans and pays in seconds on Morph L2; near-zero fees, full amount forwarded to the vendor with no skim
+- **PHP-First Stable Checkout** — customer enters PHP, app locks a short-lived PHP quote, dual-currency receipt after confirm — the FX layer of the stack
+- **On-Chain Utang (BNPL)** — Solidity escrow with installments, grace window, 1% reserve pool, 5% late-fee resume, on-chain default reputation
+- **On-Chain Vendor Reputation** — 1–5 star ratings per payment via `VendorRegistry.submitRating`; one rating per `(vendor, txHash)`
+- **Vendor Income Proof Pack** — per-period bank-ready certificate, CSV/JSON/text exports, wallet-signed on-chain attestation
+- **Fiat On / Off Ramp (PHP ↔ crypto)** — Transak ramp scaffolded for production; demo runs a mocked PHP↔crypto rail with transaction history at `/customer/history`
 - **Web Push Notifications** — VAPID-backed push for payments, utang accepted/paid/completed, due-soon/overdue reminders (daily cron)
-- **Live Vendor Open/Closed Status** — toggle stored as Stellar account data entry, sponsored reserves keep it gasless
-- **Public Shareable Receipts** — `/receipt/:txHash` read-only, Web Share API, OG previews, direct Stellar Expert link
-- **Multi-Wallet + PWA** — Freighter / xBull / Albedo (desktop), LOBSTR via WalletConnect (mobile); installable on Android/iOS, no app store
-- **EN / TL Toggle + PHP/XLM Display Switch + Hide-Balance Privacy Mode**
+- **Live Vendor Open/Closed Status** — vendors toggle availability, reflected to customers in real time
+- **Public Shareable Receipts** — `/receipt/:txHash` read-only, Web Share API, OG previews, direct Morph Explorer link
+- **Multi-Wallet + PWA** — MetaMask / injected wallets (desktop), any WalletConnect wallet (mobile) via RainbowKit; installable on Android/iOS, no app store
+- **EN / TL Toggle + PHP/crypto Display Switch + Hide-Balance Privacy Mode**
 
 ## 🛠️ Tech Stack
-- **Frontend:** React 19 + Vite 8 + TypeScript + Tailwind CSS v4
-- **Backend:** Vercel serverless functions (Node) — fee-bump, SEP-10 auth, SEP-24 dispatcher, push fan-out, ramp store, health
-- **Blockchain:** Stellar (Soroban smart contracts in Rust `soroban-sdk` 22.x, Horizon API, Stellar SDK, SEP-1/10/24)
-- **Other tools:** `@creit.tech/stellar-wallets-kit`, `qrcode.react`, `html5-qrcode`, `vite-plugin-pwa` + Workbox, `web-push` + VAPID, Upstash Redis (Vercel Marketplace), `@sentry/react`, CoinGecko price API, PDAX HMAC SHA-384 client (mock mode)
+- **Frontend:** React 19 + Vite + TypeScript + Tailwind CSS v4
+- **Wallet / chain layer:** wagmi + RainbowKit + viem (EVM)
+- **Backend:** Vercel serverless functions (Node) — push fan-out, vendor status, ramp store, health, utang-reminder cron
+- **Blockchain:** **Morph** (EVM L2) — Solidity 0.8.24 contracts, OpenZeppelin v5.1.0, Foundry toolchain
+- **Other tools:** `qrcode.react`, `html5-qrcode`, `vite-plugin-pwa` + Workbox, `web-push` + VAPID, Upstash Redis (Vercel Marketplace), `@sentry/react`, CoinGecko price API, Transak ramp SDK
 
 ## 🚀 How to Run Locally
 
 ### Prerequisites
 - **Node.js** 20+
-- **Rust** + `wasm32v1-none` target — `rustup target add wasm32v1-none`
-- **[stellar-cli](https://github.com/stellar/stellar-cli)** 25.2+
-- **Wallet** — [Freighter](https://www.freighter.app/) (desktop browser extension) or [LOBSTR](https://lobstr.co/) (mobile, via WalletConnect)
+- **[Foundry](https://book.getfoundry.sh/)** (forge 1.7+) — for building/testing contracts
+- **Wallet** — [MetaMask](https://metamask.io/) (desktop) or any WalletConnect-compatible wallet (mobile)
 
 ### 1. Clone + install
 ```bash
-git clone https://github.com/polsalarm/PalengkePay
-cd PalengkePay/frontend
+git clone https://github.com/polsalarm/PalengkePay-Morph
+cd PalengkePay-Morph/frontend
 npm ci --legacy-peer-deps
 ```
-Windows PowerShell: if a transitive wallet package postinstall fails with `yarn setup || true`, run `npm ci --legacy-peer-deps --ignore-scripts`.
 
 ### 2. Configure env
 ```bash
@@ -82,54 +100,42 @@ cp .env.example .env.local
 ```
 Fill in `frontend/.env.local`:
 ```env
-# Network — Testnet (default)
-VITE_STELLAR_NETWORK=testnet
-VITE_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
-VITE_VENDOR_REGISTRY_CONTRACT_ID=CDEQVKKRIXJHQRZCMOKE65LL2LMDXOY3MHKXQ2AP2DNHP56NPIT2NLJR
-VITE_PALENGKE_PAYMENT_CONTRACT_ID=CDSCCIT7L5ZNY5AYHOA2T6HMDEXFR7ZVR6JEWHJXXQCSILOMDOEKW5WY
-VITE_UTANG_ESCROW_CONTRACT_ID=CCPYLRKBCM4SSQYNEETXDWANEQ3Q7AB7SBS254L3CHTEGQADTX5IOI53
-VITE_UTANG_FEE_XLM=0.1
+# Morph network — Hoodi testnet (default)
+VITE_CHAIN_ID=2910
+VITE_MORPH_RPC_URL=https://rpc-hoodi.morph.network
+VITE_MORPH_EXPLORER=https://explorer-hoodi.morph.network
 
-# Mainnet (swap on the mainnet Vercel project)
-# VITE_STELLAR_NETWORK=mainnet
-# VITE_SOROBAN_RPC_URL=https://mainnet.sorobanrpc.com
-# VITE_VENDOR_REGISTRY_CONTRACT_ID=CCTB5OMKU6DITCWOFM7LVZENSJXR3VSABAWG3GRXTFPXDPBH2FKATOLX
-# VITE_PALENGKE_PAYMENT_CONTRACT_ID=CCP6WOKMHH7AEX2JTP22EEAUTQ5EAPAECX4SMJ2P442QLD4J36277GBV
-# VITE_UTANG_ESCROW_CONTRACT_ID=CDW5HJWCXIAUI27F3WZRSFU4LETD7KIDOGTP4LEKFACETQVIFWV7XKIG
+# Deployed contract addresses (Morph Hoodi)
+VITE_PALENGKE_PAYMENT_ADDRESS=0x49cfc8687afb94a2d3867713a7de829dc21794ca
+VITE_VENDOR_REGISTRY_ADDRESS=0xa1aba560607d756096f28f35c5127ce3a05f3032
+VITE_UTANG_ESCROW_ADDRESS=0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229
 
-# Fee sponsorship (server-only — never ship to client)
-SPONSOR_SECRET=SA...
-FEE_BUMP_ALLOWED_DESTINATIONS=G...,G...
-FEE_BUMP_RATE_LIMIT_WINDOW_MS=60000
-FEE_BUMP_RATE_LIMIT_MAX=20
+# Indexer: deploy block to start log scans from (Morph caps eth_getLogs at 5000-block windows)
+VITE_DEPLOY_BLOCK=5703000
 
-# Upstash Redis (auto-injected by Vercel Marketplace; optional locally)
-KV_REST_API_URL=
-KV_REST_API_TOKEN=
+# Utang BNPL fee
+VITE_UTANG_FEE_ETH=0.1
+VITE_UTANG_FEE_DEST=0x...
+
+# WalletConnect (mobile/QR wallets). Injected MetaMask works without it.
+VITE_WALLETCONNECT_PROJECT_ID=
 
 # Web Push (VAPID) — generate via `npx web-push generate-vapid-keys`
 VITE_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 VAPID_SUBJECT=mailto:you@example.com
 
-# SEP-24 anchor (generate keypair via `stellar keys generate <name>`, fund via Friendbot)
-ANCHOR_SIGNING_SECRET=S...
-ANCHOR_HOME_DOMAIN=palengkepay-pro.vercel.app
-ANCHOR_BASE_URL=https://palengkepay-pro.vercel.app
-ANCHOR_NETWORK_PASSPHRASE=Test SDF Network ; September 2015
-ANCHOR_HORIZON_URL=https://horizon-testnet.stellar.org
+# Cron auth — required in production for /api/cron/utang-reminders
+CRON_SECRET=
 
-# PDAX fiat rails (mock for hackathon, real keys for live)
-PDAX_MOCK=true
-PDAX_API_KEY=
-PDAX_API_SECRET=
-PDAX_BASE_URL=https://api.pdax.ph
-RAMP_RATE_FALLBACK=7.85
+# Upstash Redis (auto-injected by Vercel Marketplace; optional locally)
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
 
-# Ramp admin operator key (random hex; pasted into /admin/ramps)
-RAMP_ADMIN_KEY=
+# Transak fiat ramp (scaffolded; inert on testnet)
+VITE_TRANSAK_API_KEY=
+VITE_TRANSAK_ENVIRONMENT=STAGING
 ```
-See [`FULL_DETAIL_README.md`](FULL_DETAIL_README.md#environment-variables) for the full env reference + every server-only sponsor variable.
 
 ### 3. Run frontend
 ```bash
@@ -139,81 +145,63 @@ Open `http://localhost:5173`.
 
 ### 4. Build / test contracts
 ```bash
-cd contracts
-cargo test --workspace        # 33 contract tests
-stellar contract build        # WASM for deployment
+cd contracts-evm
+forge test          # 21 passing across 3 suites
+forge build         # compile for deployment
 ```
+See [`contracts-evm/README.md`](contracts-evm/README.md) for the deploy script, the Morph legacy-gas gotcha, and Blockscout verification.
 
 ### 5. Quality gates
 ```bash
 cd frontend
 npx tsc --noEmit
-npm test
+npm test            # vitest — 48 passing
 npm run lint
 npm run build
-npm run qa:visual             # Playwright across desktop + mobile, writes to qa-artifacts/
+npm run e2e         # Playwright — 46 desktop + 46 mobile
 ```
 
 ### 6. Mobile testing
-- Install LOBSTR (Android Play Store / iOS App Store), save recovery phrase
-- Get testnet XLM via in-app onboarding Step 3 (auto-funds) or [Friendbot](https://friendbot.stellar.org/)
-- Open the dev URL in your phone, tap **Connect Wallet → WalletConnect → Open in LOBSTR** (deep link, no QR scan needed)
+- Install any WalletConnect wallet (e.g. MetaMask mobile), save recovery phrase
+- Get testnet ETH from the Morph Hoodi faucet: `https://morph-rails-hoodi.morph.network/faucet`
+- Open the dev URL on your phone, tap **Connect Wallet → WalletConnect**, approve in your wallet
 - Install as PWA: Android Chrome ⋮ → *Add to Home screen*; iOS Safari Share → *Add to Home Screen*
 
-## 🧪 Testnet Deployment
+## 🧪 Deployment — Morph Hoodi Testnet (chain 2910)
+
+Deployed 2026-05-27. Source verified on Blockscout.
 
 | Contract | Address | Explorer |
 |----------|---------|----------|
-| VendorRegistry | `CDEQVKKRIXJHQRZCMOKE65LL2LMDXOY3MHKXQ2AP2DNHP56NPIT2NLJR` | [Stellar Expert →](https://stellar.expert/explorer/testnet/contract/CDEQVKKRIXJHQRZCMOKE65LL2LMDXOY3MHKXQ2AP2DNHP56NPIT2NLJR) |
-| PalengkePayment | `CDSCCIT7L5ZNY5AYHOA2T6HMDEXFR7ZVR6JEWHJXXQCSILOMDOEKW5WY` | [Stellar Expert →](https://stellar.expert/explorer/testnet/contract/CDSCCIT7L5ZNY5AYHOA2T6HMDEXFR7ZVR6JEWHJXXQCSILOMDOEKW5WY) |
-| UTangEscrow | `CCPYLRKBCM4SSQYNEETXDWANEQ3Q7AB7SBS254L3CHTEGQADTX5IOI53` | [Stellar Expert →](https://stellar.expert/explorer/testnet/contract/CCPYLRKBCM4SSQYNEETXDWANEQ3Q7AB7SBS254L3CHTEGQADTX5IOI53) |
+| PalengkePayment | `0x49cfc8687afb94a2d3867713a7de829dc21794ca` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0x49cfc8687afb94a2d3867713a7de829dc21794ca) |
+| VendorRegistry | `0xa1aba560607d756096f28f35c5127ce3a05f3032` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0xa1aba560607d756096f28f35c5127ce3a05f3032) |
+| UTangEscrow | `0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229` | [Morph Explorer →](https://explorer-hoodi.morph.network/address/0x0db57bc80d2687137b7b0fb434bdb1c93b6ea229) |
 
-📸 Screenshots — Stellar Expert (Testnet):
+- **Admin** (`ADMIN_ROLE` on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
+- **Network:** RPC `https://rpc-hoodi.morph.network` · Explorer `https://explorer-hoodi.morph.network`
+- **Settlement:** native ETH today; stablecoin settlement is the next milestone (see [Roadmap](#-roadmap))
 
-![VendorRegistry](UI/CONTRACT/VendorRegistry.png)
-![PalengkePayment](UI/CONTRACT/PalengkeyPayment.png)
-![UTangEscrow](UI/CONTRACT/UtangEscrow.png)
+> Morph deploy gotcha: the sequencer floor is ~0.2 gwei but EIP-1559 estimates underprice off the low base fee, so txs hang. Force legacy 1 gwei (`forge ... --legacy --with-gas-price 1000000000`). Full notes in [`contracts-evm/README.md`](contracts-evm/README.md).
 
-Network: Stellar Testnet (`Test SDF Network ; September 2015`). Resets ~quarterly — redeploy + update `.env.local` after each reset.
+## 🗺️ Roadmap
 
-## 🚀 Mainnet Deployment
-
-Deployed 2026-05-22.
-
-| Contract | Address | Explorer |
-|----------|---------|----------|
-| VendorRegistry | `CCTB5OMKU6DITCWOFM7LVZENSJXR3VSABAWG3GRXTFPXDPBH2FKATOLX` | [Stellar Expert →](https://stellar.expert/explorer/public/contract/CCTB5OMKU6DITCWOFM7LVZENSJXR3VSABAWG3GRXTFPXDPBH2FKATOLX) |
-| PalengkePayment | `CCP6WOKMHH7AEX2JTP22EEAUTQ5EAPAECX4SMJ2P442QLD4J36277GBV` | [Stellar Expert →](https://stellar.expert/explorer/public/contract/CCP6WOKMHH7AEX2JTP22EEAUTQ5EAPAECX4SMJ2P442QLD4J36277GBV) |
-| UTangEscrow | `CDW5HJWCXIAUI27F3WZRSFU4LETD7KIDOGTP4LEKFACETQVIFWV7XKIG` | [Stellar Expert →](https://stellar.expert/explorer/public/contract/CDW5HJWCXIAUI27F3WZRSFU4LETD7KIDOGTP4LEKFACETQVIFWV7XKIG) |
-
-📸 Screenshots — Stellar Expert (Mainnet):
-
-![VendorRegistry](UI/CONTRACT/MainnetVendorRegistry.png)
-![PalengkePayment](UI/CONTRACT/MainnetPalengkeyPayment.png)
-![UTangEscrow](UI/CONTRACT/MainnetUtangEscrow.png)
-
-- **Admin:** `GBI5W3JPFNGBMW2TCSGTNL3NPW6E423UN4BMAXAU34AXTSMTSDT2JDXH`
-- **Native XLM SAC:** `CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA`
-- **UTangEscrow BNPL cap:** 230 000 000 stroops (≈ ₱500)
-- Cash-in / cash-out (PDAX) stays testnet-only — mainnet ramps blocked on PDAX CAAS + KMS custody.
+- [x] EVM contract port to Morph (Foundry, 21/21 tests, Blockscout-verified)
+- [x] Full frontend port to wagmi + RainbowKit + viem
+- [x] On-chain payments, utang BNPL escrow, vendor reputation, income proof pack
+- [x] PWA + push notifications + PHP-first checkout
+- [ ] **Stablecoin settlement** — ERC-20 USDT/USDC (or PHP-pegged) payment path; additive `payToken()` method + approval flow
+- [ ] Live fiat on/off ramp via Transak once Morph network support lands
+- [ ] Yield layer — idle reserve-pool funds into a Morph-native yield source (the "yield" leg of the full stack)
+- [ ] Morph mainnet deployment (chain 2818) + custom domain
 
 ## 🎬 Demo
 
-### 🔗 Live Apps
-| Network | URL |
-|---------|-----|
-| Testnet | [palengkepay-pro.vercel.app](https://palengkepay-pro.vercel.app) |
-| Mainnet | [palengkepay-mainnet.vercel.app](https://palengkepay-mainnet.vercel.app) |
-
-### 🎥 Demo Videos (3–5 Minutes)
-| Type | Link |
-|------|------|
-| 🎬 MVP Walkthrough | [Google Drive →](https://drive.google.com/drive/folders/1ozQ1dlHwINO-gHuYgv4AVmQYGAj3KFC_?usp=sharing) |
-| 🧪 Testnet Demo | [Google Drive →](https://drive.google.com/drive/folders/1tZpDFF0VBAGEYmEI9eK6iWa6_AorDFTu?usp=drive_link) |
-| 🚀 Mainnet Demo | [Google Drive →](https://drive.google.com/drive/folders/1J2fLbQJx17tleVHExptrrOdg7IsB9gGL?usp=drive_link) |
-
-- 📊 **User Feedback (Google Sheets):** [View responses →](https://docs.google.com/spreadsheets/d/1g0AYRCwqc1-zcxy2q5UnIGHtllJHsXSaUvTCD7POI-g/edit?usp=sharing)
-- 🖼️ **Pitch Deck:** [Google Drive →](https://drive.google.com/drive/folders/1tGru6SEu5bsqhAks1nQDXdXJmVCl75LX?usp=drive_link)
+| Resource | Link |
+|----------|------|
+| 🔗 Live App | [palengkepay-morph.vercel.app](https://palengkepay-morph.vercel.app) |
+| 🎬 Product Walkthrough | [Google Drive →](https://drive.google.com/drive/folders/1ozQ1dlHwINO-gHuYgv4AVmQYGAj3KFC_?usp=sharing) |
+| 🖼️ Pitch Deck | [Google Drive →](https://drive.google.com/drive/folders/1tGru6SEu5bsqhAks1nQDXdXJmVCl75LX?usp=drive_link) |
+| 📊 User Feedback | [Google Sheets →](https://docs.google.com/spreadsheets/d/1g0AYRCwqc1-zcxy2q5UnIGHtllJHsXSaUvTCD7POI-g/edit?usp=sharing) |
 
 ## 👤 Team
 | Name | Role | GitHub |

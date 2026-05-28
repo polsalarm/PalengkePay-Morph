@@ -214,7 +214,23 @@ Deployed 2026-05-27. Source verified on Blockscout.
 - **Admin** (`ADMIN_ROLE` on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
 - **Network:** RPC `https://rpc-hoodi.morph.network` · Explorer `https://explorer-hoodi.morph.network`
 - **Settlement:** both native ETH and a peso-pegged stablecoin (USDT / USDC / PHP-pegged) on Morph L2
-- **Screenshots:** verified-source + live-transaction shots for each contract are in [`contracts-evm/README.md`](contracts-evm/README.md#on-chain-proof-blockscout) (images under [`contracts-evm/screenshots/`](contracts-evm/screenshots))
+### On-chain proof (Blockscout)
+Each contract is source-verified; screenshots show the verified source and live transactions.
+
+**PalengkePayment**
+| Verified source | Transactions |
+|---|---|
+| ![PalengkePayment verified source](contracts-evm/screenshots/PalengkeyPayment1.png) | ![PalengkePayment transactions](contracts-evm/screenshots/PalengkeyPayment2.png) |
+
+**VendorRegistry**
+| Verified source | Transactions |
+|---|---|
+| ![VendorRegistry verified source](contracts-evm/screenshots/VendorRegistry1.png) | ![VendorRegistry transactions](contracts-evm/screenshots/VendorRegistry2.png) |
+
+**UTangEscrow**
+| Verified source | Transactions |
+|---|---|
+| ![UTangEscrow verified source](contracts-evm/screenshots/UtangEscrow1.png) | ![UTangEscrow transactions](contracts-evm/screenshots/UtangEscrow2.png) |
 
 > Morph deploy gotcha: the sequencer floor is ~0.2 gwei but EIP-1559 estimates underprice off the low base fee, so txs hang. Force legacy 1 gwei (`forge ... --legacy --with-gas-price 1000000000`). Full notes in [`contracts-evm/README.md`](contracts-evm/README.md).
 

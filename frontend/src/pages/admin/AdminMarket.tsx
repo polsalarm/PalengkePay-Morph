@@ -827,17 +827,17 @@ export function AdminMarket() {
             </div>
           )}
 
-          {!loadingVendors && vendors.length === 0 && (
+          {!loadingVendors && activeVendors.length === 0 && (
             <div className="rounded-3xl p-10 text-center" style={{ border: '1.5px solid #F1F5F9' }}>
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#F8FAFC' }}>
                 <Users size={24} style={{ color: '#CBD5E1' }} />
               </div>
-              <p className="text-sm font-bold text-slate-500">No vendors registered yet</p>
+              <p className="text-sm font-bold text-slate-500">No active vendors</p>
               <p className="text-xs text-slate-400 mt-1">Approve applications to add vendors to the market</p>
             </div>
           )}
 
-          {!loadingVendors && vendors.map((v) => (
+          {!loadingVendors && activeVendors.map((v) => (
             <VendorCard
               key={v.id}
               vendor={v}

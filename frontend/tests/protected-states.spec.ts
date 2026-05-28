@@ -31,11 +31,7 @@ for (const route of protectedRoutes) {
 
 test('app shell exposes skip link and Escape-close wallet menu controls', async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'palengkepay_address',
-      'GBI5W3JPFNGBMW2TCSGTNL3NPW6E423UN4BMAXAU34AXTSMTSDT2JDXH',
-    );
-    window.localStorage.setItem('palengkepay_wallet_name', 'QA Wallet');
+    (window as unknown as { __PP_E2E__?: boolean }).__PP_E2E__ = true;
   });
 
   await page.goto('/vendor/home');

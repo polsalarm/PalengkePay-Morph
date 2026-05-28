@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
+    "e2e": "playwright test",
     "qa:visual": "node scripts/run-visual-qa.mjs",
     "preview": "vite preview"
   },

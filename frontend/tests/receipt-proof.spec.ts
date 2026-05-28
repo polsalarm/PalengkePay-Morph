@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
 import fs from 'node:fs/promises';
 
-const customerWallet = 'GCUSTOMER000000000000000000000000000000000000000000000';
-const vendorWallet = 'GVENDOR00000000000000000000000000000000000000000000000';
+const customerWallet = '0x1111111111111111111111111111111111111111';
+const vendorWallet = '0x2222222222222222222222222222222222222222';
 
 test('standalone receipt route restores saved wallet proof by transaction hash', async ({ page }, testInfo) => {
   await page.addInitScript(({ customer, vendor }) => {
+    (window as unknown as { __PP_E2E__?: boolean }).__PP_E2E__ = true;
     window.localStorage.setItem(`pp_payment_proofs_${customer}`, JSON.stringify([
       {
         txHash: 'tx-live-hash',
@@ -32,9 +33,9 @@ test('standalone receipt route restores saved wallet proof by transaction hash',
   await expect(page.getByRole('heading', { name: 'Payment receipt' })).toBeVisible();
   await expect(page.getByText('Wallet-signed Testnet proof saved on this device')).toBeVisible();
   await expect(page.getByText('₱125.00')).toBeVisible();
-  await expect(page.getByText('20 XLM')).toBeVisible();
+  await expect(page.getByText('20 ETH')).toBeVisible();
   await expect(page.getByText('tx-live-hash')).toBeVisible();
-  await expect(page.getByRole('link', { name: /Verify on Stellar Expert/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Verify on Morph Explorer/i })).toBeVisible();
 
   await fs.mkdir('qa-artifacts/states', { recursive: true });
   await page.screenshot({

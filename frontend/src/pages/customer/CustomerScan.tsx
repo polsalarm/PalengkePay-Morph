@@ -305,7 +305,7 @@ export function CustomerScan() {
 
   // For other steps - normal content with max-width
   return (
-    <div className="max-w-md mx-auto space-y-4 pb-8">
+    <div className="max-w-md mx-auto w-full px-4 lg:px-8 pt-6 space-y-4 pb-8">
       {/* Back button */}
       <div className="flex items-center gap-3 pt-2">
         <button

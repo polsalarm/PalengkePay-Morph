@@ -1,3 +1,5 @@
+import { isEvmAddress } from './sanitize';
+
 export interface VendorQrPayload {
   t: 'p';
   v: 1;
@@ -26,7 +28,7 @@ export function buildVendorQrPayload(address: string, vendorName?: string, stall
 export function parseVendorQrPayload(raw: string): VendorQrMeta | null {
   try {
     const parsed = JSON.parse(raw) as Partial<VendorQrPayload>;
-    if (typeof parsed.a !== 'string' || !parsed.a.startsWith('G') || parsed.a.length !== 56) {
+    if (typeof parsed.a !== 'string' || !isEvmAddress(parsed.a)) {
       return null;
     }
     return {

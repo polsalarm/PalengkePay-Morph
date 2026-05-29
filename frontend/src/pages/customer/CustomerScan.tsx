@@ -17,6 +17,7 @@ import { formatPhp, formatSettlement, type StableCheckoutQuote } from '../../lib
 import { type PayToken } from '../../lib/tokens';
 import { ESCROW_ADDRESS } from '../../lib/contracts';
 import { savePaymentProof } from '../../lib/payment-proof';
+import { isEvmAddress } from '../../lib/sanitize';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const STROOPS = 10_000_000;
@@ -107,7 +108,7 @@ export function CustomerScan() {
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const addr = manualInput.trim();
-    if (addr.startsWith('G') && addr.length === 56) {
+    if (isEvmAddress(addr)) {
       setVendorAddress(addr);
       setScannedMeta(null);
       setStep('pay');
@@ -336,7 +337,7 @@ export function CustomerScan() {
               type="text"
               value={manualInput}
               onChange={(e) => setManualInput(e.target.value)}
-              placeholder="G..."
+              placeholder="0x..."
               className="w-full rounded-2xl px-4 font-mono text-sm focus:outline-none focus:ring-2"
               style={{
                 border: '2px solid #E2E8F0',

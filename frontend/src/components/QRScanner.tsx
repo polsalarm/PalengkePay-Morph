@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Keyboard, ImageUp } from 'lucide-react';
 import { parseVendorQrPayload } from '../lib/vendor-qr';
+import { isEvmAddress } from '../lib/sanitize';
 
 export interface QRScanMeta {
   name?: string;
@@ -46,7 +47,7 @@ export function QRScanner({ onScan, onManualEntry, onRawScan }: Props) {
           if (parsed.name) meta = { name: parsed.name, stallInfo: parsed.stallInfo };
         }
 
-        if (address.startsWith('G') && address.length === 56) {
+        if (isEvmAddress(address)) {
           onScan(address, meta);
         } else {
           setError('QR code is not a valid wallet address. Try again.');
@@ -100,7 +101,7 @@ export function QRScanner({ onScan, onManualEntry, onRawScan }: Props) {
         if (parsed.name) meta = { name: parsed.name, stallInfo: parsed.stallInfo };
       }
 
-      if (address.startsWith('G') && address.length === 56) {
+      if (isEvmAddress(address)) {
         onScan(address, meta);
       } else {
         setError('QR code is not a valid wallet address.');

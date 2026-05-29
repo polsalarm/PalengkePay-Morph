@@ -7,8 +7,8 @@ export function sanitizeText(value: string, maxLen = 200): string {
     .slice(0, maxLen);
 }
 
-/** Validate an EVM address (0x + 40 hex). Name kept for call-site compatibility. */
-export function isValidStellarAddress(address: string): boolean {
+/** Validate an EVM address (0x + 40 hex). */
+export function isEvmAddress(address: string): boolean {
   return /^0x[0-9a-fA-F]{40}$/.test(address.trim());
 }
 

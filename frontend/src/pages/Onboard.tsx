@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck, Wallet, QrCode, ScanLine,
@@ -11,7 +11,7 @@ import logoImg from '../assets/logo.png';
 const STEPS = ['Get wallet', 'Connect', 'Fund', "Let's go!"];
 
 export function Onboard() {
-  const { address, connect, isConnecting, error: walletError } = useWallet();
+  const { address, connect, isConnecting, isConnected, error: walletError } = useWallet();
   const { balance, refetch } = useBalance(address);
   const navigate = useNavigate();
 
@@ -22,15 +22,19 @@ export function Onboard() {
   const [fundErr, setFundErr]     = useState<string | null>(null);
   const [justConnected, setJustConnected] = useState(false);
 
-  const handleConnect = async () => {
-    try {
-      await connect();
-      // connect() only resolves if authModal + signMessage both succeeded
-      setJustConnected(true);
-    } catch {
-      // walletError state handled by WalletProvider
-    }
+  const handleConnect = () => {
+    // Opens the RainbowKit modal; the effect below advances once connected.
+    connect();
   };
+
+  // Auto-advance to the fund step once the wallet actually connects.
+  useEffect(() => {
+    if (isConnected && address && step === 1) {
+      setJustConnected(true);
+      const tid = setTimeout(() => setStep(2), 700);
+      return () => clearTimeout(tid);
+    }
+  }, [isConnected, address, step]);
 
 
   const copyAddress = async () => {
@@ -48,8 +52,6 @@ export function Onboard() {
       // Morph has no programmatic faucet — open the web faucet for this address.
       const faucet = `https://morph-rails-hoodi.morph.network/faucet?address=${encodeURIComponent(address)}`;
       window.open(faucet, '_blank', 'noopener');
-      // Give the user a moment to claim, then re-check the on-chain balance.
-      await new Promise((r) => setTimeout(r, 4000));
       await refetch();
       setFunded(true);
     } catch (e: unknown) {
@@ -213,15 +215,15 @@ export function Onboard() {
                 </p>
 
                 <div className="space-y-3 mb-8">
-                  {/* Freighter */}
+                  {/* MetaMask */}
                   <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center font-black text-sm shrink-0"
-                      style={{ backgroundColor: '#EEF2FF', color: '#4F46E5' }}
-                    >F</div>
+                      style={{ backgroundColor: '#FFF3E0', color: '#E2761B' }}
+                    >M</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <p className="text-sm font-bold text-slate-900">Freighter</p>
+                        <p className="text-sm font-bold text-slate-900">MetaMask</p>
                         <span
                           className="text-xs font-bold px-2 py-0.5 rounded-full"
                           style={{ backgroundColor: '#F0FDFA', color: '#008055', border: '1px solid #CCFBF1' }}
@@ -230,7 +232,7 @@ export function Onboard() {
                       <p className="text-xs text-slate-400">Best for desktop and laptop</p>
                     </div>
                     <a
-                      href="https://www.freighter.app/"
+                      href="https://metamask.io/download/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="shrink-0 flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl text-white transition-all hover:opacity-90 active:scale-95"
@@ -240,18 +242,18 @@ export function Onboard() {
                     </a>
                   </div>
 
-                  {/* Lobstr */}
+                  {/* MetaMask Mobile */}
                   <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center font-black text-sm shrink-0"
                       style={{ backgroundColor: '#F0F9FF', color: '#0EA5E9' }}
-                    >L</div>
+                    >M</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-900 mb-0.5">Lobstr</p>
+                      <p className="text-sm font-bold text-slate-900 mb-0.5">MetaMask Mobile</p>
                       <p className="text-xs text-slate-400">Best for mobile phone users</p>
                     </div>
                     <a
-                      href="https://lobstr.co/"
+                      href="https://metamask.io/download/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="shrink-0 flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all active:scale-95"
@@ -316,7 +318,7 @@ export function Onboard() {
                 </button>
 
                 <p className="text-xs text-slate-400 text-center mb-4">
-                  A wallet picker will appear — select Freighter, then approve in the extension popup.
+                  A wallet picker will appear — select MetaMask, then approve in the extension popup.
                 </p>
 
                 {walletError && (

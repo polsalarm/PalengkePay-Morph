@@ -120,6 +120,11 @@ export async function sendStablePayment(
   const units = parseUnits(amount, token.decimals);
   if (units <= 0n) throw new Error('amount must be greater than 0');
 
+  const balance = await getTokenBalance(token, from);
+  if (balance < units) {
+    throw new Error(`Not enough ${token.symbol}. Tap "mint test ${token.symbol}" on the payment form to get test tokens, then retry.`);
+  }
+
   const allowance = await getTokenAllowance(token, from);
   if (allowance < units) {
     onApproving?.();

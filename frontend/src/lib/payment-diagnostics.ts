@@ -3,7 +3,9 @@ import {
   ContractFunctionRevertedError,
   InsufficientFundsError,
   UserRejectedRequestError,
+  decodeErrorResult,
 } from 'viem';
+import { erc20Abi } from './abis/erc20';
 
 export interface PaymentFailureDetails {
   message: string;
@@ -32,6 +34,15 @@ const CONTRACT_ERRORS: Record<string, PaymentFailureDetails> = {
     message: 'Payment blocked by reentrancy guard',
     diagnostic: 'Retry the payment.',
   },
+  // ERC-20 reverts bubbling up from the stablecoin's transferFrom.
+  ERC20InsufficientBalance: {
+    message: 'Not enough stablecoin balance',
+    diagnostic: 'Tap "mint test tokens" on the payment form to get test stablecoins, then retry.',
+  },
+  ERC20InsufficientAllowance: {
+    message: 'Token spending not approved',
+    diagnostic: 'Approve the token when prompted, then retry the payment.',
+  },
 };
 
 function decodeEvmError(err: BaseError): PaymentFailureDetails {
@@ -41,7 +52,12 @@ function decodeEvmError(err: BaseError): PaymentFailureDetails {
 
   const revert = err.walk((e) => e instanceof ContractFunctionRevertedError);
   if (revert instanceof ContractFunctionRevertedError) {
-    const name = revert.data?.errorName ?? null;
+    let name = revert.data?.errorName ?? null;
+    // The write goes through palengkePaymentAbi, so errors raised by the ERC-20
+    // token (transferFrom) aren't decoded — try the ERC-20 ABI against raw data.
+    if (!name && revert.raw) {
+      try { name = decodeErrorResult({ abi: erc20Abi, data: revert.raw }).errorName; } catch { /* not an ERC-20 error */ }
+    }
     if (name && CONTRACT_ERRORS[name]) return CONTRACT_ERRORS[name];
     return {
       message: name ? `Payment reverted: ${name}` : 'Payment reverted on-chain',

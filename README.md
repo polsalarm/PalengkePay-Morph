@@ -63,6 +63,7 @@ PH wet market participants and micro-merchants outside the formal banking system
 ## ✨ Features
 - **Scan-to-Pay QR Payments** — vendor shows QR, customer scans and pays in seconds on Morph L2; near-zero fees, full amount forwarded to the vendor with no skim
 - **PHP-First Stable Checkout** — customer enters PHP, app locks a short-lived PHP quote, dual-currency receipt after confirm — the FX layer of the stack
+- **Stablecoin or Native-ETH Settlement** — pay in USDC / USDT / PHP-pegged (`payToken`) or native ETH (`pay`); a new wallet with no token balance **auto-mints** test stablecoins on its first pay (testnet), or grabs all three up front from the onboarding faucet step — zero manual setup
 - **On-Chain Utang (BNPL)** — Solidity escrow with installments, grace window, 1% reserve pool, 5% late-fee resume, on-chain default reputation
 - **On-Chain Vendor Reputation** — 1–5 star ratings per payment via `VendorRegistry.submitRating`; one rating per `(vendor, txHash)`
 - **Vendor Income Proof Pack** — per-period bank-ready certificate, CSV/JSON/text exports, wallet-signed on-chain attestation
@@ -292,6 +293,28 @@ stablecoin `payToken` path + three testnet mock ERC-20s. All source-verified on 
 - **Admin** (`ADMIN_ROLE` on registry + escrow): `0x5f1cbCCE2D20D881573297949b4bb01f86DcfC76`
 - **Network:** RPC `https://rpc-hoodi.morph.network` · Explorer `https://explorer-hoodi.morph.network`
 - **Settlement:** both native ETH and a peso-pegged stablecoin (USDT / USDC / PHP-pegged) on Morph L2
+
+### Stablecoin tokens (testnet mocks, 6 decimals)
+
+Morph Hoodi has no canonical stablecoins, so these are mock ERC-20s with an open `faucet()`
+(mints 1,000 whole tokens to the caller). **You don't need to mint manually** — the app funds
+your wallet for you:
+- **Auto-mint on pay:** select USDC/USDT with a zero balance and tap Pay; the flow runs
+  faucet → approve → pay (three wallet prompts, surfaced as a "Minting test…" step).
+- **Onboarding faucet step:** the fund screen has a *Get test stablecoins* button that mints
+  all three at once (one prompt per token).
+
+Full walkthrough (add network, import tokens, mint, pay): [`docs/STABLECOIN_SETUP.md`](docs/STABLECOIN_SETUP.md).
+
+| Token | Symbol | Address |
+|-------|--------|---------|
+| Mock USD Coin   | USDC | `0x482Cadd5fFf136280EBd8a92f90621b0De6946E4` |
+| Mock Tether USD | USDT | `0xd9ee5Ca6b15107D44e62c47dC753cc1e4713F355` |
+| Mock Peso       | PHPp | `0xACbcea210FDA2Fccef942Fe2698eB3fC995736cc` |
+
+Spender for approvals (the payment contract): `0x9fd349242caB01C8Df92d3C001B6dBa779b34500`. Pay
+flow is approve → `payToken` (two wallet prompts), preceded by a one-time `faucet()` prompt when
+the wallet has no balance yet; USDC/USDT priced via USD→PHP, PHPp 1:1.
 ### On-chain proof (Blockscout)
 Each contract is source-verified; screenshots show the verified source and live transactions.
 

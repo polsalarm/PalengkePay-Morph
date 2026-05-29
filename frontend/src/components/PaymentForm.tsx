@@ -125,6 +125,10 @@ export function PaymentForm({ vendorAddress, vendor, isLoading, preloadedVendorN
       setError('Quote expired. Refresh the amount to lock a new price.');
       return;
     }
+    if (!(Number(quote.xlmAmount) > 0)) {
+      setError(`Amount too small to settle in ${token.symbol} at the current rate. Enter a larger amount.`);
+      return;
+    }
     onSubmit(quote.xlmAmount, memo, quote, token);
   };
 

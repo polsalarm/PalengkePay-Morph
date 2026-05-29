@@ -1,6 +1,65 @@
+import {
+  BaseError,
+  ContractFunctionRevertedError,
+  InsufficientFundsError,
+  UserRejectedRequestError,
+} from 'viem';
+
 export interface PaymentFailureDetails {
   message: string;
   diagnostic: string | null;
+}
+
+// Custom errors declared by the PalengkePayment contract, mapped to user-facing text.
+const CONTRACT_ERRORS: Record<string, PaymentFailureDetails> = {
+  AmountMustBePositive: {
+    message: 'Amount must be greater than 0',
+    diagnostic: 'The peso amount is too small to settle at the current rate. Enter a larger amount.',
+  },
+  VendorTransferFailed: {
+    message: 'Payment to vendor failed',
+    diagnostic: 'The vendor wallet could not receive the transfer. Re-scan the vendor QR or verify the address.',
+  },
+  TokenRequired: {
+    message: 'Stablecoin settlement misconfigured',
+    diagnostic: 'Pick a valid stablecoin (or pay in ETH) and retry.',
+  },
+  SafeERC20FailedOperation: {
+    message: 'Token transfer failed',
+    diagnostic: 'Approve the token again, ensure you have enough balance, then retry.',
+  },
+  ReentrancyGuardReentrantCall: {
+    message: 'Payment blocked by reentrancy guard',
+    diagnostic: 'Retry the payment.',
+  },
+};
+
+function decodeEvmError(err: BaseError): PaymentFailureDetails {
+  if (err.walk((e) => e instanceof UserRejectedRequestError)) {
+    return { message: 'Transaction cancelled — no funds sent', diagnostic: null };
+  }
+
+  const revert = err.walk((e) => e instanceof ContractFunctionRevertedError);
+  if (revert instanceof ContractFunctionRevertedError) {
+    const name = revert.data?.errorName ?? null;
+    if (name && CONTRACT_ERRORS[name]) return CONTRACT_ERRORS[name];
+    return {
+      message: name ? `Payment reverted: ${name}` : 'Payment reverted on-chain',
+      diagnostic: revert.shortMessage?.slice(0, 240) ?? null,
+    };
+  }
+
+  if (err.walk((e) => e instanceof InsufficientFundsError)) {
+    return {
+      message: 'Insufficient ETH for amount + gas',
+      diagnostic: 'Top up testnet ETH via the faucet, then retry.',
+    };
+  }
+
+  return {
+    message: (err.shortMessage ?? err.message).slice(0, 120),
+    diagnostic: (err.shortMessage ?? err.message).slice(0, 240),
+  };
 }
 
 type HorizonError = {
@@ -18,6 +77,8 @@ type HorizonError = {
 
 export function getPaymentFailureDetails(err: unknown): PaymentFailureDetails {
   if (!err) return { message: 'Unknown error', diagnostic: null };
+
+  if (err instanceof BaseError) return decodeEvmError(err);
 
   const rc = (err as HorizonError).response?.data?.extras?.result_codes;
   if (rc) {

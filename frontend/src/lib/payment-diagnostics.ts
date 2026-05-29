@@ -56,10 +56,19 @@ function decodeEvmError(err: BaseError): PaymentFailureDetails {
     };
   }
 
-  return {
-    message: (err.shortMessage ?? err.message).slice(0, 120),
-    diagnostic: (err.shortMessage ?? err.message).slice(0, 240),
-  };
+  const raw = err.shortMessage ?? err.message;
+
+  // Some wallets/RPCs return a bare "execution reverted" with no error data, so
+  // the custom error (e.g. AmountMustBePositive) can't be decoded. The most
+  // common causes here are a zero/too-small amount or a wrong-network wallet.
+  if (/revert/i.test(raw)) {
+    return {
+      message: 'Payment reverted on-chain',
+      diagnostic: 'Check the amount is greater than 0 and that your wallet is on Morph Hoodi (chain 2910), then retry.',
+    };
+  }
+
+  return { message: raw.slice(0, 120), diagnostic: raw.slice(0, 240) };
 }
 
 type HorizonError = {

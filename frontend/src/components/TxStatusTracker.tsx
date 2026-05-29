@@ -81,6 +81,28 @@ export function TxStatusTracker({
     );
   }
 
+  if (status === 'minting') {
+    return (
+      <div
+        className="rounded-3xl p-5 flex items-center gap-4 animate-border-pulse"
+        style={{ backgroundColor: '#00284B', border: '1.5px solid #14B8A6' }}
+      >
+        <div
+          className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
+          style={{ backgroundColor: 'rgba(20,184,166,0.15)' }}
+        >
+          <Loader2 size={20} className="animate-spin" style={{ color: '#14B8A6' }} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-white">Minting test {tokenSymbol}…</p>
+          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            You have no {tokenSymbol} yet — approve the mint, then approve + pay.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (status === 'approving') {
     return (
       <div

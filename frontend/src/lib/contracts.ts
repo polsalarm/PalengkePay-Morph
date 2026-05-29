@@ -114,20 +114,26 @@ export async function sendStablePayment(
   token: PayToken,
   amount: string,
   memo: string,
-  onApproving?: () => void,
+  hooks?: { onMinting?: () => void; onApproving?: () => void },
 ): Promise<PaymentResult> {
   if (!token.address) throw new Error('sendStablePayment requires an ERC-20 token');
   const units = parseUnits(amount, token.decimals);
   if (units <= 0n) throw new Error('amount must be greater than 0');
 
-  const balance = await getTokenBalance(token, from);
+  let balance = await getTokenBalance(token, from);
   if (balance < units) {
-    throw new Error(`Not enough ${token.symbol}. Tap "mint test ${token.symbol}" on the payment form to get test tokens, then retry.`);
+    // Auto-fund from the open testnet faucet (mints FAUCET_AMOUNT whole tokens).
+    hooks?.onMinting?.();
+    await faucetToken(token);
+    balance = await getTokenBalance(token, from);
+    if (balance < units) {
+      throw new Error(`Amount exceeds the test ${token.symbol} faucet limit. Enter a smaller amount.`);
+    }
   }
 
   const allowance = await getTokenAllowance(token, from);
   if (allowance < units) {
-    onApproving?.();
+    hooks?.onApproving?.();
     await approveToken(token, units);
   }
 

@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { useWallet } from '../lib/hooks/useWallet';
 import { useBalance } from '../lib/hooks/useBalance';
+import { faucetToken } from '../lib/contracts';
+import { STABLES, STABLECOINS_ENABLED } from '../lib/tokens';
 import logoImg from '../assets/logo.png';
 
 const STEPS = ['Get wallet', 'Connect', 'Fund', "Let's go!"];
@@ -21,6 +23,8 @@ export function Onboard() {
   const [funded, setFunded]       = useState(false);
   const [fundErr, setFundErr]     = useState<string | null>(null);
   const [justConnected, setJustConnected] = useState(false);
+  const [stableState, setStableState] = useState<'idle' | 'minting' | 'done'>('idle');
+  const [stableErr, setStableErr]     = useState<string | null>(null);
 
   const handleConnect = () => {
     // Opens the RainbowKit modal; the effect below advances once connected.
@@ -58,6 +62,20 @@ export function Onboard() {
       setFundErr((e as Error).message ?? 'Failed to fund wallet');
     } finally {
       setFunding(false);
+    }
+  };
+
+  const mintStables = async () => {
+    if (!address) return;
+    setStableState('minting');
+    setStableErr(null);
+    try {
+      // One faucet() per configured mock (mints 1,000 whole tokens each).
+      for (const t of STABLES) await faucetToken(t);
+      setStableState('done');
+    } catch (e: unknown) {
+      setStableErr((e as Error).message ?? 'Failed to mint test stablecoins');
+      setStableState('idle');
     }
   };
 
@@ -417,6 +435,34 @@ export function Onboard() {
 
                 {fundErr && (
                   <p className="text-xs text-rose-600 text-center mb-3">{fundErr}</p>
+                )}
+
+                {STABLECOINS_ENABLED && address && (
+                  <div className="rounded-2xl p-4 mt-2 border" style={{ backgroundColor: '#F0FDFA', borderColor: '#CCFBF1' }}>
+                    <p className="text-sm font-bold text-slate-800 mb-1">
+                      Want to pay in stablecoins? (optional)
+                    </p>
+                    <p className="text-xs text-slate-500 mb-3">
+                      Mint free test {STABLES.map((t) => t.symbol).join(' · ')} so you can pay vendors in pesos.
+                      Your wallet will prompt once per token.
+                    </p>
+                    {stableState === 'done' ? (
+                      <p className="text-xs font-bold" style={{ color: '#008055' }}>
+                        ✓ Test stablecoins minted to your wallet!
+                      </p>
+                    ) : (
+                      <button
+                        onClick={mintStables}
+                        disabled={stableState === 'minting'}
+                        className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl transition-all active:scale-95 disabled:opacity-60 text-white"
+                        style={{ backgroundColor: '#008055' }}
+                      >
+                        {stableState === 'minting' ? <Loader2 size={12} className="animate-spin" /> : '🪙'}
+                        {stableState === 'minting' ? 'Minting…' : 'Get test stablecoins'}
+                      </button>
+                    )}
+                    {stableErr && <p className="text-xs text-rose-500 mt-2">{stableErr}</p>}
+                  </div>
                 )}
 
                 <div className="flex justify-end mt-4">

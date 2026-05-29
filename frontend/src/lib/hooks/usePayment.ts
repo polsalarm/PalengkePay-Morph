@@ -4,7 +4,7 @@ import { getPaymentFailureDetails } from '../payment-diagnostics';
 import type { PaymentSettlementMode } from '../payment-routing';
 import { NATIVE_TOKEN, type PayToken } from '../tokens';
 
-export type TxStatus = 'idle' | 'building' | 'signing' | 'approving' | 'submitting' | 'confirmed' | 'failed';
+export type TxStatus = 'idle' | 'building' | 'signing' | 'approving' | 'minting' | 'submitting' | 'confirmed' | 'failed';
 
 export interface PaymentState {
   status: TxStatus;
@@ -34,8 +34,9 @@ export function usePayment() {
       setState({ status: 'submitting', txHash: null, error: null, diagnostic: null });
       const { txHash } = token.kind === 'native'
         ? await sendPaymentTx(to, amount, memo ?? '')
-        : await sendStablePayment(from, to, token, amount, memo ?? '', () => {
-            setState({ status: 'approving', txHash: null, error: null, diagnostic: null });
+        : await sendStablePayment(from, to, token, amount, memo ?? '', {
+            onMinting: () => setState({ status: 'minting', txHash: null, error: null, diagnostic: null }),
+            onApproving: () => setState({ status: 'approving', txHash: null, error: null, diagnostic: null }),
           });
       setState({ status: 'confirmed', txHash, error: null, diagnostic: null });
     } catch (err: unknown) {

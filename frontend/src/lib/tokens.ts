@@ -42,7 +42,7 @@ function stable(
   return { key, symbol, label, address: address as `0x${string}`, decimals: 6, kind };
 }
 
-const STABLES: PayToken[] = [
+export const STABLES: PayToken[] = [
   stable('usdc', 'USDC', 'USD Coin', 'usd', env.VITE_MOCK_USDC_ADDRESS as string | undefined),
   stable('usdt', 'USDT', 'Tether USD', 'usd', env.VITE_MOCK_USDT_ADDRESS as string | undefined),
   stable('phpp', 'PHPp', 'Peso (pegged)', 'php', env.VITE_MOCK_PHPP_ADDRESS as string | undefined),

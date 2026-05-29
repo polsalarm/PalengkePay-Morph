@@ -227,7 +227,7 @@ export function Connect() {
                 className="text-xs font-semibold hover:underline transition-colors"
                 style={{ color: '#008055' }}
               >
-                Get started with Freighter →
+                Get started with MetaMask →
               </button>
             </div>
           </div>

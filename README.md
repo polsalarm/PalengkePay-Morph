@@ -333,6 +333,21 @@ Each contract is source-verified; screenshots show the verified source and live 
 |---|---|
 | ![UTangEscrow verified source](contracts-evm/screenshots/UtangEscrow1.png) | ![UTangEscrow transactions](contracts-evm/screenshots/UtangEscrow2.png) |
 
+**MockUSDC** (testnet mock, 6 dp)
+| Verified source | Transactions |
+|---|---|
+| ![MockUSDC verified source](contracts-evm/screenshots/MockUSDC1.png) | ![MockUSDC transactions](contracts-evm/screenshots/MockUSDC2.png) |
+
+**MockUSDT** (testnet mock, 6 dp)
+| Verified source | Transactions |
+|---|---|
+| ![MockUSDT verified source](contracts-evm/screenshots/MockUSDT1.png) | ![MockUSDT transactions](contracts-evm/screenshots/MockUSDT2.png) |
+
+**MockPHPp** — PHP-pegged (testnet mock, 6 dp)
+| Verified source | Transactions |
+|---|---|
+| ![MockPHPp verified source](contracts-evm/screenshots/MockPHPp1.png) | ![MockPHPp transactions](contracts-evm/screenshots/MockPHPp2.png) |
+
 > Morph deploy gotcha: the sequencer floor is ~0.2 gwei but EIP-1559 estimates underprice off the low base fee, so txs hang. Force legacy 1 gwei (`forge ... --legacy --with-gas-price 1000000000`). Full notes in [`contracts-evm/README.md`](contracts-evm/README.md).
 
 ## 🗺️ Roadmap

@@ -57,6 +57,21 @@ Each contract is source-verified; screenshots show the verified source and live 
 |---|---|
 | ![UTangEscrow verified source](screenshots/UtangEscrow1.png) | ![UTangEscrow transactions](screenshots/UtangEscrow2.png) |
 
+### MockUSDC (testnet mock, 6 dp)
+| Verified source | Transactions |
+|---|---|
+| ![MockUSDC verified source](screenshots/MockUSDC1.png) | ![MockUSDC transactions](screenshots/MockUSDC2.png) |
+
+### MockUSDT (testnet mock, 6 dp)
+| Verified source | Transactions |
+|---|---|
+| ![MockUSDT verified source](screenshots/MockUSDT1.png) | ![MockUSDT transactions](screenshots/MockUSDT2.png) |
+
+### MockPHPp — PHP-pegged (testnet mock, 6 dp)
+| Verified source | Transactions |
+|---|---|
+| ![MockPHPp verified source](screenshots/MockPHPp1.png) | ![MockPHPp transactions](screenshots/MockPHPp2.png) |
+
 ## Prerequisites
 
 Foundry (forge 1.7.1) is installed at `~/.foundry/bin` — **not on PATH**, so either add it
